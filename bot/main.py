@@ -131,6 +131,15 @@ $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Tribe-Members-Inco
 Placeholder tekst voor uitgebreide uitleg
 """,
 
+    "UnitsDivide": """Deelt aanwezige troepen in het dorp door het gevraagde aantal en vult deze in.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/unitsdivide.206400/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/UnitsDivide_206400.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
     # Kaart category
     "Mapfunctions": """Collectie van kleine functionaliteiten op de kaart.
 **Forum topic:** <https://forum.tribalwars.nl/index.php?threads/mapfunctions.206294/>
@@ -314,6 +323,15 @@ javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Munten
 Placeholder tekst voor uitgebreide uitleg
 """,
 
+    "Vlaggen upgrader": """Scriptje waar je kan aanduiden hoeveel vlaggen je wil upgraden door gewoon enter ingedrukt te houden.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/vlaggen-upgrader.206619/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Vlaggen-Upgrader_206619.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+    
     # Stats category
     "Noble MS": """Deze JavaScript-code berekent het gemiddelde aantal milliseconden van zichtbare bevelen (nobles) op een webpagina en toont het resultaat met
 **Forum topic:** <https://forum.tribalwars.nl/index.php?threads/noble-ms.209666/>
@@ -509,14 +527,14 @@ class PrivateMenuView(View):
                 "SnipeTool", "IncsEnhancer", "TribeShare", "NobleSpam", "CoordFilter", 
                 "Coordgrab", "Resource sender", "TribeLines", "Village renamer",
                 "MintTimer", "CoinPull", "Munt Enhancer", "Template Enhancer",
-                "GroupPlacer", "ClearsTimer"
+                "GroupPlacer", "ClearsTimer", "UnitsDivide"
             ],
             "Aanval": ["Offpack", "TimeTool", "EasyCommand", "NobleSpam", "Template Enhancer", "MobileAttSent"],
-            "Verdediging": ["Defpack", "SnipeTool", "TimeTool", "IncsEnhancer", "TribeIncs"],
+            "Verdediging": ["Defpack", "SnipeTool", "TimeTool", "IncsEnhancer", "TribeIncs", "UnitsDivide"],
             "Kaart": ["Mapfunctions", "Overwatch", "CoordGrab", "TribeLines", "ClaimEnhancer"],
             "Farmen": ["FarmGod", "FarmShaper"],
             "Rooftochten": ["Massa rooftochten", "Roof unlocker"],
-            "Overig": ["GS balancer", "TribeShare", "CoordFilter", "Resource sender", "Village renamer", "GroupPlacer", "ClearsTimer", "MintTimer", "CoinPull", "Munt Enhancer"],
+            "Overig": ["GS balancer", "TribeShare", "CoordFilter", "Resource sender", "Village renamer", "GroupPlacer", "ClearsTimer", "MintTimer", "CoinPull", "Munt Enhancer", "Vlaggen upgrader"],
             "Stats": ["Noble MS", "Troop Counter", "PP Log"],
             "Package": ["Sangu Package"],
         }
