@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from discord.ui import View, Button, Modal, TextInput, Select
-from fuzzywuzzy import fuzz
+from fuzzywuzzy import fuzz, process
 import os
 
 intents = discord.Intents.default()
@@ -14,6 +14,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 descriptions = {
     "Offpack": """Offpack is een verzameling van meerdere functionaliteiten die samen komen tot één script die je helpt bij het versturen van aanvallen.""",
     "TimeTool": """TimeTool: Helps in accurately timing attacks.""",
+    "Defpack": """Defpack: Organizes defensive troops for optimal defense.""",
     # Other descriptions...
 }
 
@@ -63,10 +64,13 @@ class SearchModal(Modal):
         query = self.query.value
         results = []
 
-        # Fuzzy matching to allow minor typos
-        for subcategory, description in descriptions.items():
-            if fuzz.partial_ratio(query.lower(), subcategory.lower()) > 70 or fuzz.partial_ratio(query.lower(), description.lower()) > 70:
-                results.append((subcategory, description))
+        # Check for exact match first
+        if query in descriptions:
+            results.append((query, descriptions[query]))
+        else:
+            # Use fuzzy matching to find the best matches with a threshold
+            matches = process.extract(query, descriptions.keys(), limit=5, scorer=fuzz.partial_ratio)
+            results = [(subcategory, descriptions[subcategory]) for subcategory, score in matches if score > 60]
 
         if results:
             await interaction.response.send_message(
@@ -97,7 +101,6 @@ class ResultSelectionView(View):
         selected_script = interaction.data["values"][0]
         description = descriptions.get(selected_script, "No description available.")
         await interaction.response.send_message(f"**{selected_script}**:\n{description}", ephemeral=True)
-
 
 class PrivateMenuView(View):
     def __init__(self, bot, category):
