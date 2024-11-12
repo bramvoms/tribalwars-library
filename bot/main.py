@@ -65,27 +65,27 @@ class SearchModal(Modal):
         query = self.query.value.lower()
         results = []
 
-        # Check for exact match first
+        # Step 1: Exact match check
         if query in descriptions:
             results.append((query, descriptions[query]))
         else:
-            # Use fuzzy matching and substring matching to find the best matches
+            # Step 2: Substring and fuzzy matching with priority adjustments
             for subcategory, description in descriptions.items():
                 subcategory_lower = subcategory.lower()
                 description_lower = description.lower()
                 
-                # Check if query is a substring of the subcategory or description
+                # Substring match for flexibility with short terms
                 if query in subcategory_lower or query in description_lower:
                     results.append((subcategory, description))
                 
-                # Fuzzy match: lower threshold for short queries, combine partial and token set ratios
-                elif (fuzz.partial_ratio(query, subcategory_lower) > 60 or fuzz.token_set_ratio(query, subcategory_lower) > 60):
+                # Fuzzy match using combined methods for better scoring
+                elif (fuzz.partial_ratio(query, subcategory_lower) > 50 or fuzz.token_set_ratio(query, subcategory_lower) > 50):
                     results.append((subcategory, description))
 
-            # Remove duplicates by converting to a dictionary and back to a list
-            results = list(dict.fromkeys(results))  # Removes duplicate entries while preserving order
+            # Remove duplicates while preserving order
+            results = list(dict.fromkeys(results))
 
-        # Ensure at least five results by adding random items if needed
+        # Step 3: Ensure exactly five results by adding random items if needed
         if len(results) < 5:
             additional_results = [
                 (subcategory, descriptions[subcategory])
@@ -94,14 +94,12 @@ class SearchModal(Modal):
             ]
             results.extend(additional_results)
 
-        if results:
-            await interaction.response.send_message(
-                content="Select the script you want more details about:",
-                view=ResultSelectionView(results[:5]),  # Show only the top 5 results
-                ephemeral=True
-            )
-        else:
-            await interaction.response.send_message("No matching scripts found.", ephemeral=True)
+        # Only show the top 5 results to keep the output consistent
+        await interaction.response.send_message(
+            content="Select the script you want more details about:",
+            view=ResultSelectionView(results[:5]),  # Show only the top 5 results
+            ephemeral=True
+        )
 
 class ResultSelectionView(View):
     def __init__(self, results):
