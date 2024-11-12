@@ -1,11 +1,14 @@
 import discord
 from discord.ext import commands
 from discord.ui import View, Button, Modal, TextInput, Select
+from discord import app_commands
 from fuzzywuzzy import fuzz
 import os
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.guilds = True
+intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -220,6 +223,134 @@ class PrivateMenuView(View):
             embed=embed,
             view=PublicMenuView(self.bot)
         )
+
+# Add the purge command
+@bot.tree.command(name="purge", description="Purge messages in a channel based on various criteria.")
+@app_commands.default_permissions(manage_messages=True)
+async def purge(interaction: discord.Interaction):
+    # Check if the user has permission to manage messages
+    if not interaction.user.guild_permissions.manage_messages:
+        await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
+        return
+
+    # Present options to the user
+    view = PurgeOptionsView()
+    await interaction.response.send_message("Choose a purge option:", view=view, ephemeral=True)
+
+class PurgeOptionsView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.select(
+        placeholder="Select a purge option...",
+        options=[
+            discord.SelectOption(label="Purge All Messages", value="purge_all", description="Delete all messages in the channel."),
+            discord.SelectOption(label="Purge Number of Messages", value="purge_number", description="Delete a specific number of messages."),
+            discord.SelectOption(label="Purge Non-Bot Messages", value="purge_non_bot", description="Delete all messages sent by users."),
+            discord.SelectOption(label="Purge Bot Messages", value="purge_bot", description="Delete all messages sent by bots."),
+            discord.SelectOption(label="Purge Messages from a User", value="purge_user", description="Delete messages from a specific user."),
+            discord.SelectOption(label="Purge Messages from a Timeframe", value="purge_timeframe", description="Delete messages within a timeframe."),
+        ]
+    )
+    async def select_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
+        option = select.values[0]
+        if option == "purge_all":
+            await self.purge_all_messages(interaction)
+        elif option == "purge_number":
+            await self.prompt_number_of_messages(interaction)
+        elif option == "purge_non_bot":
+            await self.purge_non_bot_messages(interaction)
+        elif option == "purge_bot":
+            await self.purge_bot_messages(interaction)
+        elif option == "purge_user":
+            await self.prompt_user_selection(interaction)
+        elif option == "purge_timeframe":
+            await self.prompt_timeframe(interaction)
+
+    async def purge_all_messages(self, interaction: discord.Interaction):
+        await interaction.response.defer(thinking=True)
+        deleted = await interaction.channel.purge()
+        await interaction.followup.send(f"Deleted {len(deleted)} messages.", ephemeral=True)
+
+    async def prompt_number_of_messages(self, interaction: discord.Interaction):
+        modal = NumberInputModal()
+        await interaction.response.send_modal(modal)
+
+    async def purge_non_bot_messages(self, interaction: discord.Interaction):
+        await interaction.response.defer(thinking=True)
+        deleted = await interaction.channel.purge(limit=None, check=lambda m: not m.author.bot)
+        await interaction.followup.send(f"Deleted {len(deleted)} non-bot messages.", ephemeral=True)
+
+    async def purge_bot_messages(self, interaction: discord.Interaction):
+        await interaction.response.defer(thinking=True)
+        deleted = await interaction.channel.purge(limit=None, check=lambda m: m.author.bot)
+        await interaction.followup.send(f"Deleted {len(deleted)} bot messages.", ephemeral=True)
+
+    async def prompt_user_selection(self, interaction: discord.Interaction):
+        modal = UserSelectionModal()
+        await interaction.response.send_modal(modal)
+
+    async def prompt_timeframe(self, interaction: discord.Interaction):
+        modal = TimeframeModal()
+        await interaction.response.send_modal(modal)
+
+class NumberInputModal(discord.ui.Modal, title="Purge Number of Messages"):
+    number = TextInput(label="Number of messages to delete", placeholder="Enter a number (e.g., 10)", required=True)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        try:
+            limit = int(self.number.value)
+            if limit <= 0:
+                raise ValueError("Number must be positive.")
+            await interaction.response.defer(thinking=True)
+            deleted = await interaction.channel.purge(limit=limit)
+            await interaction.followup.send(f"Deleted {len(deleted)} messages.", ephemeral=True)
+        except ValueError:
+            await interaction.response.send_message("Please enter a valid positive integer.", ephemeral=True)
+
+class UserSelectionModal(discord.ui.Modal, title="Purge Messages from a User"):
+    user_input = TextInput(label="User ID or Mention", placeholder="Enter the user's ID or mention them", required=True)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        try:
+            user_value = self.user_input.value.strip()
+            user = None
+            if user_value.isdigit():
+                user = await interaction.guild.fetch_member(int(user_value))
+            elif user_value.startswith("<@") and user_value.endswith(">"):
+                user_id = int(user_value.strip("<@!>"))
+                user = await interaction.guild.fetch_member(user_id)
+            else:
+                user = interaction.guild.get_member_named(user_value)
+            if user is None:
+                raise ValueError("User not found.")
+
+            await interaction.response.defer(thinking=True)
+            deleted = await interaction.channel.purge(limit=None, check=lambda m: m.author == user)
+            await interaction.followup.send(f"Deleted {len(deleted)} messages from {user.display_name}.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f"Error: {str(e)}", ephemeral=True)
+
+class TimeframeModal(discord.ui.Modal, title="Purge Messages from a Timeframe"):
+    hours = TextInput(label="Hours", placeholder="Enter the number of hours", required=False)
+    minutes = TextInput(label="Minutes", placeholder="Enter the number of minutes", required=False)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        try:
+            hours = int(self.hours.value) if self.hours.value else 0
+            minutes = int(self.minutes.value) if self.minutes.value else 0
+            if hours == 0 and minutes == 0:
+                raise ValueError("Please enter a valid timeframe.")
+
+            from datetime import datetime, timedelta
+
+            time_limit = datetime.utcnow() - timedelta(hours=hours, minutes=minutes)
+
+            await interaction.response.defer(thinking=True)
+            deleted = await interaction.channel.purge(after=time_limit)
+            await interaction.followup.send(f"Deleted {len(deleted)} messages from the last {hours} hours and {minutes} minutes.", ephemeral=True)
+        except ValueError as e:
+            await interaction.response.send_message(str(e), ephemeral=True)
 
 @bot.event
 async def on_ready():
