@@ -95,14 +95,29 @@ async def on_ready():
     print(f"Logged in as {bot.user} ({bot.user.id})")
     await bot.tree.sync()  # Sync commands with Discord
 
+# Define the command with an administrator check
 @bot.tree.command(name="scripts", description="Displays the script categories")
+@app_commands.checks.has_permissions(administrator=True)
 async def scripts(interaction: discord.Interaction):
+    # Defer the interaction response to prevent "User used /scripts" message
+    await interaction.response.defer(ephemeral=True)
+    
+    # Send an embedded message as a regular bot message
     embed = discord.Embed(
         title="Scripts Menu",
         description="Select a category to explore the available scripts.",
         color=discord.Color.blue()
     )
-    await interaction.response.send_message(embed=embed, view=PublicMenuView(bot))
+    await interaction.channel.send(embed=embed, view=PublicMenuView(bot))
+
+# Error handler for when a user lacks administrator permissions
+@scripts.error
+async def scripts_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.errors.MissingPermissions):
+        await interaction.response.send_message(
+            "You do not have permission to use this command. Administrator access is required.",
+            ephemeral=True
+        )
 
 if __name__ == "__main__":
     bot.run(os.getenv("DISCORD_TOKEN"))
