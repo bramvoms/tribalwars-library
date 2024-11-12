@@ -894,7 +894,7 @@ class AMView(View):
     async def def_sjabloon_callback(self, interaction: Interaction):
         await interaction.response.send_message("Placeholder text for DEF sjabloon.", ephemeral=True)
 
-@bot.tree.command(name="am", description="Displays rush and template options for AM")
+@bot.tree.command(name="am", description="Shows AM templates for various uses")
 async def am(interaction: Interaction):
     """Command to display the AM options with buttons."""
     await interaction.response.send_message("Choose an action:", view=AMView(), ephemeral=True)
