@@ -504,6 +504,13 @@ class PrivateMenuView(View):
 
     def add_category_buttons(self):
         subcategories = {
+            "Must haves": [
+                "Offpack", "Defpack", "TimeTool", "Massa rooftochten", "GS balancer", 
+                "SnipeTool", "IncsEnhancer", "TribeShare", "NobleSpam", "CoordFilter", 
+                "Coordgrab", "Resource sender", "TribeLines", "Village renamer",
+                "MintTimer", "CoinPull", "Munt Enhancer", "Template Enhancer",
+                "GroupPlacer", "ClearsTimer"
+            ]
             "Aanvallen": ["Offpack", "TimeTool", "EasyCommand", "NobleSpam", "Template Enhancer", "MobileAttSent"],
             "Verdedigen": ["Defpack", "SnipeTool", "TimeTool", "IncsEnhancer", "TribeIncs"],
             "Kaart": ["Mapfunctions", "Overwatch", "CoordGrab", "TribeLines", "ClaimEnhancer"],
@@ -512,13 +519,6 @@ class PrivateMenuView(View):
             "Overig": ["GS balancer", "TribeShare", "CoordFilter", "Resource sender", "Village renamer", "GroupPlacer", "ClearsTimer", "MintTimer", "CoinPull", "Munt Enhancer"],
             "Stats": ["Noble MS", "Troop Counter", "PP Log"],
             "Package": ["Sangu Package"],
-            "Must haves": [
-                "Offpack", "Defpack", "TimeTool", "Massa rooftochten", "GS balancer", 
-                "SnipeTool", "IncsEnhancer", "TribeShare", "NobleSpam", "CoordFilter", 
-                "Coordgrab", "Resource sender", "TribeLines", "Village renamer",
-                "MintTimer", "CoinPull", "Munt Enhancer", "Template Enhancer",
-                "GroupPlacer", "ClearsTimer"
-            ]
         }
 
         for subcategory in subcategories.get(self.category, []):
