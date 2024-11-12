@@ -720,10 +720,19 @@ async def scripts(interaction: discord.Interaction):
         color=discord.Color.blue()
     )
     view = PublicMenuView(bot)
-    await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    
+    # Set a timeout for the view to delete the message after 300 seconds
+    view.timeout = 300
 
+    # Define an on_timeout function to delete the message when the view times out
+    async def on_timeout():
+        if view.message:
+            await view.message.delete()
 
-from fuzzywuzzy import process
+    view.on_timeout = on_timeout  # Set the timeout handler
+
+    # Send the ephemeral message and store the reference in the view
+    view.message = await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 @bot.command(name="scripts", help="Displays the description of a specific script by name.")
 async def get_script_description(ctx, *, script_name: str):
