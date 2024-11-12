@@ -84,8 +84,9 @@ class ResultSelectionView(View):
         self.add_result_selector()
 
     def add_result_selector(self):
+        # Limit descriptions to 100 characters
         options = [
-            discord.SelectOption(label=subcategory, description=description[:100] + "...")
+            discord.SelectOption(label=subcategory, description=(description[:97] + "..." if len(description) > 100 else description))
             for subcategory, description in self.results
         ]
         select = Select(placeholder="Choose a script...", options=options)
@@ -96,6 +97,7 @@ class ResultSelectionView(View):
         selected_script = interaction.data["values"][0]
         description = descriptions.get(selected_script, "No description available.")
         await interaction.response.send_message(f"**{selected_script}**:\n{description}", ephemeral=True)
+
 
 class PrivateMenuView(View):
     def __init__(self, bot, category):
