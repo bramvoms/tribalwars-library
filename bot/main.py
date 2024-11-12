@@ -69,21 +69,26 @@ class SearchModal(Modal):
         if query in descriptions:
             results.append((query, descriptions[query]))
         else:
-            # Step 2: Substring and fuzzy matching with priority adjustments
+            # Step 2: Advanced matching with substring and fuzzy matching
+            matches = []
             for subcategory, description in descriptions.items():
                 subcategory_lower = subcategory.lower()
                 description_lower = description.lower()
                 
-                # Substring match for flexibility with short terms
+                # Direct substring match
                 if query in subcategory_lower or query in description_lower:
-                    results.append((subcategory, description))
-                
-                # Fuzzy match using combined methods for better scoring
-                elif (fuzz.partial_ratio(query, subcategory_lower) > 50 or fuzz.token_set_ratio(query, subcategory_lower) > 50):
-                    results.append((subcategory, description))
+                    matches.append((subcategory, description, 90))  # High priority for direct substring matches
 
-            # Remove duplicates while preserving order
-            results = list(dict.fromkeys(results))
+                # Fuzzy match with a lower threshold for partial and token set ratios
+                elif (fuzz.partial_ratio(query, subcategory_lower) > 50 or fuzz.token_set_ratio(query, subcategory_lower) > 50):
+                    score = max(fuzz.partial_ratio(query, subcategory_lower), fuzz.token_set_ratio(query, subcategory_lower))
+                    matches.append((subcategory, description, score))  # Priority based on fuzzy score
+
+            # Sort matches by score to prioritize closer matches
+            matches = sorted(matches, key=lambda x: x[2], reverse=True)
+
+            # Remove duplicates and keep only the subcategory and description fields
+            results = [(subcategory, description) for subcategory, description, _ in dict.fromkeys(matches)]
 
         # Step 3: Ensure exactly three results by adding random items if needed
         if len(results) < 3:
