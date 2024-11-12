@@ -716,8 +716,8 @@ class NumberInputModal(discord.ui.Modal, title="Purge Number of Messages"):
             if limit <= 0:
                 raise ValueError("Number must be positive.")
 
-            # Send an initial message to confirm the purge request
-            response_message = await interaction.response.send_message("Purging messages...", ephemeral=True)
+            # Defer the response to indicate processing
+            await interaction.response.defer(ephemeral=True)
             deleted_count = 0
             command_message_id = interaction.id  # ID of the /purge command
 
@@ -739,8 +739,8 @@ class NumberInputModal(discord.ui.Modal, title="Purge Number of Messages"):
                 else:
                     break
 
-            # Edit the initial message with the correct deletion count
-            await response_message.edit(content=f"Deleted {deleted_count} messages.")
+            # Send a follow-up message with the final deletion count
+            await interaction.followup.send(f"Deleted {deleted_count} messages.", ephemeral=True)
 
         except ValueError:
             await interaction.response.send_message("Please enter a valid positive integer.", ephemeral=True)
