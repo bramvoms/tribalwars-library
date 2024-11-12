@@ -14,81 +14,310 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Updated descriptions dictionary with only the active scripts
 descriptions = {
+    # Aanvallen category
     "Offpack": """Een collectie aan functionaliteiten samengebracht in één package.
 **Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-off-pack.206109/>
 **Snellijst code:**
 ```js
 javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Off-Pack_206109.js');
 ```
-
 Placeholder tekst voor uitgebreide uitleg
 """,
-    
-    "TimeTool": """TimeTool helps in accurately timing attacks, allowing for synchronized actions.
-It provides time predictions and planning tools to ensure your attacks hit at the optimal moment.""",
 
-    "Defpack": """Defpack organizes defensive troops for optimal distribution in defense.
-It streamlines the process of setting up defenses across villages and villages in your cluster.""",
+    "TimeTool": """Helpt bij het nauwkeurig timen van aanvallen en synchroniseren van acties.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/time-tool.206111/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TimeTool_206111.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "SnipeTool": """SnipeTool assists in setting up snipes to defend against incoming attacks.
-It includes features for timing and launching snipe attacks to intercept enemy units.""",
+    "EasyCommand": """Verhoogt de snelheid van het verzenden van commando's over meerdere dorpen.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/easycommand.206130/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/EasyCommand_206130.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "Mapfunctions": """Mapfunctions provides various tools to enhance the TribalWars map display.
-It includes zoom features, mapping options, and better visual organization of map data.""",
+    "NobleSpam": """Automatiseert het versturen van adellijke aanvallen om meerdere dorpen snel te veroveren.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/noblespam.206117/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/NobleSpam_206117.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "Overwatch": """Overwatch helps monitor villages and activities on the map.
-You can track movements, view resource availability, and monitor enemy activity.""",
+    "Template Enhancer": """Verbetert sjablonen voor het organiseren van je dorpen.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/template-enhancer.206126/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TemplateEnhancer_206126.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "FarmGod": """FarmGod is an automated farming tool to maximize resource gains from farming.
-It automates farming tasks and ensures you gather resources efficiently from multiple villages.""",
+    "MobileAttSent": """Verstuurt aanvallen vanaf je mobiel voor snellere acties.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/mobileattsent.206140/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MobileAttSent_206140.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "FarmShaper": """FarmShaper organizes and optimizes your farming lists for efficient resource gathering.
-It helps you manage farm routes and prioritize the most productive villages.""",
+    # Verdeden category
+    "Defpack": """Een verzameling van tools die helpen bij het organiseren van verdedigingstaken.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-def-pack.206110/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Def-Pack_206110.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "Massa rooftochten": """Massa rooftochten simplifies mass scavenging operations for quick loot gathering.
-It automates the process of sending out and managing mass scavenging missions.""",
+    "SnipeTool": """Helpt bij het opzetten van snipe-aanvallen om inkomende aanvallen te blokkeren.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/snipetool.206114/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/SnipeTool_206114.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "Roof unlocker": """Roof unlocker unlocks the scavenging feature in mass amounts for faster setup.
-This tool makes it easy to unlock all villages for quick and efficient scavenging.""",
+    "IncsEnhancer": """Verbetert het overzicht van inkomende aanvallen, waardoor je ze snel kunt beheren.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/incs-enhancer.206115/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/IncsEnhancer_206115.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "GS balancer": """GS balancer balances and redistributes resources across villages efficiently.
-It ensures that all your villages are adequately resourced, preventing shortages.""",
+    "TribeIncs": """Een tool voor het beheren van inkomende aanvallen binnen je stam.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribeincs.206150/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeIncs_206150.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "Noble MS": """Noble MS provides millisecond-level precision for noble timing and coordination.
-It ensures that your nobles arrive at the exact moment to conquer villages with precision.""",
+    # Kaart category
+    "Mapfunctions": """Verbetert de functionaliteit van de kaart in het spel.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/mapfunctions.206155/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Mapfunctions_206155.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "Troop Counter": """Troop Counter counts and organizes troop levels across all villages.
-It helps you keep track of your armies' strength and optimize troop deployment.""",
+    "Overwatch": """Helpt bij het monitoren van dorpen en activiteiten op de kaart.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/overwatch.206160/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Overwatch_206160.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "Sangu Package": """Sangu Package includes a suite of tools to enhance gameplay, like map tools and overviews.
-It provides various utilities to improve your overall game experience, from troop management to resource tracking.""",
+    "CoordGrab": """Verzamelt coördinaten automatisch uit tekst voor eenvoudig gebruik.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coordgrab.206165/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordGrab_206165.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "EasyCommand": """EasyCommand simplifies troop command issuing across multiple villages.
-It allows you to send commands quickly and efficiently without manually adjusting each village.""",
+    "TribeLines": """Voegt een stam coördinatie functie toe aan je account.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribelines.206121/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeLines_206121.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "IncsEnhancer": """IncsEnhancer optimizes incoming attacks for easier recognition and response.
-It helps you manage your incoming attack notifications and alerts.""",
+    "ClaimEnhancer": """Verbetert de claims op de kaart door extra informatie weer te geven.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/claimenhancer.206170/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/ClaimEnhancer_206170.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "TribeShare": """TribeShare allows sharing information and maps within the tribe.
-It simplifies the process of sharing strategic information with tribe members.""",
+    # Farmen category
+    "FarmGod": """Automatiseert het verzamelen van middelen door het efficiënt beheren van boerderijen.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/farmgod.206175/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmGod_206175.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "NobleSpam": """NobleSpam automates noble attacks and sends them to multiple villages at once.
-It helps you to spam noble attacks quickly and efficiently.""",
+    "FarmShaper": """Organiseert en optimaliseert je boerderij lijsten voor efficiënter verzamelen van middelen.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/farmshaper.206180/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmShaper_206180.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "Coordfilter": """Coordfilter filters coordinates for specific criteria.
-It helps you manage and organize coordinates more easily.""",
+    # Rooftochten category
+    "Massa rooftochten": """Automatiseert het verzenden van massale rooftochten naar meerdere dorpen.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/massa-rooftochten.206112/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Massa-Rooftochten_206112.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "Coordgrab": """Coordgrab extracts coordinates from text for easier use.
-It allows you to grab and organize coordinates from various sources automatically.""",
+    "Roof unlocker": """Maakt het mogelijk om het rooftochten-systeem voor meerdere dorpen snel te ontgrendelen.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/roof-unlocker.206185/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/RoofUnlocker_206185.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "Resource sender": """Resource sender sends resources between your villages based on your needs.
-It helps balance resources more efficiently and keep your villages properly stocked.""",
+    # Overig category
+    "GS balancer": """Balanceren en herverdelen van grondstoffen over je dorpen voor optimale efficiëntie.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/gs-balancer.206113/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/GS-Balancer_206113.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "TribeLines": """TribeLines adds a tribe coordination feature to your account.
-It allows you to view and interact with tribe members more easily.""",
+    "TribeShare": """Maakt het delen van informatie en kaarten binnen je stam eenvoudiger.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribeshare.206116/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeShare_206116.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
 
-    "Village renamer": """Village renamer automatically renames villages based on set rules.
-It helps you maintain a well-organized village naming scheme.""",
+    "CoordFilter": """Filtert coördinaten op basis van opgegeven criteria.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coordfilter.206118/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordFilter_206118.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
+    "Resource sender": """Verstuurt grondstoffen tussen dorpen op basis van de behoeften.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/resourcesender.206120/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/ResourceSender_206120.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
+    "Village renamer": """Hernamt dorpen automatisch op basis van ingestelde regels.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/villagerenamer.206122/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/VillageRenamer_206122.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
+    "GroupPlacer": """Organiseert groepen voor dorpsbeheer.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/groupplacer.206127/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/GroupPlacer_206127.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
+    "ClearsTimer": """Toont de resterende tijd voor aanvallen of verdedigingen.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/clearstimer.206128/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/ClearsTimer_206128.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
+    "MintTimer": """Een timer voor het bijhouden van muntproductie.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/minttimer.206185/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MintTimer_206185.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
+    "CoinPull": """Maximaliseert muntproductie door grondstoffen te verdelen waar nodig.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coinpull.206186/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoinPull_206186.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
+    "Munt Enhancer": """Optimaliseert de muntproductie in het spel.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/munt-enhancer.206187/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MuntEnhancer_206187.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
+    # Stats category
+    "Noble MS": """Verhoogt de precisie van adellijke aanvallen door milliseconde-timing.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/noble-ms.206130/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/NobleMS_206130.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
+    "Troop Counter": """Houdt de sterkte van je troepen in de gaten en organiseert ze.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/troop-counter.206135/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TroopCounter_206135.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
+    "PP Log": """Logt premium punt activiteit voor eenvoudig beheer.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/pp-log.206136/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/PPLog_206136.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+""",
+
+    # Package category
+    "Sangu Package": """Een pakket van hulpmiddelen die het spel verbeteren.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/sangu-package.206140/>
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/SanguPackage_206140.js');
+```
+Placeholder tekst voor uitgebreide uitleg
+"""
 }
 
 main_menu_description = """**TribalWars Library: Scripts**
@@ -242,19 +471,21 @@ class PrivateMenuView(View):
 
     def add_category_buttons(self):
         subcategories = {
-            "Aanvallen": ["Offpack", "TimeTool"],
-            "Verdedigen": ["Defpack", "SnipeTool"],
-            "Kaart": ["Mapfunctions", "Overwatch"],
+            "Aanvallen": ["Offpack", "TimeTool", "EasyCommand", "NobleSpam", "Template Enhancer", "MobileAttSent"],
+            "Verdedigen": ["Defpack", "SnipeTool", "TimeTool", "IncsEnhancer", "TribeIncs"],
+            "Kaart": ["Mapfunctions", "Overwatch", "CoordGrab", "TribeLines", "ClaimEnhancer"],
             "Farmen": ["FarmGod", "FarmShaper"],
             "Rooftochten": ["Massa rooftochten", "Roof unlocker"],
-            "Overig": ["GS balancer"],
-            "Stats": ["Noble MS", "Troop Counter"],
-            "Package": ["Sangu Package", "EasyCommand"],
+            "Overig": ["GS balancer", "TribeShare", "CoordFilter", "Resource sender", "Village renamer", "GroupPlacer", "ClearsTimer", "MintTimer", "CoinPull", "Munt Enhancer"],
+            "Stats": ["Noble MS", "Troop Counter", "PP Log"],
+            "Package": ["Sangu Package"],
             # Added Must haves category with the specified scripts
             "Must haves": [
                 "Offpack", "Defpack", "TimeTool", "Massa rooftochten", "GS balancer", 
-                "SnipeTool", "IncsEnhancer", "TribeShare", "NobleSpam", "Coordfilter", 
-                "Coordgrab", "Resource sender", "TribeLines", "Village renamer"
+                "SnipeTool", "IncsEnhancer", "TribeShare", "NobleSpam", "CoordFilter", 
+                "Coordgrab", "Resource sender", "TribeLines", "Village renamer",
+                "MintTimer", "CoinPull", "Munt Enhancer", "Template Enhancer",
+                "GroupPlacer", "ClearsTimer"
             ]
         }
 
