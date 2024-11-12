@@ -94,26 +94,22 @@ class SubcategoryButtons(discord.ui.View):
             self.add_item(button)
 
     # Handle subcategory button clicks
-    @discord.ui.button(label="Placeholder", style=discord.ButtonStyle.secondary, custom_id="placeholder", disabled=True)
-    async def placeholder_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        pass
+    @discord.ui.button(label="Previous", style=discord.ButtonStyle.secondary)
+    async def previous_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Returns to the previous menu"""
+        view = ScriptButtons()  # Main category buttons
+        await interaction.response.send_message("Going back to the main categories.", view=view)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         """Ensure interaction is valid"""
         return True
 
-    @discord.ui.button(label="Back", style=discord.ButtonStyle.secondary)
-    async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Returns to the previous menu"""
-        view = ScriptButtons()  # Main category buttons
-        await interaction.response.send_message("Going back to the main categories.", view=view)
-
     async def on_button_click(self, interaction: discord.Interaction):
         """Handles button click for subcategories"""
         subcategory = interaction.data["custom_id"]  # Get subcategory from interaction
-        description = faq_data[self.category].get(subcategory, "No information available.")
         
-        if description:
+        if subcategory in faq_data[self.category]:
+            description = faq_data[self.category].get(subcategory, "No information available.")
             await interaction.response.send_message(description)
         else:
             await interaction.response.send_message("No information available for this subcategory.")
