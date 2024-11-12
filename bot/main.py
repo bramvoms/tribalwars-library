@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from discord.ui import View, Button, Modal, TextInput
+from discord.ui import View, Button, Modal, TextInput, Select
 from fuzzywuzzy import fuzz
 import os
 
@@ -66,12 +66,36 @@ class SearchModal(Modal):
         # Fuzzy matching to allow minor typos
         for subcategory, description in descriptions.items():
             if fuzz.partial_ratio(query.lower(), subcategory.lower()) > 70 or fuzz.partial_ratio(query.lower(), description.lower()) > 70:
-                results.append(f"**{subcategory}**:\n{description}\n")
+                results.append((subcategory, description))
 
         if results:
-            await interaction.response.send_message("Search Results:\n\n" + "\n".join(results), ephemeral=True)
+            await interaction.response.send_message(
+                content="Select the script you want more details about:",
+                view=ResultSelectionView(results),
+                ephemeral=True
+            )
         else:
             await interaction.response.send_message("No matching scripts found.", ephemeral=True)
+
+class ResultSelectionView(View):
+    def __init__(self, results):
+        super().__init__()
+        self.results = results
+        self.add_result_selector()
+
+    def add_result_selector(self):
+        options = [
+            discord.SelectOption(label=subcategory, description=description[:100] + "...")
+            for subcategory, description in self.results
+        ]
+        select = Select(placeholder="Choose a script...", options=options)
+        select.callback = self.show_description
+        self.add_item(select)
+
+    async def show_description(self, interaction: discord.Interaction):
+        selected_script = interaction.data["values"][0]
+        description = descriptions.get(selected_script, "No description available.")
+        await interaction.response.send_message(f"**{selected_script}**:\n{description}", ephemeral=True)
 
 class PrivateMenuView(View):
     def __init__(self, bot, category):
