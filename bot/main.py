@@ -3,10 +3,8 @@ from discord import app_commands
 
 # Set up intents
 intents = discord.Intents.default()
+intents.members = True
 intents.message_content = True
-
-# Replace 'YOUR_BOT_TOKEN' with your actual bot token
-BOT_TOKEN = 'MTMwNTgyOTMzMjAwNjIwNzUyMg.GgkzmU.xCGxxOUA2_TeX2eQ0xvcqWvtXHG9_K8il0W9rU'
 
 # Initialize the bot client
 class MyClient(discord.Client):
