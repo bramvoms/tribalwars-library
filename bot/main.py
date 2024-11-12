@@ -819,7 +819,7 @@ async def get_script_description(ctx, *, script_name: str):
                 suggestion_button.callback = suggestion_callback
                 view.add_item(suggestion_button)
 
-                embed = create_embed("Script Not Found", f"Script '{script_name}' not found. Did you mean:")
+                embed = create_embed("Script Not Found", f"Script '{script_name}' not found.")
                 await ctx.send(embed=embed, view=view)
             else:
                 # No close match found above the threshold
