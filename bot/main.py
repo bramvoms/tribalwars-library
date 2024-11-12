@@ -9,6 +9,21 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+# Define descriptions for each subcategory
+descriptions = {
+    "Offpack": "Offpack: A tool designed for efficient offensive organization.",
+    "TimeTool": "TimeTool: Helps in accurately timing attacks.",
+    "Defpack": "Defpack: Organizes defensive troops for optimal defense.",
+    "SnipeTool": "SnipeTool: Assists in setting up snipes to defend against attacks.",
+    "Mapfunctions": "Mapfunctions: Provides various mapping functionalities for better strategy.",
+    "Overwatch": "Overwatch: Monitors enemy movements on the map.",
+    "FarmGod": "FarmGod: Automates and optimizes your farming routines.",
+    "FarmShaper": "FarmShaper: Shapes and prioritizes farms based on resources.",
+    "Massa rooftochten": "Massa rooftochten: Mass raid tool to manage multiple attacks.",
+    "Roof unlocker": "Roof unlocker: Unlocks additional raiding capabilities.",
+    "GS balancer": "GS balancer: Balances resources across villages."
+}
+
 class MenuView(View):
     def __init__(self, bot, main_menu=True, prev_menu=None):
         super().__init__()
@@ -54,9 +69,10 @@ class MenuView(View):
 
         return callback
 
-    async def handle_subcategory(self, subcategory):
+    def handle_subcategory(self, subcategory):
         async def callback(interaction: discord.Interaction):
-            await interaction.response.send_message(f"Selected {subcategory}", ephemeral=True)
+            description = descriptions.get(subcategory, "No description available.")
+            await interaction.response.send_message(f"{subcategory}:\n{description}", ephemeral=True)
         
         return callback
 
