@@ -1,141 +1,109 @@
 import discord
 import os
 from discord.ext import commands
-from discord import app_commands
+from discord import ui
 
-# Set up intents
+# Set up intents (as before)
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-# FAQ data for each subcategory
-faq_data = {
-    "aanvallen": {
-        "offpack": "Offpack: A strategy tool to organize your offensive packs efficiently.",
-        "timetool": "TimeTool: Helps you calculate the best times to send troops for maximum efficiency."
-    },
-    "verdedigen": {
-        "defpack": "Defpack: A defensive pack setup to help protect your village.",
-        "incs_enhancer": "Incs Enhancer: A tool for better managing incoming attacks and defenses.",
-        "snipe_tool": "SnipeTool: Tool to snipe enemy troops and minimize your losses.",
-        "tribe_share": "TribeShare: Share resources or troops within your tribe for better support."
-    },
-    "kaart": {
-        "mapfunctions": "MapFunctions: Allows you to enhance the map for better strategic planning.",
-        "overwatch": "Overwatch: A system to monitor enemy movements and predict attacks."
-    },
-    "farmen": {
-        "farmgod": "FarmGod: Automates farming for resources across multiple villages.",
-        "farmshaper": "FarmShaper: A tool to organize farming routes and optimize resource collection."
-    },
-    "rooftochten": {
-        "massa_rooftochten": "Massa Rooftochten: Automates mass raids to plunder resources.",
-        "roof_unlocker": "Roof Unlocker: Helps unlock specific targets for your raids."
-    },
-    "overig": "Other useful tools that don't fit into any category."
+# Define the main scripts and their subcategories
+scripts = {
+    "aanvallen": "Offpack, TimeTool",
+    "verdedigen": "Defpack, Incs Enhancer, SnipeTool, TribeShare",
+    "kaart": "MapFunctions, Overwatch",
+    "farmen": "FarmGod, FarmShaper",
+    "rooftochten": "Massa rooftochten, Roof unlocker",
+    "overig": "Miscellaneous Tools"
 }
 
-# Create buttons for different categories
-class ScriptButtons(discord.ui.View):
-    def __init__(self):
+# Create subcategory buttons
+class SubcategoryButtons(ui.View):
+    def __init__(self, script_name):
         super().__init__()
+        self.script_name = script_name
 
-    # Category Buttons
-    @discord.ui.button(label="Aanvallen", style=discord.ButtonStyle.primary)
-    async def aanvallen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Shows subcategory buttons for Aanvallen"""
-        view = SubcategoryButtons("aanvallen")  # Subcategories for Aanvallen
-        await interaction.response.send_message("Choose a subcategory for Aanvallen:", view=view)
-
-    @discord.ui.button(label="Verdedigen", style=discord.ButtonStyle.primary)
-    async def verdedigen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Shows subcategory buttons for Verdedigen"""
-        view = SubcategoryButtons("verdedigen")  # Subcategories for Verdedigen
-        await interaction.response.send_message("Choose a subcategory for Verdedigen:", view=view)
-
-    @discord.ui.button(label="Kaart", style=discord.ButtonStyle.primary)
-    async def kaart_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Shows subcategory buttons for Kaart"""
-        view = SubcategoryButtons("kaart")  # Subcategories for Kaart
-        await interaction.response.send_message("Choose a subcategory for Kaart:", view=view)
-
-    @discord.ui.button(label="Farmen", style=discord.ButtonStyle.primary)
-    async def farmen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Shows subcategory buttons for Farmen"""
-        view = SubcategoryButtons("farmen")  # Subcategories for Farmen
-        await interaction.response.send_message("Choose a subcategory for Farmen:", view=view)
-
-    @discord.ui.button(label="Rooftochten", style=discord.ButtonStyle.primary)
-    async def rooftochten_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Shows subcategory buttons for Rooftochten"""
-        view = SubcategoryButtons("rooftochten")  # Subcategories for Rooftochten
-        await interaction.response.send_message("Choose a subcategory for Rooftochten:", view=view)
-
-    @discord.ui.button(label="Overig", style=discord.ButtonStyle.primary)
-    async def overig_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Shows information for Overig"""
-        await interaction.response.send_message(faq_data["overig"])
-
-# Subcategory buttons
-class SubcategoryButtons(discord.ui.View):
-    def __init__(self, category):
-        super().__init__()
-        self.category = category
-
-        # Ensure that only valid categories are processed
-        if category not in faq_data:
-            raise ValueError(f"Invalid category: {category}")
-        
-        # Generate subcategory buttons dynamically based on the category
-        for subcategory in faq_data[category]:
-            button = discord.ui.Button(label=subcategory.capitalize(), style=discord.ButtonStyle.primary, custom_id=subcategory)
-            self.add_item(button)
-
-    # Handle subcategory button clicks
-    @discord.ui.button(label="Previous", style=discord.ButtonStyle.secondary)
-    async def previous_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Returns to the previous menu"""
-        view = ScriptButtons()  # Main category buttons
-        await interaction.response.send_message("Going back to the main categories.", view=view)
-
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        """Ensure interaction is valid"""
-        return True
-
-    async def on_button_click(self, interaction: discord.Interaction):
-        """Handles button click for subcategories"""
-        subcategory = interaction.data["custom_id"]  # Get subcategory from interaction
-        
-        if subcategory in faq_data[self.category]:
-            description = faq_data[self.category].get(subcategory, "No information available.")
-            await interaction.response.send_message(description)
+        # Create the buttons for subcategories
+        if self.script_name == "aanvallen":
+            self.add_item(ui.Button(label="Offpack", style=discord.ButtonStyle.primary, custom_id="offpack"))
+            self.add_item(ui.Button(label="TimeTool", style=discord.ButtonStyle.primary, custom_id="timetool"))
+        elif self.script_name == "verdedigen":
+            self.add_item(ui.Button(label="Defpack", style=discord.ButtonStyle.primary, custom_id="defpack"))
+            self.add_item(ui.Button(label="Incs Enhancer", style=discord.ButtonStyle.primary, custom_id="incs_enhancer"))
+            self.add_item(ui.Button(label="SnipeTool", style=discord.ButtonStyle.primary, custom_id="snipe_tool"))
+            self.add_item(ui.Button(label="TribeShare", style=discord.ButtonStyle.primary, custom_id="tribeshare"))
+        elif self.script_name == "kaart":
+            self.add_item(ui.Button(label="MapFunctions", style=discord.ButtonStyle.primary, custom_id="map_functions"))
+            self.add_item(ui.Button(label="Overwatch", style=discord.ButtonStyle.primary, custom_id="overwatch"))
+        elif self.script_name == "farmen":
+            self.add_item(ui.Button(label="FarmGod", style=discord.ButtonStyle.primary, custom_id="farmgod"))
+            self.add_item(ui.Button(label="FarmShaper", style=discord.ButtonStyle.primary, custom_id="farmshaper"))
+        elif self.script_name == "rooftochten":
+            self.add_item(ui.Button(label="Massa rooftochten", style=discord.ButtonStyle.primary, custom_id="massa_rooftochten"))
+            self.add_item(ui.Button(label="Roof unlocker", style=discord.ButtonStyle.primary, custom_id="roof_unlocker"))
         else:
-            await interaction.response.send_message("No information available for this subcategory.")
+            self.add_item(ui.Button(label="No subcategories", style=discord.ButtonStyle.primary, custom_id="none"))
 
-# Event for when the bot is ready
-@bot.event
-async def on_ready():
-    print(f'Logged in as {bot.user.name}({bot.user.id})')
+    # Button interaction callback functions
+    async def on_button_click(self, interaction: discord.Interaction):
+        button_id = interaction.data["custom_id"]
+        
+        # Subcategory response handling based on button pressed
+        if button_id == "offpack":
+            await interaction.response.send_message("You pressed Offpack!")
+        elif button_id == "timetool":
+            await interaction.response.send_message("You pressed TimeTool!")
+        elif button_id == "defpack":
+            await interaction.response.send_message("You pressed Defpack!")
+        elif button_id == "incs_enhancer":
+            await interaction.response.send_message("You pressed Incs Enhancer!")
+        elif button_id == "snipe_tool":
+            await interaction.response.send_message("You pressed SnipeTool!")
+        elif button_id == "tribeshare":
+            await interaction.response.send_message("You pressed TribeShare!")
+        elif button_id == "map_functions":
+            await interaction.response.send_message("You pressed MapFunctions!")
+        elif button_id == "overwatch":
+            await interaction.response.send_message("You pressed Overwatch!")
+        elif button_id == "farmgod":
+            await interaction.response.send_message("You pressed FarmGod!")
+        elif button_id == "farmshaper":
+            await interaction.response.send_message("You pressed FarmShaper!")
+        elif button_id == "massa_rooftochten":
+            await interaction.response.send_message("You pressed Massa rooftochten!")
+        elif button_id == "roof_unlocker":
+            await interaction.response.send_message("You pressed Roof unlocker!")
+        else:
+            await interaction.response.send_message("No valid subcategory button pressed.")
 
-# Slash command for scripts with Buttons
+# Main command for scripts
 @bot.tree.command(name="scripts")
-async def scripts(interaction: discord.Interaction):
-    """Shows buttons for different script categories."""
-    try:
-        view = ScriptButtons()  # Create the view with buttons
-        await interaction.response.send_message("Choose a category to get more information:", view=view)
-    except Exception as e:
-        print(f"Error sending message: {e}")
-        await interaction.response.send_message("Failed to show categories. Please try again later.")
+async def scripts_command(interaction: discord.Interaction):
+    """Displays the main categories with buttons for each subcategory."""
+    buttons = ui.View()  # Create a new view to hold buttons
+    
+    # Add main category buttons
+    buttons.add_item(ui.Button(label="Aanvallen", style=discord.ButtonStyle.primary, custom_id="aanvallen"))
+    buttons.add_item(ui.Button(label="Verdedigen", style=discord.ButtonStyle.primary, custom_id="verdedigen"))
+    buttons.add_item(ui.Button(label="Kaart", style=discord.ButtonStyle.primary, custom_id="kaart"))
+    buttons.add_item(ui.Button(label="Farmen", style=discord.ButtonStyle.primary, custom_id="farmen"))
+    buttons.add_item(ui.Button(label="Rooftochten", style=discord.ButtonStyle.primary, custom_id="rooftochten"))
+    buttons.add_item(ui.Button(label="Overig", style=discord.ButtonStyle.primary, custom_id="overig"))
 
-    # Ensure that the bot is syncing slash commands
-    await bot.tree.sync()
+    # Send the message with the buttons
+    await interaction.response.send_message("Choose a category:", view=buttons)
 
-# Run the bot using the token stored in environment variables
+    # Handle button clicks
+    async def button_callback(interaction: discord.Interaction):
+        category = interaction.data["custom_id"]
+        await interaction.response.send_message(f"You selected: {category}", view=SubcategoryButtons(category))
+
+    for button in buttons.children:
+        button.callback = button_callback
+
+# Run the bot
 if __name__ == '__main__':
-    try:
-        bot.run(os.getenv('DISCORD_TOKEN'))
-    except Exception as e:
-        print(f"Error running bot: {e}")
+    bot.run(os.getenv('DISCORD_TOKEN'))
