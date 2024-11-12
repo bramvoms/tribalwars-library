@@ -616,7 +616,7 @@ class PurgeOptionsSelect(discord.ui.Select):
             await self.view.prompt_user_selection(interaction)
         elif option == "purge_timeframe":
             await self.view.prompt_timeframe(interaction)
-
+            
 class PurgeOptionsView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -625,9 +625,13 @@ class PurgeOptionsView(discord.ui.View):
     async def purge_all_messages(self, interaction: discord.Interaction):
         await interaction.response.defer(thinking=True)
         total_deleted = 0
-        delay_between_deletions = 1  # Delay between each message deletion for safety
+        delay_between_deletions = 1
+        command_message_id = interaction.id  # Capture the ID of the message that triggered /purge
 
-        async for message in interaction.channel.history(limit=None):  # Retrieve all messages
+        async for message in interaction.channel.history(limit=None):
+            if message.id == command_message_id:
+                continue  # Skip the /purge command message
+
             try:
                 await message.delete()
                 total_deleted += 1
@@ -635,10 +639,10 @@ class PurgeOptionsView(discord.ui.View):
 
             except discord.HTTPException as e:
                 if e.status == 429:
-                    retry_after = e.retry_after or 10  # Wait for the rate limit to clear
+                    retry_after = e.retry_after or 10
                     await asyncio.sleep(retry_after)
                 else:
-                    break  # Stop if another error occurs
+                    break
 
         await interaction.followup.send(f"Deleted {total_deleted} messages.", ephemeral=True)
 
@@ -650,20 +654,23 @@ class PurgeOptionsView(discord.ui.View):
         await interaction.response.defer(thinking=True)
         total_deleted = 0
         delay_between_deletions = 1
+        command_message_id = interaction.id
 
         async for message in interaction.channel.history(limit=None):
-            if not message.author.bot:
-                try:
-                    await message.delete()
-                    total_deleted += 1
-                    await asyncio.sleep(delay_between_deletions)
+            if message.id == command_message_id or message.author.bot:
+                continue  # Skip the /purge command message and bot messages
 
-                except discord.HTTPException as e:
-                    if e.status == 429:
-                        retry_after = e.retry_after or 10
-                        await asyncio.sleep(retry_after)
-                    else:
-                        break
+            try:
+                await message.delete()
+                total_deleted += 1
+                await asyncio.sleep(delay_between_deletions)
+
+            except discord.HTTPException as e:
+                if e.status == 429:
+                    retry_after = e.retry_after or 10
+                    await asyncio.sleep(retry_after)
+                else:
+                    break
 
         await interaction.followup.send(f"Deleted {total_deleted} non-bot messages.", ephemeral=True)
 
@@ -671,22 +678,26 @@ class PurgeOptionsView(discord.ui.View):
         await interaction.response.defer(thinking=True)
         total_deleted = 0
         delay_between_deletions = 1
+        command_message_id = interaction.id
 
         async for message in interaction.channel.history(limit=None):
-            if message.author.bot:
-                try:
-                    await message.delete()
-                    total_deleted += 1
-                    await asyncio.sleep(delay_between_deletions)
+            if message.id == command_message_id or not message.author.bot:
+                continue  # Skip the /purge command message and non-bot messages
 
-                except discord.HTTPException as e:
-                    if e.status == 429:
-                        retry_after = e.retry_after or 10
-                        await asyncio.sleep(retry_after)
-                    else:
-                        break
+            try:
+                await message.delete()
+                total_deleted += 1
+                await asyncio.sleep(delay_between_deletions)
+
+            except discord.HTTPException as e:
+                if e.status == 429:
+                    retry_after = e.retry_after or 10
+                    await asyncio.sleep(retry_after)
+                else:
+                    break
 
         await interaction.followup.send(f"Deleted {total_deleted} bot messages.", ephemeral=True)
+
 
     async def prompt_user_selection(self, interaction: discord.Interaction):
         modal = UserSelectionModal()
