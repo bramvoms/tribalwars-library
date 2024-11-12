@@ -443,21 +443,29 @@ async def get_script_description(ctx, *, script_name: str):
         embed = create_embed(matching_script, descriptions[matching_script])
         await ctx.send(embed=embed)
     else:
-        closest_match, score = process.extractOne(script_name, descriptions.keys())
-        if score > 60:
-            view = View()
-            suggestion_button = Button(label=f"Bedoelde je '{closest_match}'?", style=discord.ButtonStyle.primary)
+        # Try to find the closest match using fuzzy matching
+        result = process.extractOne(script_name, descriptions.keys())
+        if result:
+            closest_match, score = result
+            if score > 60:  # Adjust threshold as needed for better accuracy
+                view = View()
+                suggestion_button = Button(label=f"Bedoelde je '{closest_match}'?", style=discord.ButtonStyle.primary)
 
-            async def suggestion_callback(interaction: discord.Interaction):
-                embed = create_embed(closest_match, descriptions[closest_match])
-                await interaction.response.send_message(embed=embed)
+                async def suggestion_callback(interaction: discord.Interaction):
+                    embed = create_embed(closest_match, descriptions[closest_match])
+                    await interaction.response.send_message(embed=embed)
 
-            suggestion_button.callback = suggestion_callback
-            view.add_item(suggestion_button)
+                suggestion_button.callback = suggestion_callback
+                view.add_item(suggestion_button)
 
-            embed = create_embed("Script Not Found", f"Script '{script_name}' not found.")
-            await ctx.send(embed=embed, view=view)
+                embed = create_embed("Script Not Found", f"Script '{script_name}' not found.")
+                await ctx.send(embed=embed, view=view)
+            else:
+                # No close match found above the threshold
+                embed = create_embed("Script Not Found", f"Script '{script_name}' not found in the library.")
+                await ctx.send(embed=embed)
         else:
+            # No match or close match found
             embed = create_embed("Script Not Found", f"Script '{script_name}' not found in the library.")
             await ctx.send(embed=embed)
 
