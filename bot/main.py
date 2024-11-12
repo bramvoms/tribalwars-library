@@ -58,6 +58,31 @@ It provides various utilities to improve your overall game experience, from troo
 
     "EasyCommand": """EasyCommand simplifies troop command issuing across multiple villages.
 It allows you to send commands quickly and efficiently without manually adjusting each village.""",
+
+    # Added new scripts under Must haves category:
+    "IncsEnhancer": """IncsEnhancer optimizes incoming attacks for easier recognition and response.
+It helps you manage your incoming attack notifications and alerts.""",
+
+    "TribeShare": """TribeShare allows sharing information and maps within the tribe.
+It simplifies the process of sharing strategic information with tribe members.""",
+
+    "NobleSpam": """NobleSpam automates noble attacks and sends them to multiple villages at once.
+It helps you to spam noble attacks quickly and efficiently.""",
+
+    "Coordfilter": """Coordfilter filters coordinates for specific criteria.
+It helps you manage and organize coordinates more easily.""",
+
+    "Coordgrab": """Coordgrab extracts coordinates from text for easier use.
+It allows you to grab and organize coordinates from various sources automatically.""",
+
+    "Resource sender": """Resource sender sends resources between your villages based on your needs.
+It helps balance resources more efficiently and keep your villages properly stocked.""",
+
+    "TribeLines": """TribeLines adds a tribe coordination feature to your account.
+It allows you to view and interact with tribe members more easily.""",
+
+    "Village renamer": """Village renamer automatically renames villages based on set rules.
+It helps you maintain a well-organized village naming scheme.""",
 }
 
 main_menu_description = """**TribalWars Library: Scripts**
