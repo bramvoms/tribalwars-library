@@ -15,7 +15,14 @@ descriptions = {
 
 Een van de functionaliteiten is de mass attack planner.
 
-Een andere functionaliteit is het automatisch invullen van troepen sjablonen.""",
+Een andere functionaliteit is het automatisch invullen van troepen sjablonen.
+
+```js
+// Example JavaScript snippet
+function attackPlanner() {
+    console.log("Planning attack...");
+}
+```""",
     
     "TimeTool": """TimeTool: Helps in accurately timing attacks.
 
@@ -122,9 +129,9 @@ class MenuView(View):
 
     async def go_back(self, interaction: discord.Interaction):
         if self.main_menu:
-            await interaction.response.edit_message(content="Main Menu:", view=MenuView(self.bot))
+            await interaction.response.edit_message(content=None, view=MenuView(self.bot))
         else:
-            await interaction.response.edit_message(content="Main Menu:", view=MenuView(self.bot))
+            await interaction.response.edit_message(content=None, view=MenuView(self.bot))
 
 @bot.event
 async def on_ready():
@@ -133,7 +140,7 @@ async def on_ready():
 
 @bot.tree.command(name="scripts", description="Displays the script categories")
 async def scripts(interaction: discord.Interaction):
-    await interaction.response.send_message("Main Menu:", view=MenuView(bot), ephemeral=True)
+    await interaction.response.send_message(view=MenuView(bot), ephemeral=True)
 
 if __name__ == "__main__":
     bot.run(os.getenv("DISCORD_TOKEN"))
