@@ -295,8 +295,8 @@ class PrivateMenuView(View):
 @bot.tree.command(name="purge", description="Purge messages in a channel based on various criteria.")
 @app_commands.default_permissions(manage_messages=True)
 async def purge(interaction: discord.Interaction):
-    # Check if the user has permission to manage messages
-    if not interaction.user.guild_permissions.manage_messages:
+    # Check if the user is an administrator
+    if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
         return
 
