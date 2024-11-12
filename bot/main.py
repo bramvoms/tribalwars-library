@@ -719,8 +719,12 @@ class NumberInputModal(discord.ui.Modal, title="Purge Number of Messages"):
             await interaction.response.defer(thinking=True)
             total_deleted = 0
             delay_between_deletions = 1  # Delay to avoid rate limits
+            command_message_id = interaction.id  # Capture the ID of the message that triggered /purge
 
-            async for message in interaction.channel.history(limit=limit):
+            async for message in interaction.channel.history(limit=limit + 1):
+                if message.id == command_message_id:
+                    continue  # Skip the /purge command message itself
+
                 try:
                     await message.delete()
                     total_deleted += 1
