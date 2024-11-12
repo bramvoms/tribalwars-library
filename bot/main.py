@@ -510,7 +510,7 @@ class PrivateMenuView(View):
                 "Coordgrab", "Resource sender", "TribeLines", "Village renamer",
                 "MintTimer", "CoinPull", "Munt Enhancer", "Template Enhancer",
                 "GroupPlacer", "ClearsTimer"
-            ]
+            ],
             "Aanvallen": ["Offpack", "TimeTool", "EasyCommand", "NobleSpam", "Template Enhancer", "MobileAttSent"],
             "Verdedigen": ["Defpack", "SnipeTool", "TimeTool", "IncsEnhancer", "TribeIncs"],
             "Kaart": ["Mapfunctions", "Overwatch", "CoordGrab", "TribeLines", "ClaimEnhancer"],
