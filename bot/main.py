@@ -25,6 +25,7 @@ def create_embed(title: str, description: str) -> Embed:
 descriptions = {
     # Aanval category
     "Offpack": """Een collectie aan functionaliteiten samengebracht in één package.
+
 **Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-off-pack.206109/>
 
 **Snellijst code:**
