@@ -3,7 +3,7 @@ import os
 from discord.ext import commands
 from discord import app_commands
 
-# Set up intents (as before)
+# Set up intents
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
@@ -93,6 +93,10 @@ class SubcategoryButtons(discord.ui.View):
         return True  # Allow all interactions to be processed
 
     # Handle subcategory button clicks
+    @discord.ui.button(label="Placeholder", style=discord.ButtonStyle.secondary, custom_id="placeholder", disabled=True)
+    async def placeholder_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        pass
+
     async def on_button_click(self, interaction: discord.Interaction):
         subcategory = interaction.data["custom_id"]  # Get subcategory from interaction
         description = faq_data[self.category].get(subcategory, "No information available.")
@@ -110,11 +114,8 @@ async def scripts(interaction: discord.Interaction):
     view = ScriptButtons()  # Create the view with buttons
     await interaction.response.send_message("Choose a category to get more information:", view=view)
 
-# Register the commands when the bot is ready
-@bot.event
-async def on_ready():
-    await bot.tree.sync()  # Sync the slash commands
-    print(f'Logged in as {bot.user.name}({bot.user.id})')
+    # Ensure that the bot is syncing slash commands
+    await bot.tree.sync()
 
 # Run the bot using the token stored in environment variables
 if __name__ == '__main__':
