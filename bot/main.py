@@ -14,21 +14,50 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Updated descriptions dictionary with only the active scripts
 descriptions = {
-    "Offpack": "Offpack is a collection of functionalities to help send attacks efficiently.",
-    "TimeTool": "TimeTool helps in accurately timing attacks, allowing for synchronized actions.",
-    "Defpack": "Defpack organizes defensive troops for optimal distribution in defense.",
-    "SnipeTool": "SnipeTool assists in setting up snipes to defend against incoming attacks.",
-    "Mapfunctions": "Mapfunctions provides various tools to enhance the TribalWars map display.",
-    "Overwatch": "Overwatch helps monitor villages and activities on the map.",
-    "FarmGod": "FarmGod is an automated farming tool to maximize resource gains from farming.",
-    "FarmShaper": "FarmShaper organizes and optimizes your farming lists for efficient resource gathering.",
-    "Massa rooftochten": "Massa rooftochten simplifies mass scavenging operations for quick loot gathering.",
-    "Roof unlocker": "Roof unlocker unlocks the scavenging feature in mass amounts for faster setup.",
-    "GS balancer": "GS balancer balances and redistributes resources across villages efficiently.",
-    "Noble MS": "Noble MS provides millisecond-level precision for noble timing and coordination.",
-    "Troop Counter": "Troop Counter counts and organizes troop levels across all villages.",
-    "Sangu Package": "Sangu Package includes a suite of tools to enhance gameplay, like map tools and overviews.",
-    "EasyCommand": "EasyCommand simplifies troop command issuing across multiple villages.",
+    "Offpack": """Offpack is a collection of functionalities to help send attacks efficiently.
+It includes a mass attack planner and automatic troop template filling.""",
+    
+    "TimeTool": """TimeTool helps in accurately timing attacks, allowing for synchronized actions.
+It provides time predictions and planning tools to ensure your attacks hit at the optimal moment.""",
+
+    "Defpack": """Defpack organizes defensive troops for optimal distribution in defense.
+It streamlines the process of setting up defenses across villages and villages in your cluster.""",
+
+    "SnipeTool": """SnipeTool assists in setting up snipes to defend against incoming attacks.
+It includes features for timing and launching snipe attacks to intercept enemy units.""",
+
+    "Mapfunctions": """Mapfunctions provides various tools to enhance the TribalWars map display.
+It includes zoom features, mapping options, and better visual organization of map data.""",
+
+    "Overwatch": """Overwatch helps monitor villages and activities on the map.
+You can track movements, view resource availability, and monitor enemy activity.""",
+
+    "FarmGod": """FarmGod is an automated farming tool to maximize resource gains from farming.
+It automates farming tasks and ensures you gather resources efficiently from multiple villages.""",
+
+    "FarmShaper": """FarmShaper organizes and optimizes your farming lists for efficient resource gathering.
+It helps you manage farm routes and prioritize the most productive villages.""",
+
+    "Massa rooftochten": """Massa rooftochten simplifies mass scavenging operations for quick loot gathering.
+It automates the process of sending out and managing mass scavenging missions.""",
+
+    "Roof unlocker": """Roof unlocker unlocks the scavenging feature in mass amounts for faster setup.
+This tool makes it easy to unlock all villages for quick and efficient scavenging.""",
+
+    "GS balancer": """GS balancer balances and redistributes resources across villages efficiently.
+It ensures that all your villages are adequately resourced, preventing shortages.""",
+
+    "Noble MS": """Noble MS provides millisecond-level precision for noble timing and coordination.
+It ensures that your nobles arrive at the exact moment to conquer villages with precision.""",
+
+    "Troop Counter": """Troop Counter counts and organizes troop levels across all villages.
+It helps you keep track of your armies' strength and optimize troop deployment.""",
+
+    "Sangu Package": """Sangu Package includes a suite of tools to enhance gameplay, like map tools and overviews.
+It provides various utilities to improve your overall game experience, from troop management to resource tracking.""",
+
+    "EasyCommand": """EasyCommand simplifies troop command issuing across multiple villages.
+It allows you to send commands quickly and efficiently without manually adjusting each village.""",
 }
 
 main_menu_description = """**TribalWars Library: Scripts**
@@ -43,7 +72,7 @@ class PublicMenuView(View):
         self.add_search_button()
 
     def add_main_buttons(self):
-        categories = ["Aanvallen", "Verdedigen", "Kaart", "Farmen", "Rooftochten", "Overig", "Stats", "Package"]
+        categories = ["Aanvallen", "Verdedigen", "Kaart", "Farmen", "Rooftochten", "Overig", "Stats", "Package", "Must haves"]
         for category in categories:
             button = Button(label=category, style=discord.ButtonStyle.primary)
             button.callback = self.show_private_menu(category)
@@ -189,9 +218,16 @@ class PrivateMenuView(View):
             "Rooftochten": ["Massa rooftochten", "Roof unlocker"],
             "Overig": ["GS balancer"],
             "Stats": ["Noble MS", "Troop Counter"],
-            "Package": ["Sangu Package", "EasyCommand"]
+            "Package": ["Sangu Package", "EasyCommand"],
+            # Added Must haves category with the specified scripts
+            "Must haves": [
+                "Offpack", "Defpack", "TimeTool", "Massa rooftochten", "GS balancer", 
+                "SnipeTool", "IncsEnhancer", "TribeShare", "NobleSpam", "Coordfilter", 
+                "Coordgrab", "Resource sender", "TribeLines", "Village renamer"
+            ]
         }
 
+        # Loop through the categories and add their subcategory buttons
         for subcategory in subcategories.get(self.category, []):
             button = Button(label=subcategory, style=discord.ButtonStyle.secondary)
             button.callback = self.show_subcategory_description(subcategory)
