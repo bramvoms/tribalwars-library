@@ -15,7 +15,14 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # Updated descriptions dictionary with only the active scripts
 descriptions = {
     "Offpack": """Offpack is a collection of functionalities to help send attacks efficiently.
-It includes a mass attack planner and automatic troop template filling.""",
+**Forum topic:** https://forum.tribalwars.nl/index.php?threads/devils-off-pack.206109/
+**Snellijst code:**
+```js
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Off-Pack_206109.js');
+```
+
+Placeholder text
+""",
     
     "TimeTool": """TimeTool helps in accurately timing attacks, allowing for synchronized actions.
 It provides time predictions and planning tools to ensure your attacks hit at the optimal moment.""",
@@ -59,7 +66,6 @@ It provides various utilities to improve your overall game experience, from troo
     "EasyCommand": """EasyCommand simplifies troop command issuing across multiple villages.
 It allows you to send commands quickly and efficiently without manually adjusting each village.""",
 
-    # Added new scripts under Must haves category:
     "IncsEnhancer": """IncsEnhancer optimizes incoming attacks for easier recognition and response.
 It helps you manage your incoming attack notifications and alerts.""",
 
