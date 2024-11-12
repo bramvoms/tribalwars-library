@@ -534,10 +534,16 @@ class PrivateMenuView(View):
     def show_subcategory_description(self, subcategory):
         async def callback(interaction: discord.Interaction):
             description = descriptions.get(subcategory, "No description available.")
+            # Update the message with the script description and show only the "Main Menu" button
+            main_menu_only_view = View()
+            main_menu_button = Button(label="Main Menu", style=discord.ButtonStyle.danger)
+            main_menu_button.callback = self.go_to_main_menu
+            main_menu_only_view.add_item(main_menu_button)
+
             await interaction.response.edit_message(
                 content=f"**{subcategory}**:\n{description}",
                 embed=None,
-                view=self
+                view=main_menu_only_view
             )
         return callback
 
