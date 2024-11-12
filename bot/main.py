@@ -527,7 +527,7 @@ class PrivateMenuView(View):
             "Must haves": [
                 "Offpack", "Defpack", "TimeTool", "Massa rooftochten", "GS balancer", 
                 "SnipeTool", "IncsEnhancer", "TribeShare", "NobleSpam", "CoordFilter", 
-                "Coordgrab", "Resource sender", "TribeLines", "Village renamer",
+                "CoordGrab", "Resource sender", "TribeLines", "Village renamer",
                 "MintTimer", "CoinPull", "Munt Enhancer", "Template Enhancer",
                 "GroupPlacer", "ClearsTimer", "UnitsDivide"
             ],
