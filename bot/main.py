@@ -72,7 +72,7 @@ Placeholder tekst voor uitgebreide uitleg
 """,
 
     "Template Enhancer": """Templates dynamisch toevoegen aan grote offpack planningen.
-**Forum topic:** <hhttps://forum.tribalwars.nl/index.php?threads/toxic-donuts-template-enhancer.207122/>
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-template-enhancer.207122/>
 **Snellijst code:**
 ```js
 javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Template-Enhancer._207122.js');
