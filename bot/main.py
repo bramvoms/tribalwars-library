@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 from discord.ui import View, Button, Modal, TextInput, Select
 from fuzzywuzzy import fuzz, process
+import random
 import os
 
 intents = discord.Intents.default()
@@ -61,21 +62,42 @@ class SearchModal(Modal):
         self.add_item(self.query)
 
     async def on_submit(self, interaction: discord.Interaction):
-        query = self.query.value
+        query = self.query.value.lower()
         results = []
 
         # Check for exact match first
         if query in descriptions:
             results.append((query, descriptions[query]))
         else:
-            # Use fuzzy matching to find the best matches with a threshold
-            matches = process.extract(query, descriptions.keys(), limit=5, scorer=fuzz.partial_ratio)
-            results = [(subcategory, descriptions[subcategory]) for subcategory, score in matches if score > 60]
+            # Use fuzzy matching and substring matching to find the best matches
+            for subcategory, description in descriptions.items():
+                subcategory_lower = subcategory.lower()
+                description_lower = description.lower()
+                
+                # Check if query is a substring of the subcategory or description
+                if query in subcategory_lower or query in description_lower:
+                    results.append((subcategory, description))
+                
+                # Fuzzy match: lower threshold for short queries, combine partial and token set ratios
+                elif (fuzz.partial_ratio(query, subcategory_lower) > 60 or fuzz.token_set_ratio(query, subcategory_lower) > 60):
+                    results.append((subcategory, description))
+
+            # Remove duplicates by converting to a dictionary and back to a list
+            results = list(dict.fromkeys(results))  # Removes duplicate entries while preserving order
+
+        # Ensure at least five results by adding random items if needed
+        if len(results) < 5:
+            additional_results = [
+                (subcategory, descriptions[subcategory])
+                for subcategory in random.sample(descriptions.keys(), k=min(5 - len(results), len(descriptions)))
+                if (subcategory, descriptions[subcategory]) not in results
+            ]
+            results.extend(additional_results)
 
         if results:
             await interaction.response.send_message(
                 content="Select the script you want more details about:",
-                view=ResultSelectionView(results),
+                view=ResultSelectionView(results[:5]),  # Show only the top 5 results
                 ephemeral=True
             )
         else:
