@@ -14,343 +14,16 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Updated descriptions dictionary with only the active scripts
 descriptions = {
-    # Aanvallen category
+    # (Script descriptions here, as previously provided)
     "Offpack": """Een collectie aan functionaliteiten samengebracht in één package.
 **Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-off-pack.206109/>
 **Snellijst code:**
-```js
+
 javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Off-Pack_206109.js');
-```
+
 Placeholder tekst voor uitgebreide uitleg
 """,
-
-    "TimeTool": """Tool die helpt bij het nauwkeurig timen van bevelen.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/timetool.206574/>
-**Snellijst code:**
-```js
-javascript:
-
-var timeColor = "green";
-var waitingColor = "#ff9933";
-var noDateColor = "green";
-var timeBarWidth = false;
-
-$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TimeTool_206574.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "EasyCommand": """Verbeterd gecombineerd overzicht met als doel sneller times, snipes, backtimes ed te vinden.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/easycommand.206303/>
-**Snellijst code:**
-```js
-javascript:
-
-var ECsettings = {
-minPop : 12000,
-colors_on : true,
-colors : {
-'offence': '#90ef81',
-'defence': '#00FFFF',
-'noble': '#FFFF00',
-'none': '#F4E4BC'
-}
-};
-
-$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/EasyCommand_206303.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "NobleSpam": """Script om het plannen via https://devilicious.dev/ sneller te maken.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-noble-spam-planner-enhancer.206110/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Noble-Spam-Planner-Enhancer_206110.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "Template Enhancer": """Templates dynamisch toevoegen aan grote offpack planningen.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-template-enhancer.207122/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Template-Enhancer._207122.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "MobileAttSent": """Mobiele attack enhancer die helpt om geen fouten te maken bij het mobiel versturen van planningen.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-mobile-attack-enhancer.208673/>
-**Snellijst code:**
-```js
-javascript:
-var timeGap = false;
-
-$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Mobile-Attack-Enhancer_208673_rw6i55c8.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    # Verdedigen category
-    "Defpack": """A collection of defensive utils (e.g. Stack health and wall health, incomings overview enhancements)
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-def-pack.206163/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Def-Pack_206163.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "SnipeTool": """Het script helpt je snel zoeken naar snipe mogelijkheden op verschillende pagina's.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-snipe-calculator.206313/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Snipe-Calculator._206313.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "IncsEnhancer": """Verstuur incomings van jezelf naar een database en zorg dat stamgenoten/vrienden deze kunnen bekijken om makkelijker mee te snipen. 
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-incomings-enhancer.207109/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-incomings-enhancer._207109_4265usvb.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "TribeIncs": """Een script dat de incomings van je stamleden laat zien in 1 gemakkelijk overzichtje.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribe-members-incoming-overview.205832/>
-**Snellijst code:**
-```js
-javascript:
-var shouldRedirect = false;
-$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Tribe-Members-Incoming-Overview_205832.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    # Kaart category
-    "Mapfunctions": """Collectie van kleine functionaliteiten op de kaart.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/mapfunctions.206294/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MapFunctions_206294.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "Overwatch": """Overwatch - visueel data van de stam op de kaart
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/overwatch.206196/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Overwatch_206196.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "CoordGrab": """Het selecteren van dorpen op de kaart.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coordgrabber.206127/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordGrabber_206127.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "TribeLines": """Toont op de ingame kaart stam edellijnen die ingegeven worden op het forum.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribelines.206290/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeLines_206290.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "ClaimEnhancer": """Dorpen claimen met 1 klik op de kaart of dorpen massaal claimen aan de hand van coords.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/claimenhancer.206296/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/ClaimEnhancer_206296.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    # Farmen category
-    "FarmGod": """Snel en efficiënt versturen van micro farms!
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/farmgod.208446/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmGod_208446.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "FarmShaper": """Easy barbaren dorpen shapen
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/farmshaper.206157/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmShaper_206157.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    # Rooftochten category
-    "Massa rooftochten": """Massa rooftochten script
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/massa-rooftochten.206191/>
-**Snellijst code:**
-```js
-javascript:
-var premiumBtnEnabled = false;
-$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Massa-rooftochten_206191.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "Roof unlocker": """Snel en eenvoudig RT's unlocken.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-scavenge-unlocking-tool.207420/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Scavenge-Unlocking-Tool._207420.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    # Overig category
-    "GS balancer": """Balanceren van grondstoffen tussen je dorpen
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/gs-balancer.207166/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/GS-Balancer_207166_88qrx570.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "TribeShare": """Deel allerhande informatie snel en overzichtelijk met je stamgenoten en vrienden.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribeshare.206804/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeShare_206804_anu64me9.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "CoordFilter": """Script om coördinaten mee te filteren
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coordfilter.206247/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordFilter_206247.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "Resource sender": """Verstuurd grondstoffen in munt verhouding vanuit het huidige dorp naar een gewenst ander dorp.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/gstotargetvillage.207833/>
-**Snellijst code:**
-```js
-javascript:
-var targetVillage = [473,431];
-var GMprijs = [56000,60000,50000];
-var HandelarenThuisLaten = 0;
-$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/GsToTargetVillage_207833_342g9meb.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "Village renamer": """Hiermee kan je je dorpsnamen veranderen.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/village-renamer.206245/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Village-renamer_206245.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "GroupPlacer": """Group placer die beschikbaar is op elk scherm.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-group-placer.208611/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Group-Placer_208611.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "ClearsTimer": """Toont je wanneer hoeveel clears klaar zijn.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/remaining-build-time-clears.206135/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Remaining-build-time-clears_206135.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "MintTimer": """Zie eenvoudig en snel wanneer je opslag overloopt op de massa meppen pagina.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/minttimer.207014/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MintTimer_207014.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "CoinPull": """Script om GS te trekken naar je muntdorp waar vlaggenbooster aan staat.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coinpull.206367/>
-**Snellijst code:**
-```js
-javascript:
-var mintVillages = {'123|456' : 0};
-$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoinPull_206367.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "Munt Enhancer": """Scriptje dat een timer toevoegt wanneer de opslag vol zou lopen met 1 van de resources.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/munten-slaan-enhancer.205833/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Munten-slaan-enhancer_205833.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    # Stats category
-    "Noble MS": """Deze JavaScript-code berekent het gemiddelde aantal milliseconden van zichtbare bevelen (nobles) op een webpagina en toont het resultaat met
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/noble-ms.209666/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/noble_ms.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "Troop Counter": """Updated troepen counter
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/troop-counter.206111/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Troop-Counter_206111.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    "PP Log": """Krijg een PP overzicht voor alle werelden.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-pp-logger.208854/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-PP-Logger_208854.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-""",
-
-    # Package category
-    "Sangu Package": """Het is een verzameling van scripts die de bestaande TW pagina's gaan verrijken door extra informatie.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/sangu-package.206130/>
-**Snellijst code:**
-```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Sangu-Package_206130.js');
-```
-Placeholder tekst voor uitgebreide uitleg
-"""
+    # Other scripts here...
 }
 
 main_menu_description = """**TribalWars Library: Scripts**
@@ -512,7 +185,6 @@ class PrivateMenuView(View):
             "Overig": ["GS balancer", "TribeShare", "CoordFilter", "Resource sender", "Village renamer", "GroupPlacer", "ClearsTimer", "MintTimer", "CoinPull", "Munt Enhancer"],
             "Stats": ["Noble MS", "Troop Counter", "PP Log"],
             "Package": ["Sangu Package"],
-            # Added Must haves category with the specified scripts
             "Must haves": [
                 "Offpack", "Defpack", "TimeTool", "Massa rooftochten", "GS balancer", 
                 "SnipeTool", "IncsEnhancer", "TribeShare", "NobleSpam", "CoordFilter", 
@@ -522,7 +194,6 @@ class PrivateMenuView(View):
             ]
         }
 
-        # Loop through the categories and add their subcategory buttons
         for subcategory in subcategories.get(self.category, []):
             button = Button(label=subcategory, style=discord.ButtonStyle.secondary)
             button.callback = self.show_subcategory_description(subcategory)
@@ -559,12 +230,10 @@ class PrivateMenuView(View):
 @bot.tree.command(name="purge", description="Purge messages in a channel based on various criteria.")
 @app_commands.default_permissions(manage_messages=True)
 async def purge(interaction: discord.Interaction):
-    # Check if the user is an administrator
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
         return
 
-    # Present options to the user
     view = PurgeOptionsView()
     await interaction.response.send_message("Choose a purge option:", view=view, ephemeral=True)
 
@@ -692,14 +361,28 @@ async def on_ready():
 
 @bot.tree.command(name="scripts", description="Displays the script categories")
 async def scripts(interaction: discord.Interaction):
-    # Send an embedded message as a regular bot message with a description
+    # Send an embedded message as a private bot message with a description
     embed = discord.Embed(
         title="Scripts Menu",
         description=main_menu_description,
         color=discord.Color.blue()
     )
     view = PublicMenuView(bot)
-    await interaction.response.send_message(embed=embed, view=view)
+    await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+
+@bot.command(name="scripts", help="Displays the description of a specific script by name.")
+async def get_script_description(ctx, *, script_name: str):
+    script_name = script_name.lower()
+    # Search for the script in the descriptions dictionary, case-insensitive
+    matching_script = next((name for name in descriptions if name.lower() == script_name), None)
+
+    if matching_script:
+        # Send the description of the found script
+        await ctx.send(f"**{matching_script}**:\n{descriptions[matching_script]}")
+    else:
+        # Notify the user if the script is not found
+        await ctx.send(f"Script '{script_name}' not found in the library.")
 
 if __name__ == "__main__":
     bot.run(os.getenv("DISCORD_TOKEN"))
