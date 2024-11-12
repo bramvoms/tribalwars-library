@@ -237,13 +237,9 @@ async def purge(interaction: discord.Interaction):
     view = PurgeOptionsView()
     await interaction.response.send_message("Choose a purge option:", view=view, ephemeral=True)
 
-class PurgeOptionsView(discord.ui.View):
+class PurgeOptionsSelect(discord.ui.Select):
     def __init__(self):
-        super().__init__(timeout=None)
-
-    @discord.ui.select(
-        placeholder="Select a purge option...",
-        options=[
+        options = [
             discord.SelectOption(label="Purge All Messages", value="purge_all", description="Delete all messages in the channel."),
             discord.SelectOption(label="Purge Number of Messages", value="purge_number", description="Delete a specific number of messages."),
             discord.SelectOption(label="Purge Non-Bot Messages", value="purge_non_bot", description="Delete all messages sent by users."),
@@ -251,21 +247,27 @@ class PurgeOptionsView(discord.ui.View):
             discord.SelectOption(label="Purge Messages from a User", value="purge_user", description="Delete messages from a specific user."),
             discord.SelectOption(label="Purge Messages from a Timeframe", value="purge_timeframe", description="Delete messages within a timeframe."),
         ]
-    )
-    async def select_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
-        option = select.values[0]
+        super().__init__(placeholder="Select a purge option...", options=options, min_values=1, max_values=1)
+
+    async def callback(self, interaction: discord.Interaction):
+        option = self.values[0]
         if option == "purge_all":
-            await self.purge_all_messages(interaction)
+            await self.view.purge_all_messages(interaction)
         elif option == "purge_number":
-            await self.prompt_number_of_messages(interaction)
+            await self.view.prompt_number_of_messages(interaction)
         elif option == "purge_non_bot":
-            await self.purge_non_bot_messages(interaction)
+            await self.view.purge_non_bot_messages(interaction)
         elif option == "purge_bot":
-            await self.purge_bot_messages(interaction)
+            await self.view.purge_bot_messages(interaction)
         elif option == "purge_user":
-            await self.prompt_user_selection(interaction)
+            await self.view.prompt_user_selection(interaction)
         elif option == "purge_timeframe":
-            await self.prompt_timeframe(interaction)
+            await self.view.prompt_timeframe(interaction)
+
+class PurgeOptionsView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.add_item(PurgeOptionsSelect())
 
     async def purge_all_messages(self, interaction: discord.Interaction):
         await interaction.response.defer(thinking=True)
