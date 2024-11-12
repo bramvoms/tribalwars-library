@@ -722,14 +722,18 @@ class NumberInputModal(discord.ui.Modal, title="Purge Number of Messages"):
                     else:
                         break
 
-            # Check if interaction is still valid before sending follow-up message
-            if interaction.response.is_done():
-                await interaction.followup.send(f"Deleted {total_deleted} messages.", ephemeral=True)
-            else:
+            # Check if interaction response has been sent to avoid errors
+            if not interaction.response.is_done():
                 await interaction.response.send_message(f"Deleted {total_deleted} messages.", ephemeral=True)
+            else:
+                # Send a fallback message if the interaction is no longer valid
+                await interaction.channel.send(f"Deleted {total_deleted} messages.", delete_after=10)
 
         except ValueError:
-            await interaction.response.send_message("Please enter a valid positive integer.", ephemeral=True)
+            if not interaction.response.is_done():
+                await interaction.response.send_message("Please enter a valid positive integer.", ephemeral=True)
+            else:
+                await interaction.channel.send("Please enter a valid positive integer.", delete_after=10)
 
 class UserSelectionModal(discord.ui.Modal, title="Purge Messages from a User"):
     user_input = TextInput(label="User ID or Mention", placeholder="Enter the user's ID or mention them", required=True)
