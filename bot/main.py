@@ -365,7 +365,7 @@ class PublicMenuView(View):
         self.add_search_button()
 
     def add_main_buttons(self):
-        categories = ["Aanvallen", "Verdedigen", "Kaart", "Farmen", "Rooftochten", "Overig", "Stats", "Package", "Must haves"]
+        categories = ["Must haves", "Aanvallen", "Verdedigen", "Kaart", "Farmen", "Rooftochten", "Overig", "Stats", "Package"]
         for category in categories:
             button = Button(label=category, style=discord.ButtonStyle.primary)
             button.callback = self.show_private_menu(category)
