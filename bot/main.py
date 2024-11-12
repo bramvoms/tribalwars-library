@@ -44,28 +44,34 @@ class SubcategoryButtons(ui.View):
     def __init__(self, script_name):
         super().__init__()
         self.script_name = script_name
-        
+
         # Create the subcategory buttons dynamically based on the selected script category
         subcategories = scripts.get(script_name, {})
-        
+
         if subcategories:
             for subcategory in subcategories:
-                self.add_item(ui.Button(label=subcategory.capitalize(), style=discord.ButtonStyle.primary, custom_id=subcategory))
+                # Ensure each button has a unique custom_id based on the subcategory
+                self.add_item(ui.Button(label=subcategory.capitalize(), style=discord.ButtonStyle.primary, custom_id=f"{script_name}_{subcategory}"))
         
         # Add a "previous" button to go back to the main script categories
         self.add_item(ui.Button(label="Previous", style=discord.ButtonStyle.secondary, custom_id="previous"))
 
     async def on_button_click(self, interaction: discord.Interaction):
         button_id = interaction.data["custom_id"]
-        
+
         # If "Previous" is clicked, go back to the main categories
         if button_id == "previous":
             await interaction.response.send_message("Returning to the main menu...", view=MainMenuButtons())
         # Handle the subcategory button interaction
-        elif button_id in scripts[self.script_name]:
-            await interaction.response.send_message(f"You selected {button_id.capitalize()}: {scripts[self.script_name][button_id]}")
+        elif "_" in button_id:
+            # Split the custom_id into script_name and subcategory
+            script_name, subcategory = button_id.split("_", 1)
+            if subcategory in scripts.get(script_name, {}):
+                await interaction.response.send_message(f"You selected {subcategory.capitalize()}: {scripts[script_name][subcategory]}")
+            else:
+                await interaction.response.send_message("Subcategory not found.")
         else:
-            await interaction.response.send_message("No valid subcategory button pressed.")
+            await interaction.response.send_message("Invalid button interaction.")
 
 class MainMenuButtons(ui.View):
     def __init__(self):
@@ -82,7 +88,7 @@ class MainMenuButtons(ui.View):
     # Handle interaction for category selection
     async def on_button_click(self, interaction: discord.Interaction):
         category = interaction.data["custom_id"]
-        
+
         if category in scripts:
             # Send back the subcategories when a category is selected
             await interaction.response.send_message(f"You selected {category.capitalize()}!", view=SubcategoryButtons(category))
