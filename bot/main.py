@@ -9,19 +9,63 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Define descriptions for each subcategory
+# Multi-line descriptions with triple quotes for each subcategory
 descriptions = {
-    "Offpack": "Offpack: A tool designed for efficient offensive organization.",
-    "TimeTool": "TimeTool: Helps in accurately timing attacks.",
-    "Defpack": "Defpack: Organizes defensive troops for optimal defense.",
-    "SnipeTool": "SnipeTool: Assists in setting up snipes to defend against attacks.",
-    "Mapfunctions": "Mapfunctions: Provides various mapping functionalities for better strategy.",
-    "Overwatch": "Overwatch: Monitors enemy movements on the map.",
-    "FarmGod": "FarmGod: Automates and optimizes your farming routines.",
-    "FarmShaper": "FarmShaper: Shapes and prioritizes farms based on resources.",
-    "Massa rooftochten": "Massa rooftochten: Mass raid tool to manage multiple attacks.",
-    "Roof unlocker": "Roof unlocker: Unlocks additional raiding capabilities.",
-    "GS balancer": "GS balancer: Balances resources across villages."
+    "Offpack": """Offpack is een verzameling van meerdere functionaliteiten die samen komen tot één script die je helpt bij het versturen van aanvallen.
+
+Een van de functionaliteiten is de mass attack planner.
+
+Een andere functionaliteit is het automatisch invullen van troepen sjablonen.""",
+    
+    "TimeTool": """TimeTool: Helps in accurately timing attacks.
+
+With this tool, you can precisely coordinate your attack timings, allowing you to execute 
+multiple attacks with pinpoint accuracy. Perfect for competitive players.""",
+    
+    "Defpack": """Defpack: Organizes defensive troops for optimal defense.
+
+Use this tool to streamline your defensive setup and improve village resilience. 
+Defpack assists in maximizing defensive potential across all units.""",
+    
+    "SnipeTool": """SnipeTool: Assists in setting up snipes to defend against attacks.
+
+This tool is tailored to help you defend by intercepting incoming attacks. 
+Essential for timing snipes and avoiding unexpected losses.""",
+    
+    "Mapfunctions": """Mapfunctions: Provides various mapping functionalities for better strategy.
+
+Enhance your tactical view of the battlefield with Mapfunctions. 
+Get insights into enemy positions, resource spots, and much more.""",
+    
+    "Overwatch": """Overwatch: Monitors enemy movements on the map.
+
+Stay alert with Overwatch, a tool that keeps track of enemy activities and helps you anticipate threats. 
+Best for strategic players who like staying ahead of their opponents.""",
+    
+    "FarmGod": """FarmGod: Automates and optimizes your farming routines.
+
+FarmGod simplifies the process of resource gathering by automating farms, 
+making it easier to acquire resources with minimal effort.""",
+    
+    "FarmShaper": """FarmShaper: Shapes and prioritizes farms based on resources.
+
+FarmShaper helps you target the most resource-rich farms, saving time and maximizing yields. 
+Ideal for efficient farming and resource management.""",
+    
+    "Massa rooftochten": """Massa rooftochten: Mass raid tool to manage multiple attacks.
+
+Coordinate numerous raids simultaneously, ensuring a high rate of successful resource plundering. 
+Perfect for players looking to expand their resource base quickly.""",
+    
+    "Roof unlocker": """Roof unlocker: Unlocks additional raiding capabilities.
+
+Roof unlocker adds new functionalities to raiding, enabling players to execute advanced raid strategies 
+and unlock new levels of efficiency.""",
+    
+    "GS balancer": """GS balancer: Balances resources across villages.
+
+This tool automates resource balancing across your villages, ensuring steady growth and stability. 
+GS balancer is essential for maintaining an even distribution of resources."""
 }
 
 class MenuView(View):
@@ -65,7 +109,7 @@ class MenuView(View):
 
     def create_subcategory_view(self, category):
         async def callback(interaction: discord.Interaction):
-            await interaction.response.edit_message(content=f"{category} Subcategories:", view=MenuView(self.bot, main_menu=False, prev_menu=category))
+            await interaction.response.edit_message(content=None, view=MenuView(self.bot, main_menu=False, prev_menu=category))
 
         return callback
 
