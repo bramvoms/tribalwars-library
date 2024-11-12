@@ -716,30 +716,31 @@ class NumberInputModal(discord.ui.Modal, title="Purge Number of Messages"):
             if limit <= 0:
                 raise ValueError("Number must be positive.")
 
-            await interaction.response.defer(thinking=True)
+            # Send an initial message to confirm the purge request
+            response_message = await interaction.response.send_message("Purging messages...", ephemeral=True)
             deleted_count = 0
-            command_message_id = interaction.id  # ID of the message that triggered /purge
+            command_message_id = interaction.id  # ID of the /purge command
 
-            # Iterate through the message history to delete the exact count before the command
+            # Start purging messages up to the specified limit
             async for message in interaction.channel.history(limit=limit + 1):
                 if message.id == command_message_id:
-                    continue  # Skip the command message itself
+                    continue  # Skip the /purge command message itself
 
-                # Delete and count only up to the requested number
-                if deleted_count < limit:
+                if deleted_count < limit:  # Delete only up to the requested limit
                     try:
                         await message.delete()
                         deleted_count += 1
-
                     except discord.HTTPException as e:
                         if e.status == 429:
                             retry_after = e.retry_after or 10
                             await asyncio.sleep(retry_after)
                         else:
                             break
+                else:
+                    break
 
-            # Report the correct number of deleted messages
-            await interaction.followup.send(f"Deleted {deleted_count} messages.", ephemeral=True)
+            # Edit the initial message with the correct deletion count
+            await response_message.edit(content=f"Deleted {deleted_count} messages.")
 
         except ValueError:
             await interaction.response.send_message("Please enter a valid positive integer.", ephemeral=True)
