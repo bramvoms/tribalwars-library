@@ -1,4 +1,5 @@
 import discord
+import os  # Ensure the 'os' module is imported
 from discord.ext import commands
 from discord.ui import Button, View
 
