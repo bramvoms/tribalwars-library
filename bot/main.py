@@ -28,32 +28,50 @@ class ScriptButtons(discord.ui.View):
     @discord.ui.button(label="Aanvallen", style=discord.ButtonStyle.primary)
     async def aanvallen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Attacks FAQ"""
-        await interaction.response.send_message(scripts["aanvallen"])
+        try:
+            await interaction.response.send_message(scripts["aanvallen"])
+        except Exception as e:
+            await interaction.response.send_message(f"Error: {str(e)}")
 
     @discord.ui.button(label="Verdedigen", style=discord.ButtonStyle.primary)
     async def verdedigen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Defending FAQ"""
-        await interaction.response.send_message(scripts["verdedigen"])
+        try:
+            await interaction.response.send_message(scripts["verdedigen"])
+        except Exception as e:
+            await interaction.response.send_message(f"Error: {str(e)}")
 
     @discord.ui.button(label="Kaart", style=discord.ButtonStyle.primary)
     async def kaart_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Map FAQ"""
-        await interaction.response.send_message(scripts["kaart"])
+        try:
+            await interaction.response.send_message(scripts["kaart"])
+        except Exception as e:
+            await interaction.response.send_message(f"Error: {str(e)}")
 
     @discord.ui.button(label="Farmen", style=discord.ButtonStyle.primary)
     async def farmen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Farming FAQ"""
-        await interaction.response.send_message(scripts["farmen"])
+        try:
+            await interaction.response.send_message(scripts["farmen"])
+        except Exception as e:
+            await interaction.response.send_message(f"Error: {str(e)}")
 
     @discord.ui.button(label="Rooftochten", style=discord.ButtonStyle.primary)
     async def rooftochten_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Raids FAQ"""
-        await interaction.response.send_message(scripts["rooftochten"])
+        try:
+            await interaction.response.send_message(scripts["rooftochten"])
+        except Exception as e:
+            await interaction.response.send_message(f"Error: {str(e)}")
 
     @discord.ui.button(label="Overig", style=discord.ButtonStyle.primary)
     async def overig_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Other FAQ"""
-        await interaction.response.send_message(scripts["overig"])
+        try:
+            await interaction.response.send_message(scripts["overig"])
+        except Exception as e:
+            await interaction.response.send_message(f"Error: {str(e)}")
 
 # Event for when the bot is ready
 @bot.event
