@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ui import View, Button, Modal, TextInput, Select
-from discord import app_commands
+from discord import app_commands, Interaction
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import asyncio
@@ -373,9 +373,7 @@ Placeholder tekst voor uitgebreide uitleg
 """
 }
 
-main_menu_description = """**TribalWars Library: Scripts**
-
-Gebruik de knoppen hieronder om een categorie en daarna het script te selecteren waar je uitleg over wilt."""
+main_menu_description = """Gebruik de knoppen hieronder om een categorie en daarna het script te selecteren waar je uitleg over wilt."""
 
 class PublicMenuView(View):
     def __init__(self, bot):
@@ -504,7 +502,7 @@ class ResultSelectionView(View):
 
     async def go_to_main_menu(self, interaction: discord.Interaction):
         embed = discord.Embed(
-            title="Scripts Menu",
+            title="TribalWars Library: Scripts",
             description=main_menu_description,
             color=discord.Color.blue()
         )
@@ -569,7 +567,7 @@ class PrivateMenuView(View):
 
     async def go_to_main_menu(self, interaction: discord.Interaction):
         embed = discord.Embed(
-            title="Scripts Menu",
+            title="TribalWars Library: Scripts",
             description=main_menu_description,
             color=discord.Color.blue()
         )
@@ -798,7 +796,7 @@ async def on_ready():
 async def scripts(interaction: discord.Interaction):
     # Send an embedded message as a private bot message with a description
     embed = discord.Embed(
-        title="Scripts Menu",
+        title="TribalWars Library: Scripts",
         description=main_menu_description,
         color=discord.Color.blue()
     )
@@ -847,6 +845,59 @@ async def get_script_description(ctx, *, script_name: str):
         else:
             # No close match found, notify the user
             await ctx.send(f"Script '{script_name}' not found in the library.")
+
+class AMView(View):
+    def __init__(self):
+        super().__init__(timeout=None)  # View will persist without timing out
+        
+        # Create and add each button with its label and callback
+        self.add_button("Opslag rush", self.opslag_rush_callback)
+        self.add_button("ZC rush", self.zc_rush_callback)
+        self.add_button("AH rush", self.ah_rush_callback)
+        self.add_button("Muur rush", self.muur_rush_callback)
+        self.add_button("Toren rush", self.toren_rush_callback)
+        self.add_button("Kerk rush", self.kerk_rush_callback)
+        self.add_button("Muur spoed", self.muur_spoed_callback)
+        self.add_button("OFF sjabloon", self.off_sjabloon_callback)
+        self.add_button("DEF sjabloon", self.def_sjabloon_callback)
+
+    def add_button(self, label, callback):
+        """Helper method to add a button with a callback."""
+        button = Button(label=label, style=discord.ButtonStyle.primary)
+        button.callback = callback
+        self.add_item(button)
+
+    async def opslag_rush_callback(self, interaction: Interaction):
+        await interaction.response.send_message("Placeholder text for Opslag rush.", ephemeral=True)
+
+    async def zc_rush_callback(self, interaction: Interaction):
+        await interaction.response.send_message("Placeholder text for ZC rush.", ephemeral=True)
+
+    async def ah_rush_callback(self, interaction: Interaction):
+        await interaction.response.send_message("Placeholder text for AH rush.", ephemeral=True)
+
+    async def muur_rush_callback(self, interaction: Interaction):
+        await interaction.response.send_message("Placeholder text for Muur rush.", ephemeral=True)
+
+    async def toren_rush_callback(self, interaction: Interaction):
+        await interaction.response.send_message("Placeholder text for Toren rush.", ephemeral=True)
+
+    async def kerk_rush_callback(self, interaction: Interaction):
+        await interaction.response.send_message("Placeholder text for Kerk rush.", ephemeral=True)
+
+    async def muur_spoed_callback(self, interaction: Interaction):
+        await interaction.response.send_message("Placeholder text for Muur spoed.", ephemeral=True)
+
+    async def off_sjabloon_callback(self, interaction: Interaction):
+        await interaction.response.send_message("Placeholder text for OFF sjabloon.", ephemeral=True)
+
+    async def def_sjabloon_callback(self, interaction: Interaction):
+        await interaction.response.send_message("Placeholder text for DEF sjabloon.", ephemeral=True)
+
+@bot.tree.command(name="AM", description="Displays rush and template options for AM")
+async def am(interaction: Interaction):
+    """Command to display the AM options with buttons."""
+    await interaction.response.send_message("Choose an action:", view=AMView(), ephemeral=True)
 
 if __name__ == "__main__":
     bot.run(os.getenv("DISCORD_TOKEN"))
