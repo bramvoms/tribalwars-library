@@ -26,7 +26,8 @@ descriptions = {
     # Aanval category
     "Offpack": """Een collectie aan functionaliteiten samengebracht in één package.
 
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-off-pack.206109/>
+**Forum topic:**
+<https://forum.tribalwars.nl/index.php?threads/devils-off-pack.206109/>
 
 **Snellijst code:**
 ```js
