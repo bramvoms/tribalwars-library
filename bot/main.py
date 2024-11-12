@@ -13,7 +13,6 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Database of descriptions and scripts
 descriptions = {
-descriptions = {
     "Offpack": "Offpack is a collection of functionalities to help send attacks efficiently.",
     "TimeTool": "TimeTool helps in accurately timing attacks, allowing for synchronized actions.",
     "SnipeTool": "SnipeTool assists in setting up snipes to defend against incoming attacks.",
