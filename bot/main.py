@@ -93,9 +93,8 @@ class SubcategoryButtons(discord.ui.View):
         return True  # Allow all interactions to be processed
 
     # Handle subcategory button clicks
-    @discord.ui.button(label="Placeholder", style=discord.ButtonStyle.primary)
-    async def on_button_click(self, interaction: discord.Interaction, button: discord.ui.Button):
-        subcategory = button.custom_id  # Use the button's custom_id to identify the subcategory
+    async def on_button_click(self, interaction: discord.Interaction):
+        subcategory = interaction.data["custom_id"]  # Get subcategory from interaction
         description = faq_data[self.category].get(subcategory, "No information available.")
         await interaction.response.send_message(description)
 
