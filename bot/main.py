@@ -527,7 +527,8 @@ class PrivateMenuView(View):
                 "SnipeTool", "IncsEnhancer", "TribeShare", "NobleSpam", "CoordFilter", 
                 "CoordGrab", "Resource sender", "TribeLines", "Village renamer",
                 "MintTimer", "CoinPull", "Munt Enhancer", "Template Enhancer",
-                "GroupPlacer", "ClearsTimer", "UnitsDivide"
+                "GroupPlacer", "ClearsTimer", "UnitsDivide", "FarmGod",
+                "FarmShaper"
             ],
             "Aanval": ["Offpack", "TimeTool", "EasyCommand", "NobleSpam", "Template Enhancer", "MobileAttSent"],
             "Verdediging": ["Defpack", "SnipeTool", "TimeTool", "IncsEnhancer", "TribeIncs", "UnitsDivide"],
