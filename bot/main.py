@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ui import View, Button, Modal, TextInput, Select
-from fuzzywuzzy import fuzz, process
-import random
+from fuzzywuzzy import fuzz
 import os
 
 intents = discord.Intents.default()
@@ -10,7 +9,7 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Database of descriptions and scripts
+# Full descriptions dictionary with all scripts
 descriptions = {
     "Offpack": "Offpack is a collection of functionalities to help send attacks efficiently.",
     "TimeTool": "TimeTool helps in accurately timing attacks, allowing for synchronized actions.",
@@ -87,10 +86,9 @@ main_menu_description = """**TribalWars Library: Scripts**
 Gebruik de knoppen hieronder om een categorie en daarna het script te selecteren waar je uitleg over wilt."""
 
 class PublicMenuView(View):
-    def __init__(self, bot, interaction):
+    def __init__(self, bot):
         super().__init__(timeout=None)
         self.bot = bot
-        self.interaction = interaction
         self.add_main_buttons()
         self.add_search_button()
 
@@ -109,19 +107,19 @@ class PublicMenuView(View):
     def show_private_menu(self, category):
         async def callback(interaction: discord.Interaction):
             await interaction.response.edit_message(
-                content=f"{category} Subcategories:",
-                view=PrivateMenuView(self.bot, category, self.interaction)
+                content=f"**{category} Subcategories:**",
+                embed=None,
+                view=PrivateMenuView(self.bot, category)
             )
         return callback
 
     async def show_search_modal(self, interaction: discord.Interaction):
-        await interaction.response.send_modal(SearchModal(self.bot, self.interaction))
+        await interaction.response.send_modal(SearchModal(self.bot))
 
 class SearchModal(Modal):
-    def __init__(self, bot, original_interaction):
+    def __init__(self, bot):
         super().__init__(title="Search Scripts")
         self.bot = bot
-        self.original_interaction = original_interaction
         self.query = TextInput(label="Enter script name or keyword", placeholder="e.g., Offpack")
         self.add_item(self.query)
 
@@ -138,21 +136,22 @@ class SearchModal(Modal):
             for subcategory, description in descriptions.items():
                 subcategory_lower = subcategory.lower()
                 description_lower = description.lower()
-                
+
                 # Direct substring match
                 if query in subcategory_lower or query in description_lower:
                     matches.append((subcategory, description, 90))  # High priority for direct substring matches
 
-                # Fuzzy match with a lower threshold for partial and token set ratios
-                elif (fuzz.partial_ratio(query, subcategory_lower) > 50 or fuzz.token_set_ratio(query, subcategory_lower) > 50):
+                # Fuzzy match with a lower threshold
+                else:
                     score = max(fuzz.partial_ratio(query, subcategory_lower), fuzz.token_set_ratio(query, subcategory_lower))
-                    matches.append((subcategory, description, score))  # Priority based on fuzzy score
+                    if score > 50:
+                        matches.append((subcategory, description, score))  # Priority based on fuzzy score
 
             # Sort matches by score to prioritize closer matches
             matches = sorted(matches, key=lambda x: x[2], reverse=True)
 
             # Remove duplicates and keep only the subcategory and description fields
-            results = [(subcategory, description) for subcategory, description, _ in dict.fromkeys(matches)]
+            results = [(subcategory, description) for subcategory, description, _ in matches]
 
         # Limit the output to the top 2 results
         top_results = results[:2]
@@ -161,19 +160,19 @@ class SearchModal(Modal):
         suggestion = results[2] if len(results) > 2 else None
 
         # Create the view with top results and a "Did you mean..." button if there’s a suggestion
-        view = ResultSelectionView(top_results, suggestion, self.original_interaction)
+        view = ResultSelectionView(top_results, suggestion)
 
         await interaction.response.edit_message(
             content="Select the script you want more details about:",
+            embed=None,
             view=view
         )
 
 class ResultSelectionView(View):
-    def __init__(self, results, suggestion, original_interaction):
+    def __init__(self, results, suggestion=None):
         super().__init__(timeout=None)
         self.results = results
         self.suggestion = suggestion
-        self.original_interaction = original_interaction
         self.add_result_selector()
 
         # Add "Did you mean..." button if there's a suggestion
@@ -214,8 +213,10 @@ class ResultSelectionView(View):
     async def show_description(self, interaction: discord.Interaction):
         selected_script = interaction.data["values"][0]
         description = descriptions.get(selected_script, "No description available.")
+        # Update the message with the script description and keep the current view
         await interaction.response.edit_message(
             content=f"**{selected_script}**:\n{description}",
+            embed=None,
             view=self
         )
 
@@ -223,25 +224,31 @@ class ResultSelectionView(View):
         suggested_script, suggested_description = self.suggestion
         await interaction.response.edit_message(
             content=f"**{suggested_script}**:\n{suggested_description}",
+            embed=None,
             view=self
         )
 
     async def search_again(self, interaction: discord.Interaction):
         # Reopen the search modal to allow the user to search again
-        await interaction.response.send_modal(SearchModal(bot, self.original_interaction))
+        await interaction.response.send_modal(SearchModal(bot))
 
     async def go_to_main_menu(self, interaction: discord.Interaction):
+        embed = discord.Embed(
+            title="Scripts Menu",
+            description=main_menu_description,
+            color=discord.Color.blue()
+        )
         await interaction.response.edit_message(
-            content=main_menu_description,
-            view=PublicMenuView(self.bot, self.original_interaction)
+            content=None,
+            embed=embed,
+            view=PublicMenuView(self.bot)
         )
 
 class PrivateMenuView(View):
-    def __init__(self, bot, category, original_interaction):
+    def __init__(self, bot, category):
         super().__init__(timeout=None)
         self.bot = bot
         self.category = category
-        self.original_interaction = original_interaction
         self.add_category_buttons()
         self.add_main_menu_button()
 
@@ -271,15 +278,22 @@ class PrivateMenuView(View):
         async def callback(interaction: discord.Interaction):
             description = descriptions.get(subcategory, "No description available.")
             await interaction.response.edit_message(
-                content=f"{subcategory}:\n{description}",
+                content=f"**{subcategory}**:\n{description}",
+                embed=None,
                 view=self
             )
         return callback
 
     async def go_to_main_menu(self, interaction: discord.Interaction):
+        embed = discord.Embed(
+            title="Scripts Menu",
+            description=main_menu_description,
+            color=discord.Color.blue()
+        )
         await interaction.response.edit_message(
-            content=main_menu_description,
-            view=PublicMenuView(self.bot, self.original_interaction)
+            content=None,
+            embed=embed,
+            view=PublicMenuView(self.bot)
         )
 
 @bot.event
@@ -295,7 +309,7 @@ async def scripts(interaction: discord.Interaction):
         description=main_menu_description,
         color=discord.Color.blue()
     )
-    view = PublicMenuView(bot, interaction)
+    view = PublicMenuView(bot)
     await interaction.response.send_message(embed=embed, view=view)
 
 if __name__ == "__main__":
