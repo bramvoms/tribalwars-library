@@ -104,7 +104,7 @@ class SearchModal(Modal):
         top_results = results[:2]
 
         # Create the view with top results
-        view = ResultSelectionView(top_results)
+        view = ResultSelectionView(self.bot, top_results)
 
         await interaction.response.edit_message(
             content="Select the script you want more details about:",
@@ -113,8 +113,9 @@ class SearchModal(Modal):
         )
 
 class ResultSelectionView(View):
-    def __init__(self, results):
+    def __init__(self, bot, results):
         super().__init__(timeout=None)
+        self.bot = bot  # Store the bot instance
         self.results = results
         self.add_result_selector()
         # Add "Search Again" button
@@ -154,7 +155,7 @@ class ResultSelectionView(View):
 
     async def search_again(self, interaction: discord.Interaction):
         # Reopen the search modal to allow the user to search again
-        await interaction.response.send_modal(SearchModal(bot))
+        await interaction.response.send_modal(SearchModal(self.bot))
 
     async def go_to_main_menu(self, interaction: discord.Interaction):
         embed = discord.Embed(
