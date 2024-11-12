@@ -10,14 +10,31 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-# FAQ data (renaming to avoid conflicts)
+# FAQ data for each subcategory
 faq_data = {
-    "aanvallen": "Information about attacks: How to organize your troops for an effective attack.",
-    "verdedigen": "Information about defense: How to strengthen your village and defend against attacks.",
-    "kaart": "Information about the map: How to read the map and use it to your advantage.",
-    "farmen": "Information about farming: Tips for gathering resources efficiently.",
-    "rooftochten": "Information about raids: How to carry out successful raids on enemy villages.",
-    "overig": "Other useful information: Additional strategies and tips that don't fit into other categories."
+    "aanvallen": {
+        "offpack": "Offpack: A strategy tool to organize your offensive packs efficiently.",
+        "timetool": "TimeTool: Helps you calculate the best times to send troops for maximum efficiency."
+    },
+    "verdedigen": {
+        "defpack": "Defpack: A defensive pack setup to help protect your village.",
+        "incs_enhancer": "Incs Enhancer: A tool for better managing incoming attacks and defenses.",
+        "snipe_tool": "SnipeTool: Tool to snipe enemy troops and minimize your losses.",
+        "tribe_share": "TribeShare: Share resources or troops within your tribe for better support."
+    },
+    "kaart": {
+        "mapfunctions": "MapFunctions: Allows you to enhance the map for better strategic planning.",
+        "overwatch": "Overwatch: A system to monitor enemy movements and predict attacks."
+    },
+    "farmen": {
+        "farmgod": "FarmGod: Automates farming for resources across multiple villages.",
+        "farmshaper": "FarmShaper: A tool to organize farming routes and optimize resource collection."
+    },
+    "rooftochten": {
+        "massa_rooftochten": "Massa Rooftochten: Automates mass raids to plunder resources.",
+        "roof_unlocker": "Roof Unlocker: Helps unlock specific targets for your raids."
+    },
+    "overig": "Other useful tools that don't fit into any category."
 }
 
 # Create buttons for different categories
@@ -25,55 +42,60 @@ class ScriptButtons(discord.ui.View):
     def __init__(self):
         super().__init__()
 
+    # Category Buttons
     @discord.ui.button(label="Aanvallen", style=discord.ButtonStyle.primary)
     async def aanvallen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Respond with Attacks FAQ"""
-        try:
-            # Log to check the type of faq_data
-            print(f"faq_data type: {type(faq_data)}")
-            await interaction.response.send_message(faq_data["aanvallen"])
-        except Exception as e:
-            await interaction.response.send_message(f"Error: {str(e)}")
+        """Shows subcategory buttons for Aanvallen"""
+        view = SubcategoryButtons("aanvallen")  # Subcategories for Aanvallen
+        await interaction.response.send_message("Choose a subcategory for Aanvallen:", view=view)
 
     @discord.ui.button(label="Verdedigen", style=discord.ButtonStyle.primary)
     async def verdedigen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Respond with Defending FAQ"""
-        try:
-            await interaction.response.send_message(faq_data["verdedigen"])
-        except Exception as e:
-            await interaction.response.send_message(f"Error: {str(e)}")
+        """Shows subcategory buttons for Verdedigen"""
+        view = SubcategoryButtons("verdedigen")  # Subcategories for Verdedigen
+        await interaction.response.send_message("Choose a subcategory for Verdedigen:", view=view)
 
     @discord.ui.button(label="Kaart", style=discord.ButtonStyle.primary)
     async def kaart_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Respond with Map FAQ"""
-        try:
-            await interaction.response.send_message(faq_data["kaart"])
-        except Exception as e:
-            await interaction.response.send_message(f"Error: {str(e)}")
+        """Shows subcategory buttons for Kaart"""
+        view = SubcategoryButtons("kaart")  # Subcategories for Kaart
+        await interaction.response.send_message("Choose a subcategory for Kaart:", view=view)
 
     @discord.ui.button(label="Farmen", style=discord.ButtonStyle.primary)
     async def farmen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Respond with Farming FAQ"""
-        try:
-            await interaction.response.send_message(faq_data["farmen"])
-        except Exception as e:
-            await interaction.response.send_message(f"Error: {str(e)}")
+        """Shows subcategory buttons for Farmen"""
+        view = SubcategoryButtons("farmen")  # Subcategories for Farmen
+        await interaction.response.send_message("Choose a subcategory for Farmen:", view=view)
 
     @discord.ui.button(label="Rooftochten", style=discord.ButtonStyle.primary)
     async def rooftochten_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Respond with Raids FAQ"""
-        try:
-            await interaction.response.send_message(faq_data["rooftochten"])
-        except Exception as e:
-            await interaction.response.send_message(f"Error: {str(e)}")
+        """Shows subcategory buttons for Rooftochten"""
+        view = SubcategoryButtons("rooftochten")  # Subcategories for Rooftochten
+        await interaction.response.send_message("Choose a subcategory for Rooftochten:", view=view)
 
     @discord.ui.button(label="Overig", style=discord.ButtonStyle.primary)
     async def overig_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Respond with Other FAQ"""
-        try:
-            await interaction.response.send_message(faq_data["overig"])
-        except Exception as e:
-            await interaction.response.send_message(f"Error: {str(e)}")
+        """Shows information for Overig"""
+        await interaction.response.send_message(faq_data["overig"])
+
+# Subcategory buttons
+class SubcategoryButtons(discord.ui.View):
+    def __init__(self, category):
+        super().__init__()
+        self.category = category
+
+        # Generate subcategory buttons dynamically based on the category
+        for subcategory in faq_data[category]:
+            self.add_item(discord.ui.Button(label=subcategory.capitalize(), style=discord.ButtonStyle.primary, custom_id=subcategory))
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        return True  # Allow all interactions to be processed
+
+    # Handle subcategory button clicks
+    async def on_button_click(self, interaction: discord.Interaction):
+        subcategory = interaction.data['custom_id']
+        description = faq_data[self.category].get(subcategory, "No information available.")
+        await interaction.response.send_message(description)
 
 # Event for when the bot is ready
 @bot.event
