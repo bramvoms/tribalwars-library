@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from discord import app_commands
 from discord.ui import View, Button, Modal, TextInput, Select
 from fuzzywuzzy import fuzz, process
 import random
@@ -88,9 +87,10 @@ main_menu_description = """**TribalWars Library: Scripts**
 Gebruik de knoppen hieronder om een categorie en daarna het script te selecteren waar je uitleg over wilt."""
 
 class PublicMenuView(View):
-    def __init__(self, bot):
-        super().__init__()
+    def __init__(self, bot, interaction):
+        super().__init__(timeout=None)
         self.bot = bot
+        self.interaction = interaction
         self.add_main_buttons()
         self.add_search_button()
 
@@ -108,20 +108,20 @@ class PublicMenuView(View):
 
     def show_private_menu(self, category):
         async def callback(interaction: discord.Interaction):
-            await interaction.response.send_message(
+            await interaction.response.edit_message(
                 content=f"{category} Subcategories:",
-                view=PrivateMenuView(self.bot, category),
-                ephemeral=True
+                view=PrivateMenuView(self.bot, category, self.interaction)
             )
         return callback
 
     async def show_search_modal(self, interaction: discord.Interaction):
-        await interaction.response.send_modal(SearchModal(bot))
+        await interaction.response.send_modal(SearchModal(self.bot, self.interaction))
 
 class SearchModal(Modal):
-    def __init__(self, bot):
+    def __init__(self, bot, original_interaction):
         super().__init__(title="Search Scripts")
         self.bot = bot
+        self.original_interaction = original_interaction
         self.query = TextInput(label="Enter script name or keyword", placeholder="e.g., Offpack")
         self.add_item(self.query)
 
@@ -161,20 +161,19 @@ class SearchModal(Modal):
         suggestion = results[2] if len(results) > 2 else None
 
         # Create the view with top results and a "Did you mean..." button if there’s a suggestion
-        view = ResultSelectionView(top_results, suggestion)
+        view = ResultSelectionView(top_results, suggestion, self.original_interaction)
 
-        await interaction.response.send_message(
+        await interaction.response.edit_message(
             content="Select the script you want more details about:",
-            view=view,
-            ephemeral=True
+            view=view
         )
 
-
 class ResultSelectionView(View):
-    def __init__(self, results, suggestion=None):
-        super().__init__()
+    def __init__(self, results, suggestion, original_interaction):
+        super().__init__(timeout=None)
         self.results = results
         self.suggestion = suggestion
+        self.original_interaction = original_interaction
         self.add_result_selector()
 
         # Add "Did you mean..." button if there's a suggestion
@@ -183,6 +182,9 @@ class ResultSelectionView(View):
 
         # Add "Search Again" button
         self.add_search_again_button()
+
+        # Add "Main Menu" button
+        self.add_main_menu_button()
 
     def add_result_selector(self):
         # Limit descriptions to 100 characters
@@ -204,25 +206,44 @@ class ResultSelectionView(View):
         search_again_button.callback = self.search_again
         self.add_item(search_again_button)
 
+    def add_main_menu_button(self):
+        main_menu_button = Button(label="Main Menu", style=discord.ButtonStyle.danger)
+        main_menu_button.callback = self.go_to_main_menu
+        self.add_item(main_menu_button)
+
     async def show_description(self, interaction: discord.Interaction):
         selected_script = interaction.data["values"][0]
         description = descriptions.get(selected_script, "No description available.")
-        await interaction.response.send_message(f"**{selected_script}**:\n{description}", ephemeral=True)
+        await interaction.response.edit_message(
+            content=f"**{selected_script}**:\n{description}",
+            view=self
+        )
 
     async def show_suggestion(self, interaction: discord.Interaction):
         suggested_script, suggested_description = self.suggestion
-        await interaction.response.send_message(f"**{suggested_script}**:\n{suggested_description}", ephemeral=True)
+        await interaction.response.edit_message(
+            content=f"**{suggested_script}**:\n{suggested_description}",
+            view=self
+        )
 
     async def search_again(self, interaction: discord.Interaction):
         # Reopen the search modal to allow the user to search again
-        await interaction.response.send_modal(SearchModal(bot))
+        await interaction.response.send_modal(SearchModal(bot, self.original_interaction))
+
+    async def go_to_main_menu(self, interaction: discord.Interaction):
+        await interaction.response.edit_message(
+            content=main_menu_description,
+            view=PublicMenuView(self.bot, self.original_interaction)
+        )
 
 class PrivateMenuView(View):
-    def __init__(self, bot, category):
-        super().__init__()
+    def __init__(self, bot, category, original_interaction):
+        super().__init__(timeout=None)
         self.bot = bot
         self.category = category
+        self.original_interaction = original_interaction
         self.add_category_buttons()
+        self.add_main_menu_button()
 
     def add_category_buttons(self):
         subcategories = {
@@ -241,20 +262,25 @@ class PrivateMenuView(View):
             button.callback = self.show_subcategory_description(subcategory)
             self.add_item(button)
 
-        # Add a back button to return to the main menu
-        back_button = Button(label="Previous", style=discord.ButtonStyle.danger)
-        back_button.callback = self.go_back
-        self.add_item(back_button)
+    def add_main_menu_button(self):
+        main_menu_button = Button(label="Main Menu", style=discord.ButtonStyle.danger)
+        main_menu_button.callback = self.go_to_main_menu
+        self.add_item(main_menu_button)
 
     def show_subcategory_description(self, subcategory):
         async def callback(interaction: discord.Interaction):
             description = descriptions.get(subcategory, "No description available.")
-            await interaction.response.send_message(f"{subcategory}:\n{description}", ephemeral=True)
-        
+            await interaction.response.edit_message(
+                content=f"{subcategory}:\n{description}",
+                view=self
+            )
         return callback
 
-    async def go_back(self, interaction: discord.Interaction):
-        await interaction.response.edit_message(content=main_menu_description, view=PublicMenuView(self.bot))
+    async def go_to_main_menu(self, interaction: discord.Interaction):
+        await interaction.response.edit_message(
+            content=main_menu_description,
+            view=PublicMenuView(self.bot, self.original_interaction)
+        )
 
 @bot.event
 async def on_ready():
@@ -269,7 +295,8 @@ async def scripts(interaction: discord.Interaction):
         description=main_menu_description,
         color=discord.Color.blue()
     )
-    await interaction.response.send_message(embed=embed, view=PublicMenuView(bot))
+    view = PublicMenuView(bot, interaction)
+    await interaction.response.send_message(embed=embed, view=view)
 
 if __name__ == "__main__":
     bot.run(os.getenv("DISCORD_TOKEN"))
