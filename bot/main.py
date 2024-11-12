@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.ui import View, Button, Modal, TextInput, Select
 from discord import app_commands
 from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 import os
 
 intents = discord.Intents.default()
@@ -722,18 +723,38 @@ async def scripts(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 
+from fuzzywuzzy import process
+
 @bot.command(name="scripts", help="Displays the description of a specific script by name.")
 async def get_script_description(ctx, *, script_name: str):
     script_name = script_name.lower()
-    # Search for the script in the descriptions dictionary, case-insensitive
+    
+    # Check for an exact match in the descriptions dictionary
     matching_script = next((name for name in descriptions if name.lower() == script_name), None)
 
     if matching_script:
         # Send the description of the found script
         await ctx.send(f"**{matching_script}**:\n{descriptions[matching_script]}")
     else:
-        # Notify the user if the script is not found
-        await ctx.send(f"Script '{script_name}' not found in the library.")
+        # Use fuzzy matching to find the closest match if no exact match is found
+        closest_match, score = process.extractOne(script_name, descriptions.keys())
+        
+        if score > 60:  # Adjust threshold as needed for better accuracy
+            # Create a "Did you mean..." button with the closest match
+            view = View()
+            suggestion_button = Button(label=f"Did you mean '{closest_match}'?", style=discord.ButtonStyle.primary)
+
+            # Callback to show the suggested script's description when the button is clicked
+            async def suggestion_callback(interaction: discord.Interaction):
+                await interaction.response.send_message(f"**{closest_match}**:\n{descriptions[closest_match]}")
+            
+            suggestion_button.callback = suggestion_callback
+            view.add_item(suggestion_button)
+
+            await ctx.send(f"Script '{script_name}' not found. Did you mean:", view=view)
+        else:
+            # No close match found, notify the user
+            await ctx.send(f"Script '{script_name}' not found in the library.")
 
 if __name__ == "__main__":
     bot.run(os.getenv("DISCORD_TOKEN"))
