@@ -14,14 +14,14 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Updated descriptions dictionary with only the active scripts
 descriptions = {
-    "Offpack": """Offpack is a collection of functionalities to help send attacks efficiently.
-**Forum topic:** https://forum.tribalwars.nl/index.php?threads/devils-off-pack.206109/
+    "Offpack": """Een collectie aan functionaliteiten samengebracht in één package.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-off-pack.206109/>
 **Snellijst code:**
 ```js
 javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Off-Pack_206109.js');
 ```
 
-Placeholder text
+Placeholder tekst voor uitgebreide uitleg
 """,
     
     "TimeTool": """TimeTool helps in accurately timing attacks, allowing for synchronized actions.
