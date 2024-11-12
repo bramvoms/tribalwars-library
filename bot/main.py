@@ -85,19 +85,19 @@ class SearchModal(Modal):
             # Remove duplicates while preserving order
             results = list(dict.fromkeys(results))
 
-        # Step 3: Ensure exactly five results by adding random items if needed
-        if len(results) < 5:
+        # Step 3: Ensure exactly three results by adding random items if needed
+        if len(results) < 3:
             additional_results = [
                 (subcategory, descriptions[subcategory])
-                for subcategory in random.sample(descriptions.keys(), k=min(5 - len(results), len(descriptions)))
+                for subcategory in random.sample(descriptions.keys(), k=min(3 - len(results), len(descriptions)))
                 if (subcategory, descriptions[subcategory]) not in results
             ]
             results.extend(additional_results)
 
-        # Only show the top 5 results to keep the output consistent
+        # Only show the top 3 results to keep the output consistent
         await interaction.response.send_message(
             content="Select the script you want more details about:",
-            view=ResultSelectionView(results[:5]),  # Show only the top 5 results
+            view=ResultSelectionView(results[:3]),  # Show only the top 3 results
             ephemeral=True
         )
 
