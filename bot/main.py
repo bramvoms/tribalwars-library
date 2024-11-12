@@ -24,297 +24,330 @@ javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "TimeTool": """Helpt bij het nauwkeurig timen van aanvallen en synchroniseren van acties.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/time-tool.206111/>
+    "TimeTool": """Tool die helpt bij het nauwkeurig timen van bevelen.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/timetool.206574/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TimeTool_206111.js');
+javascript:
+
+var timeColor = "green";
+var waitingColor = "#ff9933";
+var noDateColor = "green";
+var timeBarWidth = false;
+
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TimeTool_206574.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "EasyCommand": """Verhoogt de snelheid van het verzenden van commando's over meerdere dorpen.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/easycommand.206130/>
+    "EasyCommand": """Verbeterd gecombineerd overzicht met als doel sneller times, snipes, backtimes ed te vinden.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/easycommand.206303/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/EasyCommand_206130.js');
+javascript:
+
+var ECsettings = {
+minPop : 12000,
+colors_on : true,
+colors : {
+'offence': '#90ef81',
+'defence': '#00FFFF',
+'noble': '#FFFF00',
+'none': '#F4E4BC'
+}
+};
+
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/EasyCommand_206303.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "NobleSpam": """Automatiseert het versturen van adellijke aanvallen om meerdere dorpen snel te veroveren.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/noblespam.206117/>
+    "NobleSpam": """Script om het plannen via https://devilicious.dev/ sneller te maken.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-noble-spam-planner-enhancer.206110/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/NobleSpam_206117.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Noble-Spam-Planner-Enhancer_206110.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "Template Enhancer": """Verbetert sjablonen voor het organiseren van je dorpen.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/template-enhancer.206126/>
+    "Template Enhancer": """Templates dynamisch toevoegen aan grote offpack planningen.
+**Forum topic:** <hhttps://forum.tribalwars.nl/index.php?threads/toxic-donuts-template-enhancer.207122/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TemplateEnhancer_206126.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Template-Enhancer._207122.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "MobileAttSent": """Verstuurt aanvallen vanaf je mobiel voor snellere acties.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/mobileattsent.206140/>
+    "MobileAttSent": """Mobiele attack enhancer die helpt om geen fouten te maken bij het mobiel versturen van planningen.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-mobile-attack-enhancer.208673/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MobileAttSent_206140.js');
+javascript:
+var timeGap = false;
+
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Mobile-Attack-Enhancer_208673_rw6i55c8.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    # Verdeden category
-    "Defpack": """Een verzameling van tools die helpen bij het organiseren van verdedigingstaken.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-def-pack.206110/>
+    # Verdedigen category
+    "Defpack": """A collection of defensive utils (e.g. Stack health and wall health, incomings overview enhancements)
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-def-pack.206163/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Def-Pack_206110.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Def-Pack_206163.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "SnipeTool": """Helpt bij het opzetten van snipe-aanvallen om inkomende aanvallen te blokkeren.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/snipetool.206114/>
+    "SnipeTool": """Het script helpt je snel zoeken naar snipe mogelijkheden op verschillende pagina's.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-snipe-calculator.206313/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/SnipeTool_206114.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Snipe-Calculator._206313.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "IncsEnhancer": """Verbetert het overzicht van inkomende aanvallen, waardoor je ze snel kunt beheren.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/incs-enhancer.206115/>
+    "IncsEnhancer": """Verstuur incomings van jezelf naar een database en zorg dat stamgenoten/vrienden deze kunnen bekijken om makkelijker mee te snipen. 
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-incomings-enhancer.207109/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/IncsEnhancer_206115.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-incomings-enhancer._207109_4265usvb.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "TribeIncs": """Een tool voor het beheren van inkomende aanvallen binnen je stam.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribeincs.206150/>
+    "TribeIncs": """Een script dat de incomings van je stamleden laat zien in 1 gemakkelijk overzichtje.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribe-members-incoming-overview.205832/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeIncs_206150.js');
+javascript:
+var shouldRedirect = false;
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Tribe-Members-Incoming-Overview_205832.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
     # Kaart category
-    "Mapfunctions": """Verbetert de functionaliteit van de kaart in het spel.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/mapfunctions.206155/>
+    "Mapfunctions": """Collectie van kleine functionaliteiten op de kaart.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/mapfunctions.206294/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Mapfunctions_206155.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MapFunctions_206294.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "Overwatch": """Helpt bij het monitoren van dorpen en activiteiten op de kaart.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/overwatch.206160/>
+    "Overwatch": """Overwatch - visueel data van de stam op de kaart
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/overwatch.206196/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Overwatch_206160.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Overwatch_206196.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "CoordGrab": """Verzamelt coördinaten automatisch uit tekst voor eenvoudig gebruik.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coordgrab.206165/>
+    "CoordGrab": """Het selecteren van dorpen op de kaart.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coordgrabber.206127/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordGrab_206165.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordGrabber_206127.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "TribeLines": """Voegt een stam coördinatie functie toe aan je account.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribelines.206121/>
+    "TribeLines": """Toont op de ingame kaart stam edellijnen die ingegeven worden op het forum.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribelines.206290/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeLines_206121.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeLines_206290.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "ClaimEnhancer": """Verbetert de claims op de kaart door extra informatie weer te geven.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/claimenhancer.206170/>
+    "ClaimEnhancer": """Dorpen claimen met 1 klik op de kaart of dorpen massaal claimen aan de hand van coords.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/claimenhancer.206296/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/ClaimEnhancer_206170.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/ClaimEnhancer_206296.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
     # Farmen category
-    "FarmGod": """Automatiseert het verzamelen van middelen door het efficiënt beheren van boerderijen.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/farmgod.206175/>
+    "FarmGod": """Snel en efficiënt versturen van micro farms!
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/farmgod.208446/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmGod_206175.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmGod_208446.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "FarmShaper": """Organiseert en optimaliseert je boerderij lijsten voor efficiënter verzamelen van middelen.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/farmshaper.206180/>
+    "FarmShaper": """Easy barbaren dorpen shapen
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/farmshaper.206157/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmShaper_206180.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmShaper_206157.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
     # Rooftochten category
-    "Massa rooftochten": """Automatiseert het verzenden van massale rooftochten naar meerdere dorpen.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/massa-rooftochten.206112/>
+    "Massa rooftochten": """Massa rooftochten script
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/massa-rooftochten.206191/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Massa-Rooftochten_206112.js');
+javascript:
+var premiumBtnEnabled = false;
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Massa-rooftochten_206191.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "Roof unlocker": """Maakt het mogelijk om het rooftochten-systeem voor meerdere dorpen snel te ontgrendelen.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/roof-unlocker.206185/>
+    "Roof unlocker": """Snel en eenvoudig RT's unlocken.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-scavenge-unlocking-tool.207420/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/RoofUnlocker_206185.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Scavenge-Unlocking-Tool._207420.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
     # Overig category
-    "GS balancer": """Balanceren en herverdelen van grondstoffen over je dorpen voor optimale efficiëntie.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/gs-balancer.206113/>
+    "GS balancer": """Balanceren van grondstoffen tussen je dorpen
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/gs-balancer.207166/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/GS-Balancer_206113.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/GS-Balancer_207166_88qrx570.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "TribeShare": """Maakt het delen van informatie en kaarten binnen je stam eenvoudiger.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribeshare.206116/>
+    "TribeShare": """Deel allerhande informatie snel en overzichtelijk met je stamgenoten en vrienden.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/tribeshare.206804/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeShare_206116.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeShare_206804_anu64me9.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "CoordFilter": """Filtert coördinaten op basis van opgegeven criteria.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coordfilter.206118/>
+    "CoordFilter": """Script om coördinaten mee te filteren
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coordfilter.206247/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordFilter_206118.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordFilter_206247.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "Resource sender": """Verstuurt grondstoffen tussen dorpen op basis van de behoeften.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/resourcesender.206120/>
+    "Resource sender": """Verstuurd grondstoffen in munt verhouding vanuit het huidige dorp naar een gewenst ander dorp.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/gstotargetvillage.207833/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/ResourceSender_206120.js');
+javascript:
+var targetVillage = [473,431];
+var GMprijs = [56000,60000,50000];
+var HandelarenThuisLaten = 0;
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/GsToTargetVillage_207833_342g9meb.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "Village renamer": """Hernamt dorpen automatisch op basis van ingestelde regels.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/villagerenamer.206122/>
+    "Village renamer": """Hiermee kan je je dorpsnamen veranderen.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/village-renamer.206245/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/VillageRenamer_206122.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Village-renamer_206245.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "GroupPlacer": """Organiseert groepen voor dorpsbeheer.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/groupplacer.206127/>
+    "GroupPlacer": """Group placer die beschikbaar is op elk scherm.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-group-placer.208611/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/GroupPlacer_206127.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Group-Placer_208611.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "ClearsTimer": """Toont de resterende tijd voor aanvallen of verdedigingen.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/clearstimer.206128/>
+    "ClearsTimer": """Toont je wanneer hoeveel clears klaar zijn.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/remaining-build-time-clears.206135/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/ClearsTimer_206128.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Remaining-build-time-clears_206135.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "MintTimer": """Een timer voor het bijhouden van muntproductie.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/minttimer.206185/>
+    "MintTimer": """Zie eenvoudig en snel wanneer je opslag overloopt op de massa meppen pagina.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/minttimer.207014/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MintTimer_206185.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MintTimer_207014.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "CoinPull": """Maximaliseert muntproductie door grondstoffen te verdelen waar nodig.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coinpull.206186/>
+    "CoinPull": """Script om GS te trekken naar je muntdorp waar vlaggenbooster aan staat.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/coinpull.206367/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoinPull_206186.js');
+javascript:
+var mintVillages = {'123|456' : 0};
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoinPull_206367.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "Munt Enhancer": """Optimaliseert de muntproductie in het spel.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/munt-enhancer.206187/>
+    "Munt Enhancer": """Scriptje dat een timer toevoegt wanneer de opslag vol zou lopen met 1 van de resources.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/munten-slaan-enhancer.205833/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MuntEnhancer_206187.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Munten-slaan-enhancer_205833.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
     # Stats category
-    "Noble MS": """Verhoogt de precisie van adellijke aanvallen door milliseconde-timing.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/noble-ms.206130/>
+    "Noble MS": """Deze JavaScript-code berekent het gemiddelde aantal milliseconden van zichtbare bevelen (nobles) op een webpagina en toont het resultaat met
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/noble-ms.209666/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/NobleMS_206130.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/noble_ms.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "Troop Counter": """Houdt de sterkte van je troepen in de gaten en organiseert ze.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/troop-counter.206135/>
+    "Troop Counter": """Updated troepen counter
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/troop-counter.206111/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TroopCounter_206135.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Troop-Counter_206111.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    "PP Log": """Logt premium punt activiteit voor eenvoudig beheer.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/pp-log.206136/>
+    "PP Log": """Krijg een PP overzicht voor alle werelden.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-pp-logger.208854/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/PPLog_206136.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-PP-Logger_208854.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """,
 
     # Package category
-    "Sangu Package": """Een pakket van hulpmiddelen die het spel verbeteren.
-**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/sangu-package.206140/>
+    "Sangu Package": """Het is een verzameling van scripts die de bestaande TW pagina's gaan verrijken door extra informatie.
+**Forum topic:** <https://forum.tribalwars.nl/index.php?threads/sangu-package.206130/>
 **Snellijst code:**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/SanguPackage_206140.js');
+javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Sangu-Package_206130.js');
 ```
 Placeholder tekst voor uitgebreide uitleg
 """
