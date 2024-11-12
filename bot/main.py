@@ -84,23 +84,39 @@ class SubcategoryButtons(discord.ui.View):
         super().__init__()
         self.category = category
 
+        # Ensure that only valid categories are processed
+        if category not in faq_data:
+            raise ValueError(f"Invalid category: {category}")
+        
         # Generate subcategory buttons dynamically based on the category
         for subcategory in faq_data[category]:
             button = discord.ui.Button(label=subcategory.capitalize(), style=discord.ButtonStyle.primary, custom_id=subcategory)
             self.add_item(button)
-
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        return True  # Allow all interactions to be processed
 
     # Handle subcategory button clicks
     @discord.ui.button(label="Placeholder", style=discord.ButtonStyle.secondary, custom_id="placeholder", disabled=True)
     async def placeholder_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         pass
 
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        """Ensure interaction is valid"""
+        return True
+
+    @discord.ui.button(label="Back", style=discord.ButtonStyle.secondary)
+    async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Returns to the previous menu"""
+        view = ScriptButtons()  # Main category buttons
+        await interaction.response.send_message("Going back to the main categories.", view=view)
+
     async def on_button_click(self, interaction: discord.Interaction):
+        """Handles button click for subcategories"""
         subcategory = interaction.data["custom_id"]  # Get subcategory from interaction
         description = faq_data[self.category].get(subcategory, "No information available.")
-        await interaction.response.send_message(description)
+        
+        if description:
+            await interaction.response.send_message(description)
+        else:
+            await interaction.response.send_message("No information available for this subcategory.")
 
 # Event for when the bot is ready
 @bot.event
@@ -111,12 +127,19 @@ async def on_ready():
 @bot.tree.command(name="scripts")
 async def scripts(interaction: discord.Interaction):
     """Shows buttons for different script categories."""
-    view = ScriptButtons()  # Create the view with buttons
-    await interaction.response.send_message("Choose a category to get more information:", view=view)
+    try:
+        view = ScriptButtons()  # Create the view with buttons
+        await interaction.response.send_message("Choose a category to get more information:", view=view)
+    except Exception as e:
+        print(f"Error sending message: {e}")
+        await interaction.response.send_message("Failed to show categories. Please try again later.")
 
     # Ensure that the bot is syncing slash commands
     await bot.tree.sync()
 
 # Run the bot using the token stored in environment variables
 if __name__ == '__main__':
-    bot.run(os.getenv('DISCORD_TOKEN'))
+    try:
+        bot.run(os.getenv('DISCORD_TOKEN'))
+    except Exception as e:
+        print(f"Error running bot: {e}")
