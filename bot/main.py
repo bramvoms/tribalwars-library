@@ -33,7 +33,6 @@ descriptions = {
 ```js
 javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Off-Pack_206109.js');
 ```
-
 Placeholder tekst voor uitgebreide uitleg
 """,
 
