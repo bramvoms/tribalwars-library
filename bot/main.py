@@ -742,7 +742,7 @@ async def get_script_description(ctx, *, script_name: str):
         if score > 60:  # Adjust threshold as needed for better accuracy
             # Create a "Did you mean..." button with the closest match
             view = View()
-            suggestion_button = Button(label=f"Did you mean '{closest_match}'?", style=discord.ButtonStyle.primary)
+            suggestion_button = Button(label=f"Bedoelde je '{closest_match}'?", style=discord.ButtonStyle.primary)
 
             # Callback to show the suggested script's description when the button is clicked
             async def suggestion_callback(interaction: discord.Interaction):
@@ -751,7 +751,7 @@ async def get_script_description(ctx, *, script_name: str):
             suggestion_button.callback = suggestion_callback
             view.add_item(suggestion_button)
 
-            await ctx.send(f"Script '{script_name}' not found. Did you mean:", view=view)
+            await ctx.send(f"Script '{script_name}' not found.", view=view)
         else:
             # No close match found, notify the user
             await ctx.send(f"Script '{script_name}' not found in the library.")
