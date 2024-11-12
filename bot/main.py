@@ -704,9 +704,30 @@ class NumberInputModal(discord.ui.Modal, title="Purge Number of Messages"):
             limit = int(self.number.value)
             if limit <= 0:
                 raise ValueError("Number must be positive.")
+
             await interaction.response.defer(thinking=True)
-            deleted = await interaction.channel.purge(limit=limit)
-            await interaction.followup.send(f"Deleted {len(deleted)} messages.", ephemeral=True)
+            total_deleted = 0
+            delay_between_deletions = 1  # Delay to avoid rate limits
+
+            async for message in interaction.channel.history(limit=limit):
+                try:
+                    await message.delete()
+                    total_deleted += 1
+                    await asyncio.sleep(delay_between_deletions)
+
+                except discord.HTTPException as e:
+                    if e.status == 429:
+                        retry_after = e.retry_after or 10
+                        await asyncio.sleep(retry_after)
+                    else:
+                        break
+
+            # Check if interaction is still valid before sending follow-up message
+            if interaction.response.is_done():
+                await interaction.followup.send(f"Deleted {total_deleted} messages.", ephemeral=True)
+            else:
+                await interaction.response.send_message(f"Deleted {total_deleted} messages.", ephemeral=True)
+
         except ValueError:
             await interaction.response.send_message("Please enter a valid positive integer.", ephemeral=True)
 
