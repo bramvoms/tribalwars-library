@@ -181,6 +181,9 @@ class ResultSelectionView(View):
         if self.suggestion:
             self.add_suggestion_button()
 
+        # Add "Search Again" button
+        self.add_search_again_button()
+
     def add_result_selector(self):
         # Limit descriptions to 100 characters
         options = [
@@ -196,6 +199,11 @@ class ResultSelectionView(View):
         suggestion_button.callback = self.show_suggestion
         self.add_item(suggestion_button)
 
+    def add_search_again_button(self):
+        search_again_button = Button(label="Search Again", style=discord.ButtonStyle.primary)
+        search_again_button.callback = self.search_again
+        self.add_item(search_again_button)
+
     async def show_description(self, interaction: discord.Interaction):
         selected_script = interaction.data["values"][0]
         description = descriptions.get(selected_script, "No description available.")
@@ -205,6 +213,9 @@ class ResultSelectionView(View):
         suggested_script, suggested_description = self.suggestion
         await interaction.response.send_message(f"**{suggested_script}**:\n{suggested_description}", ephemeral=True)
 
+    async def search_again(self, interaction: discord.Interaction):
+        # Reopen the search modal to allow the user to search again
+        await interaction.response.send_modal(SearchModal(bot))
 
 class PrivateMenuView(View):
     def __init__(self, bot, category):
