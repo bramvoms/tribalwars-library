@@ -717,38 +717,32 @@ class NumberInputModal(discord.ui.Modal, title="Purge Number of Messages"):
                 raise ValueError("Number must be positive.")
 
             await interaction.response.defer(thinking=True)
-            total_deleted = 0
-            delay_between_deletions = 1  # Delay to avoid rate limits
-            command_message_id = interaction.id  # Capture the ID of the message that triggered /purge
+            deleted_count = 0
+            command_message_id = interaction.id  # ID of the message that triggered /purge
 
+            # Iterate through the message history to delete the exact count before the command
             async for message in interaction.channel.history(limit=limit + 1):
                 if message.id == command_message_id:
-                    continue  # Skip the /purge command message itself
+                    continue  # Skip the command message itself
 
-                try:
-                    await message.delete()
-                    total_deleted += 1
-                    await asyncio.sleep(delay_between_deletions)
+                # Delete and count only up to the requested number
+                if deleted_count < limit:
+                    try:
+                        await message.delete()
+                        deleted_count += 1
 
-                except discord.HTTPException as e:
-                    if e.status == 429:
-                        retry_after = e.retry_after or 10
-                        await asyncio.sleep(retry_after)
-                    else:
-                        break
+                    except discord.HTTPException as e:
+                        if e.status == 429:
+                            retry_after = e.retry_after or 10
+                            await asyncio.sleep(retry_after)
+                        else:
+                            break
 
-            # Check if interaction response has been sent to avoid errors
-            if not interaction.response.is_done():
-                await interaction.response.send_message(f"Deleted {total_deleted} messages.", ephemeral=True)
-            else:
-                # Send a fallback message if the interaction is no longer valid
-                await interaction.channel.send(f"Deleted {total_deleted} messages.", delete_after=10)
+            # Report the correct number of deleted messages
+            await interaction.followup.send(f"Deleted {deleted_count} messages.", ephemeral=True)
 
         except ValueError:
-            if not interaction.response.is_done():
-                await interaction.response.send_message("Please enter a valid positive integer.", ephemeral=True)
-            else:
-                await interaction.channel.send("Please enter a valid positive integer.", delete_after=10)
+            await interaction.response.send_message("Please enter a valid positive integer.", ephemeral=True)
 
 class UserSelectionModal(discord.ui.Modal, title="Purge Messages from a User"):
     user_input = TextInput(label="User ID or Mention", placeholder="Enter the user's ID or mention them", required=True)
