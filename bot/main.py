@@ -626,7 +626,6 @@ class PurgeOptionsView(discord.ui.View):
         await interaction.response.defer(thinking=True)
         total_deleted = 0
         batch_size = 25  # Smaller batch size to reduce rate limit risk
-        delay_between_batches = 2  # Increased delay between batches
 
         while True:
             try:
@@ -636,11 +635,14 @@ class PurgeOptionsView(discord.ui.View):
                 if len(deleted) < batch_size:
                     break  # Stop if fewer messages were deleted than the batch size
                 
-                await asyncio.sleep(delay_between_batches)  # Wait to avoid rate limits
+                await asyncio.sleep(2)  # Short delay to avoid rate limits
 
             except discord.HTTPException as e:
-                # Handle rate limit by waiting longer
-                await asyncio.sleep(5)
+                if e.status == 429:
+                    retry_after = e.retry_after or 5  # Use Discord’s recommended retry time or default to 5 seconds
+                    await asyncio.sleep(retry_after)
+                else:
+                    break  # Stop if another error occurs
 
         await interaction.followup.send(f"Deleted {total_deleted} messages.", ephemeral=True)
 
@@ -652,7 +654,6 @@ class PurgeOptionsView(discord.ui.View):
         await interaction.response.defer(thinking=True)
         total_deleted = 0
         batch_size = 25
-        delay_between_batches = 2
 
         while True:
             try:
@@ -662,10 +663,14 @@ class PurgeOptionsView(discord.ui.View):
                 if len(deleted) < batch_size:
                     break
 
-                await asyncio.sleep(delay_between_batches)
+                await asyncio.sleep(2)
 
             except discord.HTTPException as e:
-                await asyncio.sleep(5)
+                if e.status == 429:
+                    retry_after = e.retry_after or 5
+                    await asyncio.sleep(retry_after)
+                else:
+                    break
 
         await interaction.followup.send(f"Deleted {total_deleted} non-bot messages.", ephemeral=True)
 
@@ -673,7 +678,6 @@ class PurgeOptionsView(discord.ui.View):
         await interaction.response.defer(thinking=True)
         total_deleted = 0
         batch_size = 25
-        delay_between_batches = 2
 
         while True:
             try:
@@ -683,10 +687,14 @@ class PurgeOptionsView(discord.ui.View):
                 if len(deleted) < batch_size:
                     break
 
-                await asyncio.sleep(delay_between_batches)
+                await asyncio.sleep(2)
 
             except discord.HTTPException as e:
-                await asyncio.sleep(5)
+                if e.status == 429:
+                    retry_after = e.retry_after or 5
+                    await asyncio.sleep(retry_after)
+                else:
+                    break
 
         await interaction.followup.send(f"Deleted {total_deleted} bot messages.", ephemeral=True)
 
