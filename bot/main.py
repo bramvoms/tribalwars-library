@@ -9,12 +9,12 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Full descriptions dictionary with all scripts
+# Updated descriptions dictionary with only the active scripts
 descriptions = {
     "Offpack": "Offpack is a collection of functionalities to help send attacks efficiently.",
     "TimeTool": "TimeTool helps in accurately timing attacks, allowing for synchronized actions.",
-    "SnipeTool": "SnipeTool assists in setting up snipes to defend against incoming attacks.",
     "Defpack": "Defpack organizes defensive troops for optimal distribution in defense.",
+    "SnipeTool": "SnipeTool assists in setting up snipes to defend against incoming attacks.",
     "Mapfunctions": "Mapfunctions provides various tools to enhance the TribalWars map display.",
     "Overwatch": "Overwatch helps monitor villages and activities on the map.",
     "FarmGod": "FarmGod is an automated farming tool to maximize resource gains from farming.",
@@ -26,59 +26,6 @@ descriptions = {
     "Troop Counter": "Troop Counter counts and organizes troop levels across all villages.",
     "Sangu Package": "Sangu Package includes a suite of tools to enhance gameplay, like map tools and overviews.",
     "EasyCommand": "EasyCommand simplifies troop command issuing across multiple villages.",
-    "CoinPull": "CoinPull maximizes coin minting by redistributing resources where they are needed.",
-    "ClaimEnhancer": "ClaimEnhancer adds more features to the village claiming system.",
-    "LocalStorage": "LocalStorage saves settings locally for quick access and customization.",
-    "marketChecker": "marketChecker scans the market for favorable trades.",
-    "TussenStackChecker": "TussenStackChecker helps detect stacking issues between villages.",
-    "Toxic Donut's PP Logger": "Logs premium point activity for easy tracking and management.",
-    "Coördinaten/DorpsId Converter": "Converts coordinates and village IDs for easier management.",
-    "Massameppen met sneltoetsen": "Enables mass attacks using keyboard shortcuts.",
-    "Devil's Minting Resource Balancer": "Balances resources for optimized minting across villages.",
-    "Duidelijke Milliseconden": "Displays clear millisecond timing in the game interface.",
-    "Vlaggen Upgrader": "Automatically upgrades flags across villages based on criteria.",
-    "Notities verwijderen via overzicht": "Quickly deletes notes across the game overview.",
-    "TW.NL Officiële Extensie": "Official Dutch TribalWars extension with various utilities.",
-    "Warenhuis balancer": "Balances resources across warehouses in villages.",
-    "Village Renamer By Conquer Date": "Renames villages based on their conquer date.",
-    "Munten slaan enhancer": "Enhances the coin minting process for efficiency.",
-    "GS balancer (oud)": "An older version of the GS resource balancer.",
-    "TribeShare": "TribeShare allows sharing information and maps within the tribe.",
-    "Speedtagger": "Tags incoming attacks with speed information for quicker response.",
-    "Defteller": "Counts and organizes defensive troops for coordinated defense.",
-    "Attack wave recognizer": "Recognizes attack waves and organizes them for analysis.",
-    "Dorpnummers intern/extern": "Switches village numbers for internal or external views.",
-    "Edelspam sorteer script": "Organizes noble spam attacks for streamlined offense.",
-    "Def aanvragen optimalisatie": "Optimizes the process of requesting defensive support.",
-    "Renamer van inkomende aanvallen": "Automatically renames incoming attacks for clarity.",
-    "Train Spotter": "Detects and organizes incoming train attacks for better defense.",
-    "Coord Extractor": "Extracts coordinates from text for easier use.",
-    "Farm Enhancer": "Enhances farming tools and reports for better management.",
-    "Stamforum update fix": "Fixes issues with tribe forum updates.",
-    "GroupPlacer": "Organizes groups for village management.",
-    "Server Tijd Font": "Adjusts the server time font for better readability.",
-    "QuickFarm": "Quickly manages farming tasks for higher efficiency.",
-    "Milliseconden op aanvalsscherm": "Displays milliseconds in the attack screen.",
-    "ConfirmEnhancer": "Enhances confirmation dialogs for better user experience.",
-    "TimeExport": "Exports time and date information from the game for analysis.",
-    "CoAssistent": "Provides assistance with coordinating co-playing responsibilities.",
-    "Zet gs in muntverhouding": "Adjusts resource distribution for optimal coin minting.",
-    "UnitsDivide": "Divides units among villages for balanced defense and offense.",
-    "NobleDivide": "Distributes nobles strategically across villages.",
-    "Edelberichten": "Organizes noble-related messages.",
-    "TW BB Code ++": "Enhances BB code functionality for use in TribalWars.",
-    "CoordFilter": "Filters coordinates for specific criteria.",
-    "Village renamer": "Automatically renames villages based on set rules.",
-    "GSen opvragen Munten": "Requests resources for minting coins efficiently.",
-    "PackageCounter": "Counts and manages package resources.",
-    "TW-Surviving troops": "Shows surviving troops after battles.",
-    "Vlagfarm log": "Logs flag farming activities.",
-    "Single a Farm": "Optimizes single farming tasks.",
-    "FA-Pack": "Includes multiple farming assistant tools.",
-    "Bevelen Timer in Titel": "Displays command timers in titles for easy tracking.",
-    "Devil's Noble Spam Planner Enhancer": "Improves planning for noble spamming strategies.",
-    "Cancelsnipen kun je leren": "Helps players learn to cancel snipe attacks.",
-    "CommandRenamer": "Renames commands for easier management.",
 }
 
 main_menu_description = """**TribalWars Library: Scripts**
@@ -156,11 +103,8 @@ class SearchModal(Modal):
         # Limit the output to the top 2 results
         top_results = results[:2]
 
-        # Determine the best suggestion not in top 2 results, if available
-        suggestion = results[2] if len(results) > 2 else None
-
-        # Create the view with top results and a "Did you mean..." button if there’s a suggestion
-        view = ResultSelectionView(top_results, suggestion)
+        # Create the view with top results
+        view = ResultSelectionView(top_results)
 
         await interaction.response.edit_message(
             content="Select the script you want more details about:",
@@ -169,19 +113,12 @@ class SearchModal(Modal):
         )
 
 class ResultSelectionView(View):
-    def __init__(self, results, suggestion=None):
+    def __init__(self, results):
         super().__init__(timeout=None)
         self.results = results
-        self.suggestion = suggestion
         self.add_result_selector()
-
-        # Add "Did you mean..." button if there's a suggestion
-        if self.suggestion:
-            self.add_suggestion_button()
-
         # Add "Search Again" button
         self.add_search_again_button()
-
         # Add "Main Menu" button
         self.add_main_menu_button()
 
@@ -194,11 +131,6 @@ class ResultSelectionView(View):
         select = Select(placeholder="Choose a script...", options=options)
         select.callback = self.show_description
         self.add_item(select)
-
-    def add_suggestion_button(self):
-        suggestion_button = Button(label=f"Did you mean '{self.suggestion[0]}'?", style=discord.ButtonStyle.secondary)
-        suggestion_button.callback = self.show_suggestion
-        self.add_item(suggestion_button)
 
     def add_search_again_button(self):
         search_again_button = Button(label="Search Again", style=discord.ButtonStyle.primary)
@@ -216,14 +148,6 @@ class ResultSelectionView(View):
         # Update the message with the script description and keep the current view
         await interaction.response.edit_message(
             content=f"**{selected_script}**:\n{description}",
-            embed=None,
-            view=self
-        )
-
-    async def show_suggestion(self, interaction: discord.Interaction):
-        suggested_script, suggested_description = self.suggestion
-        await interaction.response.edit_message(
-            content=f"**{suggested_script}**:\n{suggested_description}",
             embed=None,
             view=self
         )
