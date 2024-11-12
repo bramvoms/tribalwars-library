@@ -14,7 +14,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Updated descriptions dictionary with only the active scripts
 descriptions = {
-    # Aanvallen category
+    # Aanval category
     "Offpack": """Een collectie aan functionaliteiten samengebracht in één package.
 **Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-off-pack.206109/>
 **Snellijst code:**
@@ -92,7 +92,7 @@ $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Mobil
 Placeholder tekst voor uitgebreide uitleg
 """,
 
-    # Verdedigen category
+    # Verdediging category
     "Defpack": """A collection of defensive utils (e.g. Stack health and wall health, incomings overview enhancements)
 **Forum topic:** <https://forum.tribalwars.nl/index.php?threads/devils-def-pack.206163/>
 **Snellijst code:**
@@ -365,7 +365,7 @@ class PublicMenuView(View):
         self.add_search_button()
 
     def add_main_buttons(self):
-        categories = ["Must haves", "Aanvallen", "Verdedigen", "Kaart", "Farmen", "Rooftochten", "Overig", "Stats", "Package"]
+        categories = ["Must haves", "Aanval", "Verdediging", "Kaart", "Farmen", "Rooftochten", "Overig", "Stats", "Package"]
         for category in categories:
             button = Button(label=category, style=discord.ButtonStyle.primary)
             button.callback = self.show_private_menu(category)
@@ -379,7 +379,7 @@ class PublicMenuView(View):
     def show_private_menu(self, category):
         async def callback(interaction: discord.Interaction):
             await interaction.response.edit_message(
-                content=f"**{category} Subcategories:**",
+                content=f"**{category} scripts:**",
                 embed=None,
                 view=PrivateMenuView(self.bot, category)
             )
@@ -511,8 +511,8 @@ class PrivateMenuView(View):
                 "MintTimer", "CoinPull", "Munt Enhancer", "Template Enhancer",
                 "GroupPlacer", "ClearsTimer"
             ],
-            "Aanvallen": ["Offpack", "TimeTool", "EasyCommand", "NobleSpam", "Template Enhancer", "MobileAttSent"],
-            "Verdedigen": ["Defpack", "SnipeTool", "TimeTool", "IncsEnhancer", "TribeIncs"],
+            "Aanval": ["Offpack", "TimeTool", "EasyCommand", "NobleSpam", "Template Enhancer", "MobileAttSent"],
+            "Verdediging": ["Defpack", "SnipeTool", "TimeTool", "IncsEnhancer", "TribeIncs"],
             "Kaart": ["Mapfunctions", "Overwatch", "CoordGrab", "TribeLines", "ClaimEnhancer"],
             "Farmen": ["FarmGod", "FarmShaper"],
             "Rooftochten": ["Massa rooftochten", "Roof unlocker"],
