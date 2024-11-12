@@ -39,7 +39,7 @@ scripts = {
     }
 }
 
-# Create subcategory buttons
+# Create subcategory buttons dynamically
 class SubcategoryButtons(ui.View):
     def __init__(self, script_name):
         super().__init__()
@@ -47,11 +47,8 @@ class SubcategoryButtons(ui.View):
 
         # Create the subcategory buttons dynamically based on the selected script category
         subcategories = scripts.get(script_name, {})
-
-        if subcategories:
-            for subcategory in subcategories:
-                # Ensure each button has a unique custom_id based on the subcategory
-                self.add_item(ui.Button(label=subcategory.capitalize(), style=discord.ButtonStyle.primary, custom_id=f"{script_name}_{subcategory}"))
+        for subcategory in subcategories:
+            self.add_item(ui.Button(label=subcategory.capitalize(), style=discord.ButtonStyle.primary, custom_id=f"{script_name}_{subcategory}"))
         
         # Add a "previous" button to go back to the main script categories
         self.add_item(ui.Button(label="Previous", style=discord.ButtonStyle.secondary, custom_id="previous"))
@@ -73,6 +70,7 @@ class SubcategoryButtons(ui.View):
         else:
             await interaction.response.send_message("Invalid button interaction.")
 
+# Create the main menu buttons
 class MainMenuButtons(ui.View):
     def __init__(self):
         super().__init__()
