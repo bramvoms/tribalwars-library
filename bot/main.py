@@ -10,8 +10,8 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-# FAQ data (you can customize this)
-scripts = {
+# FAQ data (renaming to avoid conflicts)
+faq_data = {
     "aanvallen": "Information about attacks: How to organize your troops for an effective attack.",
     "verdedigen": "Information about defense: How to strengthen your village and defend against attacks.",
     "kaart": "Information about the map: How to read the map and use it to your advantage.",
@@ -29,7 +29,9 @@ class ScriptButtons(discord.ui.View):
     async def aanvallen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Attacks FAQ"""
         try:
-            await interaction.response.send_message(scripts["aanvallen"])
+            # Log to check the type of faq_data
+            print(f"faq_data type: {type(faq_data)}")
+            await interaction.response.send_message(faq_data["aanvallen"])
         except Exception as e:
             await interaction.response.send_message(f"Error: {str(e)}")
 
@@ -37,7 +39,7 @@ class ScriptButtons(discord.ui.View):
     async def verdedigen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Defending FAQ"""
         try:
-            await interaction.response.send_message(scripts["verdedigen"])
+            await interaction.response.send_message(faq_data["verdedigen"])
         except Exception as e:
             await interaction.response.send_message(f"Error: {str(e)}")
 
@@ -45,7 +47,7 @@ class ScriptButtons(discord.ui.View):
     async def kaart_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Map FAQ"""
         try:
-            await interaction.response.send_message(scripts["kaart"])
+            await interaction.response.send_message(faq_data["kaart"])
         except Exception as e:
             await interaction.response.send_message(f"Error: {str(e)}")
 
@@ -53,7 +55,7 @@ class ScriptButtons(discord.ui.View):
     async def farmen_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Farming FAQ"""
         try:
-            await interaction.response.send_message(scripts["farmen"])
+            await interaction.response.send_message(faq_data["farmen"])
         except Exception as e:
             await interaction.response.send_message(f"Error: {str(e)}")
 
@@ -61,7 +63,7 @@ class ScriptButtons(discord.ui.View):
     async def rooftochten_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Raids FAQ"""
         try:
-            await interaction.response.send_message(scripts["rooftochten"])
+            await interaction.response.send_message(faq_data["rooftochten"])
         except Exception as e:
             await interaction.response.send_message(f"Error: {str(e)}")
 
@@ -69,7 +71,7 @@ class ScriptButtons(discord.ui.View):
     async def overig_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Respond with Other FAQ"""
         try:
-            await interaction.response.send_message(scripts["overig"])
+            await interaction.response.send_message(faq_data["overig"])
         except Exception as e:
             await interaction.response.send_message(f"Error: {str(e)}")
 
