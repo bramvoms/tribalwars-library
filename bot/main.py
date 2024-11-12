@@ -437,17 +437,21 @@ async def scripts(interaction: discord.Interaction):
 @bot.command(name="scripts", help="Displays the description of a specific script by name.")
 async def get_script_description(ctx, *, script_name: str):
     script_name = script_name.lower()
+    
+    # Check for an exact match, ignoring case
     matching_script = next((name for name in descriptions if name.lower() == script_name), None)
 
     if matching_script:
+        # Found an exact match
         embed = create_embed(matching_script, descriptions[matching_script])
         await ctx.send(embed=embed)
     else:
-        # Try to find the closest match using fuzzy matching
+        # Attempt fuzzy matching if no exact match is found
         result = process.extractOne(script_name, descriptions.keys())
         if result:
             closest_match, score = result
             if score > 60:  # Adjust threshold as needed for better accuracy
+                # Suggest closest match
                 view = View()
                 suggestion_button = Button(label=f"Bedoelde je '{closest_match}'?", style=discord.ButtonStyle.primary)
 
@@ -458,7 +462,7 @@ async def get_script_description(ctx, *, script_name: str):
                 suggestion_button.callback = suggestion_callback
                 view.add_item(suggestion_button)
 
-                embed = create_embed("Script Not Found", f"Script '{script_name}' not found.")
+                embed = create_embed("Script Not Found", f"Script '{script_name}' not found. Did you mean:")
                 await ctx.send(embed=embed, view=view)
             else:
                 # No close match found above the threshold
