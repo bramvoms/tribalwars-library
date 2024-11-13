@@ -10,54 +10,55 @@ class HelpCog(commands.Cog):
     async def help_command(self, ctx):
         # Create an embed for the help menu
         embed = create_embed(
-            title=f"━━━━━━ TribalWars Library ━━━━━━",
-            description="Here is a list of all available commands and their descriptions. Use them to navigate and utilize bot functionalities."
+            title=f"━ TribalWars Library ━",
+            description="Hieronder een lijst met alle mogelijkheden in de TribalWars Library bot."
         )
 
         # Add a short description for each command
         embed.add_field(
             name="`/scripts`",
-            value="Displays a categorized menu for all available scripts. You can browse or search for specific scripts.",
+            value="Toont een interactief menu om scripts te zoeken. Blader door categorieën of gebruik de zoekfunctie.",
             inline=False
         )
 
         embed.add_field(
             name="`&scripts <script_name>`",
-            value="Search for a script by name. Provides the closest matching script if an exact match isn't found. e.g. &scripts snipecalc",
+            value="Zoek direct een script in de database. Houdt rekening met typfouten. Bijvoorbeeld: &scripts snipecalc",
             inline=False
         )
 
         embed.add_field(
             name="`/group_scripts`",
-            value="Combine multiple scripts into one to improve loading times",
+            value="Groepeer scripts tot één script om laadtijden met de TW Extensie te versnellen.",
             inline=False
         )
 
         embed.add_field(
             name="`/am`",
-            value="Displays a menu for AM (Automated Management) templates and options. Browse templates and view details.",
+            value="Toont een interactief menu om AM sjablonen te zoeken.",
             inline=False
         )
 
         embed.add_field(
             name="`&am <template_name>`",
-            value="Search for an AM template by name. Provides the closest matching template if an exact match isn't found. e.g. &am def",
+            value="Zoek direct een AM sjabloon in de database. Houdt rekening met typfouten. Bijvoorbeeld: &am def",
             inline=False
         )
 
         embed.add_field(
             name="`/purge`",
-            value="Opens a menu for purging messages in a channel with multiple options, including number of messages and specific users.",
+            value="Verwijder berichten uit het huidige kanaal. Administrator rechten benodigd.",
             inline=False
         )
 
         embed.add_field(
             name="`&bothelp`",
-            value="Show all bot functionalities",
+            value="Toont dit menu.",
             inline=False
         )
-
-        embed.set_footer(text="Use commands with prefixes '&' or '/' as specified\nTribalWars Library - Created by Victorious")
+        
+        footer_icon_url = "https://i.imgur.com/N6Z8wxx.png"
+        embed.set_footer(text="Gebruik commands met '&' of '/' zoals hierboven benoemd\nTribalWars Library - Created by Victorious")
 
         await ctx.send(embed=embed)
 
