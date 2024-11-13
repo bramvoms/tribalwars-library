@@ -379,7 +379,7 @@ class ScriptsCog(commands.Cog):
 
     @app_commands.command(name="scripts", description="Displays the script categories")
     async def scripts(self, interaction: Interaction):
-        embed = create_embed("Scripts Menu", "Select a category to view scripts.")
+        embed = create_embed("TribalWars Library: Scripts", "Selecteer een categorie om scripts te bekijken.")
         await interaction.response.send_message(embed=embed, view=PublicMenuView(self.bot), ephemeral=True)
 
     @commands.command(name="scripts", help="Finds a specific script by name.")
@@ -413,7 +413,7 @@ class PublicMenuView(discord.ui.View):
             self.add_item(button)
 
     async def show_category(self, interaction: Interaction, category):
-        embed = create_embed(f"{category} Scripts", f"Displaying scripts for the {category} category.")
+        embed = create_embed(f"{category} scripts", f"Alle scripts voor de categorie {category}.")
         await interaction.response.edit_message(embed=embed, view=PrivateMenuView(self.bot, category))          
         
 class SearchModal(Modal):
@@ -504,7 +504,7 @@ class ResultSelectionView(View):
         await interaction.response.send_modal(SearchModal(self.bot))
 
     async def go_to_main_menu(self, interaction: discord.Interaction):
-        embed = create_embed("Scripts Menu", main_menu_description)
+        embed = create_embed("TribalWars Library: Scripts", main_menu_description)
         await interaction.response.edit_message(embed=embed, view=PublicMenuView(self.bot))
 
 class PrivateMenuView(View):
@@ -558,7 +558,7 @@ class PrivateMenuView(View):
         await interaction.response.edit_message(embed=embed, view=main_menu_only_view)
 
     async def go_to_main_menu(self, interaction: discord.Interaction):
-        embed = create_embed("Scripts Menu", main_menu_description)
+        embed = create_embed("TribalWars Library: Scripts", main_menu_description)
         await interaction.response.edit_message(embed=embed, view=PublicMenuView(self.bot))
 
 async def setup(bot):
