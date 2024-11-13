@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord import Interaction
+from discord import app_commands, Interaction
 from discord.ui import View, Button
 from fuzzywuzzy import process  # Import for fuzzy matching
 from main import create_embed
