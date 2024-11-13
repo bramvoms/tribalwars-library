@@ -46,5 +46,5 @@ class BroadcastCog(commands.Cog):
         await ctx.send("Broadcast completed.")
 
 # Setup function to add the cog
-def setup(bot):
-    bot.add_cog(BroadcastCog(bot))
+async def setup(bot):
+    await bot.add_cog(BroadcastCog(bot))
