@@ -11,7 +11,8 @@ class GroupScriptsCog(commands.Cog):
 
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
     async def group_scripts(self, interaction: discord.Interaction):
-        await interaction.response.defer(ephemeral=True)  # Defer to prevent timeout
+        # Defer the response immediately to prevent the interaction from failing
+        await interaction.response.defer(ephemeral=True)  # Mark the interaction as pending
         try:
             # Send the script selection view after deferring
             await interaction.followup.send("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot))
@@ -55,7 +56,7 @@ class ScriptCombineView(View):
             user_dm = await interaction.user.create_dm()  # Ensure the user has a DM channel open
             await user_dm.send(f"Gecombineerde scriptcode:\n```js\n{combined_code}\n```")
             
-            # Send confirmation in the channel that the DM has been sent
+            # Send confirmation message in the channel
             await interaction.followup.send("De gecombineerde scriptcode is verzonden naar je DM.", ephemeral=True)
         except Exception as e:
             await interaction.followup.send(f"Er is iets misgegaan bij het sturen van de gecombineerde scriptcode naar je DM: {e}", ephemeral=True)
