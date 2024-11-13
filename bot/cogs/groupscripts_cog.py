@@ -24,7 +24,7 @@ class ScriptCombineView(View):
         super().__init__(timeout=None)
         self.bot = bot
         self.selected_scripts = []
-        
+
         # Divide the script options into chunks of 25 or less
         options_chunks = [list(descriptions.keys())[i:i + 25] for i in range(0, len(descriptions), 25)]
         for i, chunk in enumerate(options_chunks, start=1):
@@ -50,12 +50,12 @@ class ScriptCombineView(View):
             return
 
         # Combine the selected scripts into one
-        combined_code = self.get_combined_script_code(self.selected_scripts)
+        combined_code, variables = self.get_combined_script_code(self.selected_scripts)
 
         # Send the combined code directly to the user's DM
         try:
             user_dm = await interaction.user.create_dm()  # Ensure the user has a DM channel open
-            await user_dm.send(f"Gecombineerde scriptcode:\n```js\n{combined_code}\n```")
+            await user_dm.send(f"Gecombineerde scriptcode:\n```js\n{combined_code}\n{variables}\n```")
             
             # Send confirmation message in the channel
             await interaction.followup.send("De gecombineerde scriptcode is verzonden naar je DM.", ephemeral=True)
@@ -64,12 +64,20 @@ class ScriptCombineView(View):
 
     def get_combined_script_code(self, selected_scripts):
         combined_code = "javascript:\n"
+        variables = ""  # To hold any variable declarations like ECsettings
+
         for script_name in selected_scripts:
             description = descriptions.get(script_name)
             if description:
+                # Extract lines containing $.getScript
                 script_lines = [line.strip() for line in description.splitlines() if line.strip().startswith("$.getScript")]
                 combined_code += "\n".join(script_lines) + "\n"
-        return combined_code.strip()
+                
+                # Extract variables (everything that is not a $.getScript line)
+                variable_lines = [line.strip() for line in description.splitlines() if not line.strip().startswith("$.getScript")]
+                variables += "\n".join(variable_lines) + "\n"
+
+        return combined_code.strip(), variables.strip()  # Return both script links and variables
 
 async def setup(bot):
     await bot.add_cog(GroupScriptsCog(bot))
