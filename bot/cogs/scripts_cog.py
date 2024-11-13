@@ -372,22 +372,21 @@ main_menu_description = """**TribalWars Library: Scripts**
 Gebruik de knoppen hieronder om een categorie en daarna het script te selecteren waar je uitleg over wilt."""
                 
 class PublicMenuView(discord.ui.View):
-    def __init__(self):
+    def __init__(self, bot):
         super().__init__(timeout=None)
+        self.bot = bot
         self.add_main_buttons()
 
     def add_main_buttons(self):
         categories = ["Must haves", "Aanval", "Verdediging", "Kaart", "Farmen", "Rooftochten", "Overig", "Stats", "Package"]
         for category in categories:
             button = discord.ui.Button(label=category, style=discord.ButtonStyle.primary)
-            button.callback = self.show_category(category)
+            button.callback = lambda interaction, category=category: self.show_category(interaction, category)
             self.add_item(button)
 
-    def show_category(self, category):
-        async def callback(interaction: Interaction):
-            embed = create_embed(f"{category} Scripts", f"Displaying scripts for the {category} category.")
-            await interaction.response.edit_message(embed=embed, view=self)
-        return callback
+    async def show_category(self, interaction: Interaction, category):
+        embed = create_embed(f"{category} Scripts", f"Displaying scripts for the {category} category.")
+        await interaction.response.edit_message(embed=embed, view=PrivateMenuView(self.bot, category))
 
 class ScriptsCog(commands.Cog):
     def __init__(self, bot):
@@ -396,28 +395,22 @@ class ScriptsCog(commands.Cog):
     @app_commands.command(name="scripts", description="Displays the script categories")
     async def scripts(self, interaction: Interaction):
         embed = create_embed("Scripts Menu", "Select a category to view scripts.")
-        await interaction.response.send_message(embed=embed, view=PublicMenuView(), ephemeral=True)
- 
-    # Text command for !scripts <script_name>
+        await interaction.response.send_message(embed=embed, view=PublicMenuView(self.bot), ephemeral=True)
+
     @commands.command(name="scripts", help="Finds a specific script by name.")
     async def get_script_description(self, ctx, *, script_name: str):
-        script_name = script_name.lower()  # Normalize input to lowercase
-        matching_script = descriptions.get(script_name)  # Try to find an exact match
+        script_name = script_name.lower()
+        matching_script = descriptions.get(script_name)
 
         if matching_script:
-            # Send the exact match description
             embed = create_embed(script_name.capitalize(), matching_script)
             await ctx.send(embed=embed)
         else:
-            # No exact match, use fuzzy matching to find the closest script
             closest_match, score = process.extractOne(script_name, descriptions.keys())
-            
-            if score > 60:  # Threshold for considering a match
-                # Show the closest match automatically
+            if score > 60:
                 embed = create_embed(closest_match.capitalize(), descriptions[closest_match])
                 await ctx.send(embed=embed)
             else:
-                # No close match found
                 embed = create_embed("Script Not Found", f"No script found matching '{script_name}'.")
                 await ctx.send(embed=embed)
                 
@@ -539,9 +532,9 @@ class PrivateMenuView(View):
             "Package": ["Sangu Package"],
         }
 
-        for subcategory in subcategories.get(self.category, []):
+     for subcategory in subcategories.get(self.category, []):
             button = Button(label=subcategory, style=discord.ButtonStyle.secondary)
-            button.callback = self.show_subcategory_description(subcategory)
+            button.callback = lambda interaction, subcategory=subcategory: self.show_subcategory_description(interaction, subcategory)
             self.add_item(button)
 
     def add_main_menu_button(self):
@@ -549,17 +542,10 @@ class PrivateMenuView(View):
         main_menu_button.callback = self.go_to_main_menu
         self.add_item(main_menu_button)
 
-    def show_subcategory_description(self, subcategory):
-        async def callback(interaction: discord.Interaction):
-            description = descriptions.get(subcategory, "No description available.")
-            embed = create_embed(subcategory, description)
-            main_menu_only_view = View()
-            main_menu_button = Button(label="Main Menu", style=discord.ButtonStyle.danger)
-            main_menu_button.callback = self.go_to_main_menu
-            main_menu_only_view.add_item(main_menu_button)
-
-            await interaction.response.edit_message(embed=embed, view=main_menu_only_view)
-        return callback
+    async def show_subcategory_description(self, interaction: discord.Interaction, subcategory):
+        description = descriptions.get(subcategory, "No description available.")
+        embed = create_embed(subcategory, description)
+        await interaction.response.edit_message(embed=embed, view=self)
 
     async def go_to_main_menu(self, interaction: discord.Interaction):
         embed = create_embed("Scripts Menu", main_menu_description)
