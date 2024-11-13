@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord import Interaction
+from discord import app_commands, Interaction
 from discord.ui import View, Button, Modal, Select
 from scripts_cog import descriptions  # Import descriptions from scripts_cog
 from main import create_embed
@@ -18,10 +18,11 @@ class GroupScriptsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # Command to open the modal for combining scripts
-    @commands.command(name="group_scripts", help="Combine scripts into a single script for faster loading.")
-    async def group_scripts(self, ctx):
-        await ctx.send("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot))
+    # Slash command to open the modal for combining scripts
+    @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
+    async def group_scripts(self, interaction: Interaction):
+        await interaction.response.send_message("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot), ephemeral=True)
+
 
 # Modal for grouping scripts
 class ScriptCombineModal(Modal):
