@@ -11,11 +11,11 @@ class GroupScriptsCog(commands.Cog):
 
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
     async def group_scripts(self, interaction: discord.Interaction):
-        await interaction.response.defer()
+        await interaction.response.defer(ephemeral=True)
         
         view = ScriptCombineView()
         embed = create_embed("Select Scripts to Combine", "Select scripts to add or remove them from the combined code.")
-        await interaction.followup.send(embed=embed, view=view)
+        await interaction.followup.send(embed=embed, view=view, ephemeral=True)  # Make this private
 
 class ScriptCombineView(View):
     def __init__(self):
@@ -53,7 +53,7 @@ class ScriptCombineView(View):
 
         # Update message with the current combined code
         embed = create_embed("Combined Script Code", f"```js\n{combined_code}\n```")
-        await interaction.response.edit_message(embed=embed, view=self)
+        await interaction.response.edit_message(embed=embed, view=self, ephemeral=True)  # Make this private
 
     def extract_script_lines(self, description):
         lines = ""
