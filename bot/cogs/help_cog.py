@@ -28,6 +28,12 @@ class HelpCog(commands.Cog):
         )
 
         embed.add_field(
+            name="`/group_scripts`",
+            value="Combine multiple scripts into one to improve loading times",
+            inline=False
+        )
+
+        embed.add_field(
             name="`/am`",
             value="Displays a menu for AM (Automated Management) templates and options. Browse templates and view details.",
             inline=False
