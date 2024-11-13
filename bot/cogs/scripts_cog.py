@@ -376,11 +376,13 @@ class ScriptsCog(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="scripts", description="Displays the script categories")
-    async def scripts(self, interaction: discord.Interaction):
-        view = PublicMenuView(self.bot)
-        embed = create_embed("Scripts Menu", main_menu_description)
-        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    async def scripts(self, interaction: Interaction):
+        embed = create_embed("Scripts Menu", "Main menu for scripts")
+        await interaction.response.send_message(embed=embed, view=PublicMenuView(self.bot), ephemeral=True)
 
+async def setup(bot):
+    await bot.add_cog(ScriptsCog(bot))
+    
 class PublicMenuView(View):
     def __init__(self, bot):
         super().__init__(timeout=None)
