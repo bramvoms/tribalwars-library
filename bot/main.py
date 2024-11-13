@@ -29,7 +29,10 @@ async def on_ready():
         print(f"Error syncing commands: {e}")
 
 async def load_cogs():
-    cogs_path = Path("cogs")
+    # Define the cogs_path based on the location of main.py
+    base_dir = Path(__file__).parent
+    cogs_path = base_dir / "cogs"
+    
     print(f"Loading cogs from: {cogs_path.resolve()}")  # Log the absolute path
 
     if not cogs_path.exists() or not cogs_path.is_dir():
