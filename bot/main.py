@@ -9,7 +9,7 @@ intents.message_content = True
 intents.guilds = True
 intents.members = True
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="&", intents=intents)
 
 # Define a global helper function to create an embed
 embed_color = discord.Color.from_rgb(255, 255, 0)
