@@ -375,11 +375,34 @@ class ScriptsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="scripts", description="Displays the script categories")
+    @app_commands.command(name="scripts", description="Displays the script categories")  # Slash command
     async def scripts(self, interaction: Interaction):
         embed = create_embed("Scripts Menu", "Main menu for scripts")
-        await interaction.response.send_message(embed=embed, view=PublicMenuView(self.bot), ephemeral=True)
-    
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    # Text command for !scripts <script_name>
+    @commands.command(name="scripts", help="Finds a specific script by name.")
+    async def get_script_description(self, ctx, *, script_name: str):
+        script_name = script_name.lower()  # Normalize input to lowercase
+        matching_script = descriptions.get(script_name)  # Try to find an exact match
+
+        if matching_script:
+            # Send the exact match description
+            embed = create_embed(script_name.capitalize(), matching_script)
+            await ctx.send(embed=embed)
+        else:
+            # No exact match, use fuzzy matching to find the closest script
+            closest_match, score = process.extractOne(script_name, descriptions.keys())
+            
+            if score > 60:  # Threshold for considering a match
+                # Show the closest match automatically
+                embed = create_embed(closest_match.capitalize(), descriptions[closest_match])
+                await ctx.send(embed=embed)
+            else:
+                # No close match found
+                embed = create_embed("Script Not Found", f"No script found matching '{script_name}'.")
+                await ctx.send(embed=embed)
+                
 class PublicMenuView(View):
     def __init__(self, bot):
         super().__init__(timeout=None)
