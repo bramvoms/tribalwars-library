@@ -115,16 +115,25 @@ class ScriptCombineView(View):
         # Delete the interaction message
         await interaction.message.delete()
 
-    def get_combined_script_code(self):
-        # Combine the selected scripts into the final code
-        combined_code = "javascript:\n"
-        for script_name in self.selected_scripts:
-            description = descriptions.get(script_name)
-            if description:
-                # Extract script URLs and variables, if any
-                script_lines = [line.strip() for line in description.splitlines() if line.strip().startswith("$.getScript") or "var" in line]
-                combined_code += "\n".join(script_lines) + "\n"
-        return combined_code.strip()
+def get_combined_script_code(self):
+    # Define a specific order for prioritized scripts
+    prioritized_scripts = ["Millisecond tagger", "Timetool"]
+    
+    # Start the combined code string with JavaScript label
+    combined_code = "javascript:\n"
+
+    # Sort selected scripts so prioritized scripts appear first if selected
+    ordered_scripts = sorted(self.selected_scripts, key=lambda x: (x not in prioritized_scripts, prioritized_scripts.index(x) if x in prioritized_scripts else float('inf')))
+
+    # Add each script to the combined code
+    for script_name in ordered_scripts:
+        description = descriptions.get(script_name)
+        if description:
+            # Extract script URLs and variables, if any
+            script_lines = [line.strip() for line in description.splitlines() if line.strip().startswith("$.getScript") or "var" in line]
+            combined_code += "\n".join(script_lines) + "\n"
+
+    return combined_code.strip()
 
 async def setup(bot):
     await bot.add_cog(GroupScriptsCog(bot))
