@@ -1,38 +1,9 @@
 import discord
-import requests  # This will let us make requests to Pastebin
 from discord.ext import commands
 from discord import app_commands, Interaction
 from discord.ui import View, Button, Select
 from cogs.scripts_cog import descriptions  # Import descriptions from scripts_cog
 from main import create_embed
-
-# Your Pastebin API Key
-PASTEBIN_API_KEY = 'IIqOr2TN7b7dp9pS1O34-b8oFmlyJ8mI'  # Replace with your Pastebin API key
-
-# Helper function to combine script codes and send to Pastebin
-def get_combined_script_code(selected_scripts):
-    combined_code = "javascript:\n"
-    for script_name in selected_scripts:
-        description = descriptions.get(script_name)
-        if description:
-            script_lines = [line.strip() for line in description.splitlines() if line.strip().startswith("$.getScript")]
-            combined_code += "\n".join(script_lines) + "\n"
-    return combined_code.strip()
-
-# Function to upload the combined code to Pastebin and return the URL
-def upload_to_pastebin(code):
-    url = "https://pastebin.com/api/api_post.php"
-    data = {
-        'api_dev_key': PASTEBIN_API_KEY,
-        'api_option': 'paste',
-        'api_paste_code': code,
-        'api_paste_private': 1,  # 1 = unlisted, 0 = public
-    }
-    response = requests.post(url, data=data)
-    if response.status_code == 200:
-        return response.text
-    else:
-        return None
 
 class GroupScriptsCog(commands.Cog):
     def __init__(self, bot):
@@ -77,17 +48,24 @@ class ScriptCombineView(View):
             await interaction.followup.send("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
             return
 
-        combined_code = get_combined_script_code(self.selected_scripts)
-        paste_url = upload_to_pastebin(combined_code)
+        combined_code = self.get_combined_script_code(self.selected_scripts)
 
-        if paste_url:
-            try:
-                await interaction.user.send(f"Gecombineerde scriptcode is opgeslagen op Pastebin: {paste_url}")
-                await interaction.followup.send("De gecombineerde scriptcode is verzonden naar je DM.", ephemeral=True)
-            except Exception as e:
-                await interaction.followup.send(f"Er is iets misgegaan bij het sturen van de link naar je DM: {e}", ephemeral=True)
-        else:
-            await interaction.followup.send("Er is iets misgegaan bij het maken van de Pastebin-link.", ephemeral=True)
+        # Send the combined code directly to the user's DM
+        try:
+            user_dm = await interaction.user.create_dm()  # Ensure the user has a DM channel open
+            await user_dm.send(f"Gecombineerde scriptcode:\n```js\n{combined_code}\n```")
+            await interaction.followup.send("De gecombineerde scriptcode is verzonden naar je DM.", ephemeral=True)
+        except Exception as e:
+            await interaction.followup.send(f"Er is iets misgegaan bij het sturen van de gecombineerde scriptcode naar je DM: {e}", ephemeral=True)
+
+    def get_combined_script_code(self, selected_scripts):
+        combined_code = "javascript:\n"
+        for script_name in selected_scripts:
+            description = descriptions.get(script_name)
+            if description:
+                script_lines = [line.strip() for line in description.splitlines() if line.strip().startswith("$.getScript")]
+                combined_code += "\n".join(script_lines) + "\n"
+        return combined_code.strip()
 
 async def setup(bot):
     await bot.add_cog(GroupScriptsCog(bot))
