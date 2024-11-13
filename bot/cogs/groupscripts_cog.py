@@ -15,14 +15,15 @@ class GroupScriptsCog(commands.Cog):
         await interaction.response.defer()
 
         # Create a view with script selections and a combine button
-        view = ScriptCombineView()
+        view = ScriptCombineView(interaction)  # Pass interaction to view for deletion
         embed = create_embed("Select Scripts to Combine", "Select scripts and click 'Combine Now' to receive the combined code in your DMs.")
         await interaction.followup.send(embed=embed, view=view)
 
 class ScriptCombineView(View):
-    def __init__(self):
+    def __init__(self, interaction: discord.Interaction):
         super().__init__(timeout=None)
         self.selected_scripts = set()  # Track selected scripts
+        self.interaction = interaction  # Store interaction for message deletion
 
         # Divide scripts into chunks of 20 for multiple selection menus
         script_chunks = [list(descriptions.keys())[i:i + 20] for i in range(0, len(descriptions), 20)]
@@ -64,9 +65,13 @@ class ScriptCombineView(View):
         try:
             user_dm = await interaction.user.create_dm()
             await user_dm.send(f"Here is your combined script code:\n```js\n{combined_code}\n```")
-            await interaction.response.send_message("The combined script code has been sent to your DMs.", ephemeral=True)
+            await interaction.followup.send("The combined script code has been sent to your DMs.", ephemeral=True)
+
+            # Delete the message in the channel
+            original_message = await self.interaction.original_response()
+            await original_message.delete()
         except Exception as e:
-            await interaction.response.send_message(f"Error sending DM: {e}", ephemeral=True)
+            await interaction.followup.send(f"Error sending DM: {e}", ephemeral=True)
 
     def get_combined_script_code(self):
         # Combine the selected scripts into the final code
