@@ -9,13 +9,11 @@ intents.message_content = True
 intents.guilds = True
 intents.members = True
 
-bot = commands.Bot(command_prefix="&", intents=intents)
-
-# Initialize the bot with application_id
+# Initialize the bot with application_id from the environment variable
 bot = commands.Bot(
-    command_prefix="!",
+    command_prefix="&",
     intents=intents,
-    application_id=os.getenv("1305829332006207522")  # Ensure this environment variable is set
+    application_id=int(os.getenv("DISCORD_APPLICATION_ID"))  # Convert to int if required by your hosting environment
 )
 
 # Define the bot owner's ID
