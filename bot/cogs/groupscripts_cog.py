@@ -50,61 +50,63 @@ class ScriptCombineView(View):
         delete_button.callback = self.delete_message
         self.add_item(delete_button)
 
-    async def update_selected_scripts(self, interaction: discord.Interaction):
-        # Check if the user is the command initiator
-        if interaction.user != self.command_user:
-            await interaction.response.send_message("You are not authorized to select scripts for this action.", ephemeral=True)
-            return
+async def update_selected_scripts(self, interaction: discord.Interaction):
+    # Check if the user is the command initiator
+    if interaction.user != self.command_user:
+        await interaction.response.send_message("You are not authorized to select scripts for this action.", ephemeral=True)
+        return
 
-        # Update selected scripts based on current selections in all menus
-        selected_values = set(interaction.data["values"])
-        self.selected_scripts.symmetric_difference_update(selected_values)
+    # Update selected scripts based on current selections in all menus
+    selected_values = set(interaction.data["values"])
+    self.selected_scripts.symmetric_difference_update(selected_values)
 
-        # Keep selected options highlighted
-        for select in self.children:
-            if isinstance(select, Select):
-                for option in select.options:
-                    option.default = option.value in self.selected_scripts
+    # Keep selected options highlighted
+    for select in self.children:
+        if isinstance(select, Select):
+            for option in select.options:
+                option.default = option.value in self.selected_scripts
 
-        await interaction.response.defer()  # Defer the response to keep interaction active
-
+    # Respond to interaction by editing the message to update view
+    await interaction.response.edit_message(view=self)
+    
     async def clear_selection(self, interaction: discord.Interaction):
-        # Check if the user is the command initiator
-        if interaction.user != self.command_user:
-            await interaction.response.send_message("You are not authorized to clear selections.", ephemeral=True)
-            return
+    # Check if the user is the command initiator
+    if interaction.user != self.command_user:
+        await interaction.response.send_message("You are not authorized to clear selections.", ephemeral=True)
+        return
 
-        # Clear the selected scripts
-        self.selected_scripts.clear()
+    # Clear the selected scripts
+    self.selected_scripts.clear()
 
-        # Reset all options to not be highlighted
-        for select in self.children:
-            if isinstance(select, Select):
-                for option in select.options:
-                    option.default = False
+    # Reset all options to not be highlighted
+    for select in self.children:
+        if isinstance(select, Select):
+            for option in select.options:
+                option.default = False
 
-        await interaction.response.edit_message(content="Selection cleared. Please select scripts to combine again.", view=self)
+    # Edit the interaction message to reflect cleared selection
+    await interaction.response.edit_message(content="Selection cleared. Please select scripts to combine again.", view=self)
 
     async def send_combined_code(self, interaction: discord.Interaction):
-        # Check if the user is the command initiator
-        if interaction.user != self.command_user:
-            await interaction.response.send_message("You are not authorized to combine scripts.", ephemeral=True)
-            return
+    # Check if the user is the command initiator
+    if interaction.user != self.command_user:
+        await interaction.response.send_message("You are not authorized to combine scripts.", ephemeral=True)
+        return
 
-        if not self.selected_scripts:
-            await interaction.response.send_message("No scripts selected. Please select at least one script.", ephemeral=True)
-            return
+    if not self.selected_scripts:
+        await interaction.response.send_message("No scripts selected. Please select at least one script.", ephemeral=True)
+        return
 
-        # Generate the combined script code
-        combined_code = self.get_combined_script_code()
+    # Generate the combined script code
+    combined_code = self.get_combined_script_code()
 
-        # Send the combined code to the user's DM
-        try:
-            user_dm = await interaction.user.create_dm()
-            await user_dm.send(f"Here is your combined script code:\n```js\n{combined_code}\n```")
-            await interaction.response.send_message("The combined script code has been sent to your DMs.", ephemeral=True)
-        except Exception as e:
-            await interaction.response.send_message(f"Error sending DM: {e}", ephemeral=True)
+    # Send the combined code to the user's DM
+    try:
+        user_dm = await interaction.user.create_dm()
+        await user_dm.send(f"Here is your combined script code:\n```js\n{combined_code}\n```")
+        await interaction.response.send_message("The combined script code has been sent to your DMs.", ephemeral=True)
+    except Exception as e:
+        await interaction.response.send_message(f"Error sending DM: {e}", ephemeral=True)
 
     async def delete_message(self, interaction: discord.Interaction):
         # Check if the user is the command initiator
