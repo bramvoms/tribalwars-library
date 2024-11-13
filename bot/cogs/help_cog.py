@@ -6,7 +6,7 @@ class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="bothelp", help="Displays all available bot commands with their descriptions.")
+    @commands.command(name="bothelp", help="Overzicht van alle commands van de TribalWars Library bot.")
     async def help_command(self, ctx):
         # Create an embed for the help menu
         embed = create_embed(
