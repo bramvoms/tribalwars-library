@@ -23,7 +23,7 @@ class HelpCog(commands.Cog):
 
         embed.add_field(
             name="`&scripts <script_name>`",
-            value="Search for a script by name. Provides the closest matching script if an exact match isn't found.",
+            value="Search for a script by name. Provides the closest matching script if an exact match isn't found. e.g. "&scripts snipecalc"",
             inline=False
         )
 
@@ -35,7 +35,7 @@ class HelpCog(commands.Cog):
 
         embed.add_field(
             name="`&am <template_name>`",
-            value="Search for an AM template by name. Provides the closest matching template if an exact match isn't found.",
+            value="Search for an AM template by name. Provides the closest matching template if an exact match isn't found. e.g. "&am def"",
             inline=False
         )
 
@@ -46,7 +46,7 @@ class HelpCog(commands.Cog):
         )
 
         embed.add_field(
-            name="`&help`",
+            name="`&bothelp`",
             value="Show all bot functionalities",
             inline=False
         )
