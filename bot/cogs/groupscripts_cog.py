@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands, Interaction
 from discord.ui import View, Button, Modal, Select
-from scripts_cog import descriptions  # Import descriptions from scripts_cog
+from cogs.scripts_cog import descriptions  # Import descriptions from cogs.scripts_cog
 from main import create_embed
 
 # Helper function to combine script codes from selected scripts
