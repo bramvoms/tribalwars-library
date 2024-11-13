@@ -23,7 +23,7 @@ class GroupScriptsCog(commands.Cog):
 
 # Slash command to open the modal for combining scripts
 @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
-async def group_scripts(self, interaction: "Interaction"):  # Use string annotation for Interaction
+async def group_scripts(self, interaction):  # Removed type hint
     print("Received /group_scripts command")  # Debug print
     
     # Acknowledge the interaction immediately to prevent timeout
