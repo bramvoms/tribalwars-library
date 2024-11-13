@@ -28,15 +28,22 @@ class ScriptCombineView(View):
         # Create a Select menu for each chunk
         for i, chunk in enumerate(script_chunks, start=1):
             options = [discord.SelectOption(label=script, value=script) for script in chunk]
-            select = Select(placeholder=f"Select scripts (Group {i})", options=options, min_values=1, max_values=len(options))
+            select = Select(placeholder=f"Select scripts (Group {i})", options=options, min_values=0, max_values=len(options))
             select.callback = self.update_combined_code
             self.add_item(select)
 
     async def update_combined_code(self, interaction: discord.Interaction):
+        # Retrieve selected values from the menu interaction
         selected_values = set(interaction.data["values"])
         
-        # Update selected scripts, adding or removing as necessary
-        self.selected_scripts.symmetric_difference_update(selected_values)  # Toggle each script in/out of selection
+        # Update selected scripts to toggle them in or out based on user selection
+        self.selected_scripts.symmetric_difference_update(selected_values)
+
+        # Reapply selected options across all Select menus to keep choices highlighted
+        for select in self.children:
+            if isinstance(select, Select):
+                for option in select.options:
+                    option.default = option.value in self.selected_scripts
 
         # Build the combined script code
         combined_code = "javascript:\n"
@@ -45,17 +52,12 @@ class ScriptCombineView(View):
             if description:
                 combined_code += self.extract_script_lines(description)
 
-        # Update options to keep selected items highlighted
-        for select in self.children:
-            if isinstance(select, Select):
-                for option in select.options:
-                    option.default = option.value in self.selected_scripts
-
-        # Update message with the current combined code
+        # Update the interaction message with the current combined code and refresh the view
         embed = create_embed("Combined Script Code", f"```js\n{combined_code}\n```")
-        await interaction.response.edit_message(embed=embed, view=self, ephemeral=True)  # Make this private
+        await interaction.response.edit_message(embed=embed, view=self, ephemeral=True)
 
     def extract_script_lines(self, description):
+        # Helper function to extract lines with $.getScript or variable definitions
         lines = ""
         for line in description.splitlines():
             if line.strip().startswith("$.getScript") or "var" in line:
