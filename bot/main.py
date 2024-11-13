@@ -15,7 +15,7 @@ bot = commands.Bot(command_prefix="&", intents=intents)
 BOT_OWNER_ID = 284710799321202702  # Replace with your Discord user ID
 
 # Define a global helper function to create an embed
-embed_color = discord.Color.from_rgb(255, 255, 0)
+embed_color = discord.Color.from_rgb(221, 205, 165)
 thumbnail_url = "https://i.imgur.com/GDJE1uD.png"
 footer_icon_url = "https://i.imgur.com/N6Z8wxx.png"  # Same image or different as needed
 
