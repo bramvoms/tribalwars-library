@@ -12,6 +12,7 @@ def get_combined_script_code(selected_scripts):
         description = descriptions.get(script_name, "")
         script_lines = [line.strip() for line in description.splitlines() if line.strip().startswith("$.getScript")]
         combined_code += "\n".join(script_lines) + "\n"
+    print(f"Combined script code:\n{combined_code.strip()}")  # Debug print
     return combined_code.strip()
 
 class GroupScriptsCog(commands.Cog):
@@ -44,6 +45,7 @@ class ScriptCombineModal(Modal):
             title="Gecombineerde scriptcode",
             description=f"```js\n{combined_code}\n```"
         )
+        print("Sending combined script code embed")  # Debug print
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 class ScriptCombineView(View):
@@ -83,7 +85,10 @@ class ScriptCombineView(View):
             print("No scripts selected message sent")  # Debug print
         else:
             print(f"Opening combine modal with selected scripts: {self.selected_scripts}")  # Debug print
-            await interaction.response.send_modal(ScriptCombineModal(self.bot, self.selected_scripts))
+            try:
+                await interaction.response.send_modal(ScriptCombineModal(self.bot, self.selected_scripts))
+            except Exception as e:
+                print(f"Error opening combine modal: {e}")  # Capture any issues with the modal
 
 async def setup(bot):
     await bot.add_cog(GroupScriptsCog(bot))
