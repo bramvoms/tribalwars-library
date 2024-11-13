@@ -728,7 +728,7 @@ class PrivateMenuView(View):
     async def show_script_description(self, interaction: discord.Interaction, subcategory):
         # Display the description for the selected script
         description = descriptions.get(subcategory, "No description available.")
-        title = f"━━ {subcategory.upper()} ━━"
+        title = f"━━━━━━ {subcategory.upper()} ━━━━━━"
         embed = create_embed(title=title, description=description)
         main_menu_only_view = View()
         main_menu_button = Button(label="Main Menu", style=discord.ButtonStyle.danger)
