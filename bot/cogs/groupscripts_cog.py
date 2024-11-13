@@ -34,10 +34,15 @@ class ScriptCombineView(View):
             select.callback = self.update_selected_scripts
             self.add_item(select)
 
-        # Add the "Combine Now" button to finalize the selection and send combined code
+        # Add "Combine Now" button to finalize the selection and send combined code
         combine_button = Button(label="Combine Now", style=discord.ButtonStyle.success)
         combine_button.callback = self.send_combined_code
         self.add_item(combine_button)
+
+        # Add "Clear Selection" button to reset selections
+        clear_button = Button(label="Clear Selection", style=discord.ButtonStyle.danger)
+        clear_button.callback = self.clear_selection
+        self.add_item(clear_button)
 
     async def update_selected_scripts(self, interaction: discord.Interaction):
         # Update selected scripts based on current selections in all menus
@@ -52,9 +57,21 @@ class ScriptCombineView(View):
 
         await interaction.response.defer()  # Defer the response to keep interaction active
 
+    async def clear_selection(self, interaction: discord.Interaction):
+        # Clear the selected scripts
+        self.selected_scripts.clear()
+
+        # Reset all options to not be highlighted
+        for select in self.children:
+            if isinstance(select, Select):
+                for option in select.options:
+                    option.default = False
+
+        await interaction.response.edit_message(content="Selection cleared. Please select scripts to combine again.", view=self)
+
     async def send_combined_code(self, interaction: discord.Interaction):
         if not self.selected_scripts:
-            await interaction.followup.send("No scripts selected. Please select at least one script.", ephemeral=True)
+            await interaction.response.send_message("No scripts selected. Please select at least one script.", ephemeral=True)
             return
 
         # Generate the combined script code
@@ -64,13 +81,9 @@ class ScriptCombineView(View):
         try:
             user_dm = await interaction.user.create_dm()
             await user_dm.send(f"Here is your combined script code:\n```js\n{combined_code}\n```")
-            await interaction.followup.send("The combined script code has been sent to your DMs.", ephemeral=True)
-
-            # Clear the selection after sending the code
-            self.clear_selection()
-            await interaction.message.edit(view=self)  # Update the view to reflect cleared selections
+            await interaction.response.send_message("The combined script code has been sent to your DMs.", ephemeral=True)
         except Exception as e:
-            await interaction.followup.send(f"Error sending DM: {e}", ephemeral=True)
+            await interaction.response.send_message(f"Error sending DM: {e}", ephemeral=True)
 
     def get_combined_script_code(self):
         # Combine the selected scripts into the final code
@@ -82,14 +95,6 @@ class ScriptCombineView(View):
                 script_lines = [line.strip() for line in description.splitlines() if line.strip().startswith("$.getScript") or "var" in line]
                 combined_code += "\n".join(script_lines) + "\n"
         return combined_code.strip()
-
-    def clear_selection(self):
-        """Clear selected scripts and reset all select options."""
-        self.selected_scripts.clear()
-        for select in self.children:
-            if isinstance(select, Select):
-                for option in select.options:
-                    option.default = False  # Unselect each option
 
 async def setup(bot):
     await bot.add_cog(GroupScriptsCog(bot))
