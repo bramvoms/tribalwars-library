@@ -514,6 +514,7 @@ class PrivateMenuView(View):
         self.add_main_menu_button()
 
     def add_category_buttons(self):
+        # Define the scripts under each category
         subcategories = {
             "Must haves": [
                 "Offpack", "Defpack", "TimeTool", "Massa rooftochten", "GS balancer", 
@@ -532,9 +533,10 @@ class PrivateMenuView(View):
             "Package": ["Sangu Package"],
         }
 
-     for subcategory in subcategories.get(self.category, []):
+        # Add a button for each script in the category
+        for subcategory in subcategories.get(self.category, []):
             button = Button(label=subcategory, style=discord.ButtonStyle.secondary)
-            button.callback = lambda interaction, subcategory=subcategory: self.show_subcategory_description(interaction, subcategory)
+            button.callback = lambda interaction, subcategory=subcategory: self.show_script_description(interaction, subcategory)
             self.add_item(button)
 
     def add_main_menu_button(self):
@@ -542,10 +544,16 @@ class PrivateMenuView(View):
         main_menu_button.callback = self.go_to_main_menu
         self.add_item(main_menu_button)
 
-    async def show_subcategory_description(self, interaction: discord.Interaction, subcategory):
+    async def show_script_description(self, interaction: discord.Interaction, subcategory):
+        # Display the description for the selected script
         description = descriptions.get(subcategory, "No description available.")
         embed = create_embed(subcategory, description)
-        await interaction.response.edit_message(embed=embed, view=self)
+        main_menu_only_view = View()
+        main_menu_button = Button(label="Main Menu", style=discord.ButtonStyle.danger)
+        main_menu_button.callback = self.go_to_main_menu
+        main_menu_only_view.add_item(main_menu_button)
+
+        await interaction.response.edit_message(embed=embed, view=main_menu_only_view)
 
     async def go_to_main_menu(self, interaction: discord.Interaction):
         embed = create_embed("Scripts Menu", main_menu_description)
