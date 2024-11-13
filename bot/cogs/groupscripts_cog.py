@@ -1,5 +1,5 @@
 import discord
-import requests  # This will let us make requests to Pastebin
+import requests
 from discord.ext import commands
 from discord import app_commands, Interaction
 from discord.ui import View, Button, Select
@@ -43,15 +43,11 @@ class GroupScriptsCog(commands.Cog):
 
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
     async def group_scripts(self, interaction: discord.Interaction):
-        print("Received /group_scripts command")  # Debug print
         await interaction.response.defer(ephemeral=True)
-        print("Interaction deferred successfully")  # Debug print
-        
         try:
             await interaction.followup.send("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot))
-            print("Sent ScriptCombineView to user")  # Debug print
         except Exception as e:
-            print(f"Error sending script selection view: {e}")  # Print any errors encountered
+            print(f"Error sending script selection view: {e}")
 
 class ScriptCombineView(View):
     def __init__(self, bot):
@@ -74,24 +70,20 @@ class ScriptCombineView(View):
         selected_values = interaction.data["values"]
         self.selected_scripts.extend(selected_values)
         self.selected_scripts = list(set(self.selected_scripts))
-        print(f"Current selected scripts: {self.selected_scripts}")  # Debug print
         await interaction.response.defer()
 
     async def show_combined_code(self, interaction: discord.Interaction):
-        print(f"Show combined code button clicked with selected scripts: {self.selected_scripts}")  # Debug print
         if not self.selected_scripts:
-            await interaction.response.send_message("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
-            print("No scripts selected message sent")  # Debug print
+            await interaction.followup.send("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
             return
 
         combined_code = get_combined_script_code(self.selected_scripts)
         paste_url = upload_to_pastebin(combined_code)
         
         if paste_url:
-            print(f"Sending Pastebin URL to user: {paste_url}")  # Debug print
+            # Send the Pastebin URL as a follow-up message
             await interaction.followup.send(f"Gecombineerde scriptcode is opgeslagen op Pastebin: {paste_url}", ephemeral=True)
         else:
-            print("Failed to create Pastebin link.")  # Debug print
             await interaction.followup.send("Er is iets misgegaan bij het maken van de Pastebin-link.", ephemeral=True)
 
 async def setup(bot):
