@@ -49,11 +49,21 @@ async def load_cogs():
             print(f"Successfully loaded cog: {cog_name}")
         except Exception as e:
             print(f"Failed to load cog {cog_name}: {e}")
-
+            
 async def main():
     await load_cogs()  # Load all cogs asynchronously
     await bot.start(os.getenv("DISCORD_TOKEN"))  # Start the bot
     
+@bot.command(name="reload", help="Reloads a specified cog.")
+@commands.is_owner()  # Only the bot owner can use this command
+async def reload(ctx, cog: str):
+    try:
+        await bot.unload_extension(f"cogs.{cog}")
+        await bot.load_extension(f"cogs.{cog}")
+        await ctx.send(f"Successfully reloaded `{cog}`.")
+    except Exception as e:
+        await ctx.send(f"Failed to reload `{cog}`: {e}")    
+        
 # Run the asynchronous main function
 if __name__ == "__main__":
     asyncio.run(main())
