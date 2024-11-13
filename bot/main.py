@@ -13,10 +13,13 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Define a global helper function to create an embed
 embed_color = discord.Color.from_rgb(255, 255, 0)
+thumbnail_url = "https://i.imgur.com/GDJE1uD.png"
+footer_icon_url = "https://i.imgur.com/N6Z8wxx.png"  # Same image or different as needed
 
 def create_embed(title: str, description: str) -> discord.Embed:
     embed = discord.Embed(title=title, description=description, color=embed_color)
-    embed.set_footer(text="TribalWars Library - Created by Victorious")
+    embed.set_thumbnail(url=thumbnail_url)  # Add the thumbnail image in the top right corner
+    embed.set_footer(icon_url=footer_icon_url, text="TribalWars Library - Created by Victorious")  # Footer with image
     return embed
 
 @bot.event
