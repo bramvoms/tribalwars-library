@@ -16,7 +16,7 @@ embed_color = discord.Color.from_rgb(255, 255, 0)
 
 def create_embed(title: str, description: str) -> discord.Embed:
     embed = discord.Embed(title=title, description=description, color=embed_color)
-    embed.set_footer(text="Created by Victorious")
+    embed.set_footer(text="TribalWars Library - Created by Victorious")
     return embed
 
 @bot.event
