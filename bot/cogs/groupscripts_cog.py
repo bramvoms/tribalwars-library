@@ -11,10 +11,8 @@ class GroupScriptsCog(commands.Cog):
 
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
     async def group_scripts(self, interaction: discord.Interaction):
-        # Defer the interaction to prevent timeout
         await interaction.response.defer()
         
-        # Send initial message with script selection view
         view = ScriptCombineView()
         embed = create_embed("Select Scripts to Combine", "Select scripts to add or remove them from the combined code.")
         await interaction.followup.send(embed=embed, view=view)
@@ -35,28 +33,32 @@ class ScriptCombineView(View):
             self.add_item(select)
 
     async def update_combined_code(self, interaction: discord.Interaction):
-        # Toggle selection: Add if new, remove if already selected
-        selected_scripts = set(interaction.data["values"])
-        newly_added = selected_scripts - self.selected_scripts
-        removed = self.selected_scripts - selected_scripts
-        self.selected_scripts = selected_scripts
+        selected_values = set(interaction.data["values"])
+        
+        # Update selected scripts, adding or removing as necessary
+        self.selected_scripts.symmetric_difference_update(selected_values)  # Toggle each script in/out of selection
 
         # Build the combined script code
         combined_code = "javascript:\n"
         for script in self.selected_scripts:
             description = descriptions.get(script)
             if description:
-                # Add variables and $.getScript lines
                 combined_code += self.extract_script_lines(description)
 
-        # Send updated message with combined code
+        # Update options to keep selected items highlighted
+        for select in self.children:
+            if isinstance(select, Select):
+                for option in select.options:
+                    option.default = option.value in self.selected_scripts
+
+        # Update message with the current combined code
         embed = create_embed("Combined Script Code", f"```js\n{combined_code}\n```")
         await interaction.response.edit_message(embed=embed, view=self)
 
     def extract_script_lines(self, description):
         lines = ""
         for line in description.splitlines():
-            if line.strip().startswith("$.getScript") or "var" in line:  # Capture both $.getScript and variables
+            if line.strip().startswith("$.getScript") or "var" in line:
                 lines += line.strip() + "\n"
         return lines
 
