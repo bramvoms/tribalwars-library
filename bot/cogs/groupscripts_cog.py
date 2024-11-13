@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands, Interaction
-from discord.ui import View, Button, Modal, Select
+from discord.ui import View, Button, Select
 from cogs.scripts_cog import descriptions  # Import descriptions from scripts_cog
 from main import create_embed
 
@@ -28,7 +28,7 @@ class GroupScriptsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # Slash command to open the modal for combining scripts
+    # Slash command to open the selection view for combining scripts
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
     async def group_scripts(self, interaction: discord.Interaction):
         print("Received /group_scripts command")  # Debug print
@@ -41,38 +41,6 @@ class GroupScriptsCog(commands.Cog):
             print("Sent ScriptCombineView to user")  # Debug print
         except Exception as e:
             print(f"Error sending ScriptCombineView: {e}")  # Print any errors encountered
-
-# Modal for grouping scripts with a limit of 5 scripts per modal
-class ScriptCombineModal(Modal):
-    def __init__(self, bot, selected_scripts):
-        super().__init__(title="Gecombineerde Script Code")
-        self.bot = bot
-        self.selected_scripts = selected_scripts
-
-    async def on_submit(self, interaction: Interaction):
-        combined_code, missing_scripts = get_combined_script_code(self.selected_scripts)
-        
-        # Notify user if there are missing scripts
-        if missing_scripts:
-            missing_msg = f"De volgende scripts konden niet worden gevonden en zijn overgeslagen: {', '.join(missing_scripts)}"
-            await interaction.followup.send(missing_msg, ephemeral=True)
-            print(f"Missing scripts: {missing_scripts}")
-
-        # Check if combined code is empty after skipping missing descriptions
-        if not combined_code:
-            await interaction.followup.send("Geen geldige scripts gevonden om te combineren.", ephemeral=True)
-            print("No valid script lines found in descriptions.")
-            return
-
-        # Split the message if it exceeds Discord's limits
-        code_chunks = [combined_code[i:i+2000] for i in range(0, len(combined_code), 2000)]
-        
-        for chunk in code_chunks:
-            embed = create_embed(
-                title="Gecombineerde scriptcode",
-                description=f"```js\n{chunk}\n```"
-            )
-            await interaction.followup.send(embed=embed, ephemeral=True)
 
 class ScriptCombineView(View):
     def __init__(self, bot):
@@ -94,7 +62,7 @@ class ScriptCombineView(View):
 
         # Add "Combine" button to confirm selection and show combined code
         combine_button = Button(label="Combineer Geselecteerde Scripts", style=discord.ButtonStyle.success)
-        combine_button.callback = self.show_combine_modal
+        combine_button.callback = self.show_combined_code
         self.add_item(combine_button)
         print("Added Combine Scripts button")  # Debug print
 
@@ -110,17 +78,36 @@ class ScriptCombineView(View):
         # Acknowledge the interaction with a deferred response to avoid "interaction failed"
         await interaction.response.defer() 
 
-    async def show_combine_modal(self, interaction: discord.Interaction):
+    async def show_combined_code(self, interaction: discord.Interaction):
         print("Combine button clicked")  # Debug print
         if not self.selected_scripts:
             await interaction.response.send_message("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
             print("No scripts selected message sent")  # Debug print
         else:
-            print(f"Opening combine modal with selected scripts: {self.selected_scripts}")  # Debug print
-            try:
-                await interaction.response.send_modal(ScriptCombineModal(self.bot, self.selected_scripts))
-            except Exception as e:
-                print(f"Error opening combine modal: {e}")  # Capture any issues with the modal
+            combined_code, missing_scripts = get_combined_script_code(self.selected_scripts)
+            
+            # Notify user if there are missing scripts
+            if missing_scripts:
+                missing_msg = f"De volgende scripts konden niet worden gevonden en zijn overgeslagen: {', '.join(missing_scripts)}"
+                await interaction.followup.send(missing_msg, ephemeral=True)
+                print(f"Missing scripts: {missing_scripts}")
+
+            # Check if combined code is empty after skipping missing descriptions
+            if not combined_code:
+                await interaction.followup.send("Geen geldige scripts gevonden om te combineren.", ephemeral=True)
+                print("No valid script lines found in descriptions.")
+                return
+
+            # Split the message if it exceeds Discord's limits
+            code_chunks = [combined_code[i:i+2000] for i in range(0, len(combined_code), 2000)]
+            
+            for index, chunk in enumerate(code_chunks, start=1):
+                embed = create_embed(
+                    title=f"Gecombineerde scriptcode - Deel {index}",
+                    description=f"```js\n{chunk}\n```"
+                )
+                await interaction.followup.send(embed=embed, ephemeral=True)
+                print(f"Sent code chunk {index} to user")  # Debug print
 
 async def setup(bot):
     await bot.add_cog(GroupScriptsCog(bot))
