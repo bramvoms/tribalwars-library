@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands, Interaction
-from discord.ui import View, Button, Select
+from discord.ui import View, Button
 from cogs.scripts_cog import descriptions  # Import descriptions from scripts_cog
 from main import create_embed
 
@@ -11,73 +11,60 @@ class GroupScriptsCog(commands.Cog):
 
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
     async def group_scripts(self, interaction: discord.Interaction):
-        # Defer the interaction immediately to prevent a timeout
+        # Acknowledge the interaction immediately to prevent timeout
         await interaction.response.defer(ephemeral=True)
+        
+        # Create and send the script selection view
         try:
-            # Send the script selection view after deferring
-            await interaction.followup.send("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot))
+            await interaction.followup.send("Click the buttons to add scripts:", view=ScriptCombineView(self.bot, interaction.user))
         except Exception as e:
             print(f"Error sending script selection view: {e}")
 
 class ScriptCombineView(View):
-    def __init__(self, bot):
+    def __init__(self, bot, user):
         super().__init__(timeout=None)
         self.bot = bot
-        self.selected_scripts = []
+        self.user = user
+        self.selected_scripts = set()  # Store selected scripts in a set to avoid duplicates
+        self.message_content = ""  # To store the message content dynamically
 
-        # Divide the script options into chunks of 25 or less
-        options_chunks = [list(descriptions.keys())[i:i + 25] for i in range(0, len(descriptions), 25)]
-        for i, chunk in enumerate(options_chunks, start=1):
-            options = [discord.SelectOption(label=script) for script in chunk]
-            select = Select(placeholder=f"Select scripts (part {i})", options=options, min_values=1, max_values=len(options))
-            select.callback = self.select_scripts
-            self.add_item(select)
+        # Add buttons for each script
+        for script_name in descriptions.keys():
+            button = Button(label=script_name, style=discord.ButtonStyle.primary)
+            button.callback = self.toggle_script
+            self.add_item(button)
 
-        # Add "Combine" button to confirm selection and show combined code
-        combine_button = Button(label="Combineer Geselecteerde Scripts", style=discord.ButtonStyle.success)
-        combine_button.callback = self.show_combined_code
-        self.add_item(combine_button)
+    async def toggle_script(self, interaction: discord.Interaction):
+        script_name = interaction.data["custom_id"]
+        
+        if script_name in self.selected_scripts:
+            # Remove the script from the selection
+            self.selected_scripts.remove(script_name)
+            self.message_content = self.message_content.replace(self.get_script_code(script_name), "")
+        else:
+            # Add the script to the selection
+            self.selected_scripts.add(script_name)
+            self.message_content += self.get_script_code(script_name) + "\n"
+        
+        # Update the message with the current combined script
+        await interaction.response.edit_message(content=self.message_content or "Click the buttons to add scripts:", view=self)
 
-    async def select_scripts(self, interaction: discord.Interaction):
-        selected_values = interaction.data["values"]
-        self.selected_scripts.extend(selected_values)
-        self.selected_scripts = list(set(self.selected_scripts))  # Remove duplicates
-        await interaction.response.defer()  # Defer response to avoid timeout
-
-    async def show_combined_code(self, interaction: discord.Interaction):
-        if not self.selected_scripts:
-            await interaction.followup.send("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
-            return
-
-        # Combine the selected scripts into one
-        combined_code, variables = self.get_combined_script_code(self.selected_scripts)
-
-        # Send the combined code directly to the user's DM
-        try:
-            user_dm = await interaction.user.create_dm()  # Ensure the user has a DM channel open
-            await user_dm.send(f"Gecombineerde scriptcode:\n```js\n{combined_code}\n{variables}\n```")
-            
-            # Send confirmation message in the channel
-            await interaction.followup.send("De gecombineerde scriptcode is verzonden naar je DM.", ephemeral=True)
-        except Exception as e:
-            await interaction.followup.send(f"Er is iets misgegaan bij het sturen van de gecombineerde scriptcode naar je DM: {e}", ephemeral=True)
-
-    def get_combined_script_code(self, selected_scripts):
-        combined_code = "javascript:\n"
-        variables = ""  # To hold any variable declarations like ECsettings
-
-        for script_name in selected_scripts:
-            description = descriptions.get(script_name)
-            if description:
-                # Extract lines containing $.getScript
-                script_lines = [line.strip() for line in description.splitlines() if line.strip().startswith("$.getScript")]
-                combined_code += "\n".join(script_lines) + "\n"
-                
-                # Extract variables (everything that is not a $.getScript line)
-                variable_lines = [line.strip() for line in description.splitlines() if not line.strip().startswith("$.getScript")]
-                variables += "\n".join(variable_lines) + "\n"
-
-        return combined_code.strip(), variables.strip()  # Return both script links and variables
+    def get_script_code(self, script_name):
+        """Helper function to return the code for a script (getScript line + variables)."""
+        description = descriptions.get(script_name, "")
+        script_code = ""
+        
+        # Extract the $.getScript line
+        for line in description.splitlines():
+            if line.strip().startswith("$.getScript"):
+                script_code += line.strip() + "\n"
+        
+        # Extract variables and add them to the script
+        for line in description.splitlines():
+            if not line.strip().startswith("$.getScript"):
+                script_code += line.strip() + "\n"
+        
+        return script_code.strip()
 
 async def setup(bot):
     await bot.add_cog(GroupScriptsCog(bot))
