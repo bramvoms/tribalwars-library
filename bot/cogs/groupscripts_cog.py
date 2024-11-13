@@ -54,6 +54,8 @@ class ScriptCombineView(View):
         try:
             user_dm = await interaction.user.create_dm()  # Ensure the user has a DM channel open
             await user_dm.send(f"Gecombineerde scriptcode:\n```js\n{combined_code}\n```")
+            
+            # Send confirmation in the channel that the DM has been sent
             await interaction.followup.send("De gecombineerde scriptcode is verzonden naar je DM.", ephemeral=True)
         except Exception as e:
             await interaction.followup.send(f"Er is iets misgegaan bij het sturen van de gecombineerde scriptcode naar je DM: {e}", ephemeral=True)
