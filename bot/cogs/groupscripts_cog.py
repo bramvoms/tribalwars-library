@@ -1,4 +1,3 @@
-# Import necessary libraries
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -21,14 +20,17 @@ class GroupScriptsCog(commands.Cog):
 
     # Slash command to open the modal for combining scripts
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
-    async def group_scripts(self, interaction: "discord.Interaction"):  # Added type hint as a string
+    async def group_scripts(self, interaction: "discord.Interaction"):
         print("Received /group_scripts command")  # Debug print
-        # Acknowledge the interaction immediately to prevent timeout
         await interaction.response.defer(ephemeral=True)
         print("Interaction deferred successfully")  # Debug print
+        
         # Send the selection view after deferring the response
-        await interaction.followup.send("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot))
-        print("Sent ScriptCombineView to user")  # Debug print
+        try:
+            await interaction.followup.send("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot))
+            print("Sent ScriptCombineView to user")  # Debug print
+        except Exception as e:
+            print(f"Error sending ScriptCombineView: {e}")  # Print any errors encountered
 
 class ScriptCombineModal(Modal):
     def __init__(self, bot, selected_scripts):
@@ -49,26 +51,33 @@ class ScriptCombineView(View):
         super().__init__(timeout=None)
         self.bot = bot
         self.selected_scripts = []
+        print("Initialized ScriptCombineView")  # Debug print
 
         # Dropdown selection for multiple scripts
         options = [discord.SelectOption(label=script) for script in descriptions.keys()]
+        print(f"Options loaded: {options}")  # Debug print to show loaded options
         self.select = Select(placeholder="Select scripts to combine", options=options, min_values=1, max_values=len(options))
         self.select.callback = self.select_scripts
         self.add_item(self.select)
+        print("Added script selection dropdown")  # Debug print
 
         # Add "Combine" button to confirm selection and show combined code
         combine_button = Button(label="Combineer Geselecteerde Scripts", style=discord.ButtonStyle.success)
         combine_button.callback = self.show_combine_modal
         self.add_item(combine_button)
+        print("Added Combine Scripts button")  # Debug print
 
     async def select_scripts(self, interaction: "discord.Interaction"):
         self.selected_scripts = self.select.values
-        print(f"Selected scripts: {self.selected_scripts}")  # Debug print
+        print(f"Selected scripts: {self.selected_scripts}")  # Debug print to confirm selection
 
     async def show_combine_modal(self, interaction: "discord.Interaction"):
+        print("Combine button clicked")  # Debug print
         if not self.selected_scripts:
             await interaction.response.send_message("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
+            print("No scripts selected message sent")  # Debug print
         else:
+            print(f"Opening combine modal with selected scripts: {self.selected_scripts}")  # Debug print
             await interaction.response.send_modal(ScriptCombineModal(self.bot, self.selected_scripts))
 
 async def setup(bot):
