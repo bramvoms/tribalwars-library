@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import os
 import asyncio
-from pathlib import Path  # Import Path to work with directories
+from pathlib import Path
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -35,7 +35,10 @@ async def load_cogs():
         await bot.load_extension(cog_name)
         print(f"Loaded cog: {cog_name}")
 
-# Run the bot and load cogs
+async def main():
+    await load_cogs()  # Load all cogs asynchronously
+    await bot.start(os.getenv("DISCORD_TOKEN"))  # Start the bot
+
+# Run the asynchronous main function
 if __name__ == "__main__":
-    bot.loop.run_until_complete(load_cogs())
-    bot.run(os.getenv("DISCORD_TOKEN"))
+    asyncio.run(main())
