@@ -34,7 +34,7 @@ class HelpCog(commands.Cog):
         )
 
         embed.add_field(
-            name="`&am_template <template_name>`",
+            name="`&am <template_name>`",
             value="Search for an AM template by name. Provides the closest matching template if an exact match isn't found.",
             inline=False
         )
