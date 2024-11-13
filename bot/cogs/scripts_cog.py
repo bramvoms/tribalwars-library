@@ -24,7 +24,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "TimeTool": """Tool die helpt bij het nauwkeurig timen van bevelen.
     
-🔗 - **FORUM TOPIC**<https://forum.tribalwars.nl/index.php?threads/timetool.206574/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/timetool.206574/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -145,7 +146,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "IncsEnhancer": """Verstuur incomings van jezelf naar een database en zorg dat stamgenoten/vrienden deze kunnen bekijken om makkelijker mee te snipen. 
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-incomings-enhancer.207109/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/toxic-donuts-incomings-enhancer.207109/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -158,7 +160,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "TribeIncs": """Een script dat de incomings van je stamleden laat zien in 1 gemakkelijk overzichtje.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/tribe-members-incoming-overview.205832/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/tribe-members-incoming-overview.205832/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -173,7 +176,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "UnitsDivide": """Deelt aanwezige troepen in het dorp door het gevraagde aantal en vult deze in.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/unitsdivide.206400/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/unitsdivide.206400/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -187,7 +191,8 @@ Placeholder tekst voor uitgebreide uitleg
     # Kaart category
     "Mapfunctions": """Collectie van kleine functionaliteiten op de kaart.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/mapfunctions.206294/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/mapfunctions.206294/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -200,7 +205,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "Overwatch": """Overwatch - visueel data van de stam op de kaart
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/overwatch.206196/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/overwatch.206196/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -213,7 +219,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "CoordGrab": """Het selecteren van dorpen op de kaart.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/coordgrabber.206127/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/coordgrabber.206127/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -226,7 +233,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "TribeLines": """Toont op de ingame kaart stam edellijnen die ingegeven worden op het forum.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/tribelines.206290/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/tribelines.206290/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -239,7 +247,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "ClaimEnhancer": """Dorpen claimen met 1 klik op de kaart of dorpen massaal claimen aan de hand van coords.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/claimenhancer.206296/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/claimenhancer.206296/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -253,7 +262,8 @@ Placeholder tekst voor uitgebreide uitleg
     # Farmen category
     "FarmGod": """Snel en efficiënt versturen van micro farms!
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/farmgod.208446/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/farmgod.208446/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -266,7 +276,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "FarmShaper": """Easy barbaren dorpen shapen
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/farmshaper.206157/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/farmshaper.206157/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -280,7 +291,8 @@ Placeholder tekst voor uitgebreide uitleg
     # Rooftochten category
     "Massa rooftochten": """Massa rooftochten script
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/massa-rooftochten.206191/>
+🔗 - **FORUM TOPIC** 
+<https://forum.tribalwars.nl/index.php?threads/massa-rooftochten.206191/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -295,7 +307,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "Roof unlocker": """Snel en eenvoudig RT's unlocken.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-scavenge-unlocking-tool.207420/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/toxic-donuts-scavenge-unlocking-tool.207420/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -309,7 +322,8 @@ Placeholder tekst voor uitgebreide uitleg
     # Overig category
     "GS balancer": """Balanceren van grondstoffen tussen je dorpen
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/gs-balancer.207166/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/gs-balancer.207166/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -322,7 +336,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "TribeShare": """Deel allerhande informatie snel en overzichtelijk met je stamgenoten en vrienden.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/tribeshare.206804/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/tribeshare.206804/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -335,7 +350,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "CoordFilter": """Script om coördinaten mee te filteren
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/coordfilter.206247/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/coordfilter.206247/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -348,7 +364,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "Resource sender": """Verstuurd grondstoffen in munt verhouding vanuit het huidige dorp naar een gewenst ander dorp.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/gstotargetvillage.207833/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/gstotargetvillage.207833/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -365,7 +382,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "Village renamer": """Hiermee kan je je dorpsnamen veranderen.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/village-renamer.206245/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/village-renamer.206245/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -378,7 +396,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "GroupPlacer": """Group placer die beschikbaar is op elk scherm.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-group-placer.208611/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/toxic-donuts-group-placer.208611/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -391,7 +410,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "ClearsTimer": """Toont je wanneer hoeveel clears klaar zijn.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/remaining-build-time-clears.206135/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/remaining-build-time-clears.206135/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -404,7 +424,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "MintTimer": """Zie eenvoudig en snel wanneer je opslag overloopt op de massa meppen pagina.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/minttimer.207014/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/minttimer.207014/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -417,7 +438,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "CoinPull": """Script om GS te trekken naar je muntdorp waar vlaggenbooster aan staat.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/coinpull.206367/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/coinpull.206367/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -432,7 +454,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "Munt Enhancer": """Scriptje dat een timer toevoegt wanneer de opslag vol zou lopen met 1 van de resources.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/munten-slaan-enhancer.205833/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/munten-slaan-enhancer.205833/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -445,7 +468,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "Vlaggen upgrader": """Scriptje waar je kan aanduiden hoeveel vlaggen je wil upgraden door gewoon enter ingedrukt te houden.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/vlaggen-upgrader.206619/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/vlaggen-upgrader.206619/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -459,7 +483,8 @@ Placeholder tekst voor uitgebreide uitleg
     # Stats category
     "Noble MS": """Deze JavaScript-code berekent het gemiddelde aantal milliseconden van zichtbare bevelen (nobles) op een webpagina en toont het resultaat met
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/noble-ms.209666/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/noble-ms.209666/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -472,7 +497,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "Troop Counter": """Updated troepen counter
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/troop-counter.206111/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/troop-counter.206111/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -485,7 +511,8 @@ Placeholder tekst voor uitgebreide uitleg
 
     "PP Log": """Krijg een PP overzicht voor alle werelden.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/toxic-donuts-pp-logger.208854/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/toxic-donuts-pp-logger.208854/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -499,7 +526,8 @@ Placeholder tekst voor uitgebreide uitleg
     # Package category
     "Sangu Package": """Het is een verzameling van scripts die de bestaande TW pagina's gaan verrijken door extra informatie.
 
-🔗 - **FORUM TOPIC** <https://forum.tribalwars.nl/index.php?threads/sangu-package.206130/>
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/sangu-package.206130/>
 
 📜 - **SNELLIJST CODE**
 ```js
@@ -700,7 +728,8 @@ class PrivateMenuView(View):
     async def show_script_description(self, interaction: discord.Interaction, subcategory):
         # Display the description for the selected script
         description = descriptions.get(subcategory, "No description available.")
-        embed = create_embed(title=subcategory, description=description)
+        title = f"━━ {subcategory.upper()} ━━"
+        embed = create_embed(title=title, description=description)
         main_menu_only_view = View()
         main_menu_button = Button(label="Main Menu", style=discord.ButtonStyle.danger)
         main_menu_button.callback = self.go_to_main_menu
