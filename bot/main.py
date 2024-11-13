@@ -397,6 +397,7 @@ class PublicMenuView(View):
     def __init__(self, bot):
         super().__init__(timeout=None)
         self.bot = bot
+        self.message = None  # Placeholder to store the initial message
         self.add_main_buttons()
         self.add_search_button()
 
@@ -414,10 +415,9 @@ class PublicMenuView(View):
 
     def show_private_menu(self, category):
         async def callback(interaction: discord.Interaction):
-            await send_embed(interaction, "", title=f"{category} scripts", ephemeral=True)
-            await interaction.response.edit_message(
-                view=PrivateMenuView(self.bot, category)
-            )
+            embed = Embed(title=f"{category} scripts", description="", color=embed_color)
+            embed.set_footer(text="Created by Victorious")
+            await self.message.edit(embed=embed, view=PrivateMenuView(self.bot, category))
         return callback
 
     async def show_search_modal(self, interaction: discord.Interaction):
@@ -755,10 +755,14 @@ async def on_ready():
 
 @bot.tree.command(name="scripts", description="Displays the script categories")
 async def scripts(interaction: discord.Interaction):
-    # Send both the embed and the view in a single response
-    await send_embed(interaction, main_menu_description, title="Scripts Menu", ephemeral=True)
-    # Send the view along with the embed in the same response to avoid double responding
-    await interaction.followup.send(view=PublicMenuView(bot), ephemeral=True)
+    # Create the view and send the initial message with both embed and view
+    view = PublicMenuView(bot)
+    embed = Embed(title="Scripts Menu", description=main_menu_description, color=embed_color)
+    embed.set_footer(text="Created by Victorious")
+
+    # Send the initial message with the view and store the message reference in the view
+    message = await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    view.message = await message  # Store the message reference in the view for future edits
 
 @bot.command(name="scripts", help="Displays the description of a specific script by name.")
 async def get_script_description(ctx, *, script_name: str):
