@@ -661,14 +661,17 @@ class ResultSelectionView(View):
         self.add_search_again_button()
         self.add_main_menu_button()
 
-    def add_result_selector(self):
-        options = [
-            discord.SelectOption(label=subcategory, description=(description[:97] + "..." if len(description) > 100 else description))
-            for subcategory, description in self.results
-        ]
-        select = Select(placeholder="Selecteer een script...", options=options)
-        select.callback = self.show_description
-        self.add_item(select)
+def add_result_selector(self):
+    options = [
+        discord.SelectOption(
+            label=subcategory, 
+            description=(description.splitlines()[0][:97] + "..." if len(description.splitlines()[0]) > 97 else description.splitlines()[0])
+        )
+        for subcategory, description in self.results
+    ]
+    select = discord.ui.Select(placeholder="Choose a script...", options=options)
+    select.callback = self.show_description
+    self.add_item(select)
 
     def add_search_again_button(self):
         search_again_button = Button(label="Opnieuw zoeken", style=discord.ButtonStyle.primary)
