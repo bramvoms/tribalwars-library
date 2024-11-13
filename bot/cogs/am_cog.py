@@ -89,7 +89,8 @@ class AMView(View):
 
     async def go_to_main_menu(self, interaction: Interaction):
         # Redirect to the main AM menu
-        embed = create_embed("AM sjablonen", "Selecteer welk sjabloon je wilt bekijken")
+        title = f"━━━━━━ AM SJABLONEN ━━━━━━"
+        embed = create_embed(title=title, description="Selecteer welk sjabloon je wilt bekijken.\nKopieer de tekst onder TEMPLATE en plak dit ingame bij Account Manager > Bouw > Sjablonen beheren > Sjabloon importeren")
         await interaction.response.edit_message(embed=embed, view=self)
 
 class AMCog(commands.Cog):
@@ -99,7 +100,8 @@ class AMCog(commands.Cog):
     # Slash command to show AM options
     @app_commands.command(name="am", description="Toont het AM sjablonen menu")
     async def am(self, interaction: Interaction):
-        embed = create_embed("AM sjablonen", "Selecteer welk sjabloon je wilt bekijken")
+        title = f"━━━━━━ AM SJABLONEN ━━━━━━"
+        embed = create_embed(title=title, description="Selecteer welk sjabloon je wilt bekijken")
         await interaction.response.send_message(embed=embed, view=AMView(self.bot), ephemeral=True)
 
     # Text command for !am <template_name> for direct template lookup
