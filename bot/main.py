@@ -30,7 +30,6 @@ async def on_ready():
 
 async def load_cogs():
     cogs_path = Path("cogs")
-    
     for cog_file in cogs_path.glob("*.py"):
         cog_name = f"cogs.{cog_file.stem}"
         try:
