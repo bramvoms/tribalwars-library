@@ -73,10 +73,16 @@ class ScriptCombineView(View):
         print("Added Combine Scripts button")  # Debug print
 
     async def select_scripts(self, interaction: discord.Interaction):
-        # Add selected scripts from the dropdown to self.selected_scripts
-        self.selected_scripts.extend(self.select.values)
-        print(f"Selected scripts: {self.selected_scripts}")  # Debug print to confirm selection
-        await interaction.response.defer()  # Defer the response to avoid "interaction failed" error
+        # Append selected scripts from dropdown
+        selected_values = interaction.data["values"]
+        self.selected_scripts.extend(selected_values)
+        
+        # Remove duplicates
+        self.selected_scripts = list(set(self.selected_scripts))
+        print(f"Current selected scripts: {self.selected_scripts}")  # Debug print
+
+        # Acknowledge the interaction with a deferred response to avoid "interaction failed"
+        await interaction.response.defer() 
 
     async def show_combine_modal(self, interaction: discord.Interaction):
         print("Combine button clicked")  # Debug print
