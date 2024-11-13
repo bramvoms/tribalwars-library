@@ -9,15 +9,6 @@ class ReportToModsCog(commands.Cog):
         # Replace with your server's specific moderator channel ID
         self.moderator_channel_id = 123456789012345678  # Replace with actual channel ID
 
-    async def cog_load(self):
-        # Register the context menu command directly to the existing command tree
-        report_command = app_commands.ContextMenu(
-            name="Report to Mods",
-            callback=self.report_message
-        )
-        self.bot.tree.add_command(report_command)
-        await self.bot.tree.sync()  # Sync the commands with Discord
-
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
         mod_channel = self.bot.get_channel(self.moderator_channel_id)
         
@@ -64,6 +55,5 @@ class ReportView(discord.ui.View):
         await interaction.message.edit(embed=embed, view=self)
         await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
 
-# Ensure the setup function is defined correctly
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
