@@ -10,15 +10,15 @@ descriptions = {
     # Aanval category
     "Offpack": """Een collectie aan functionaliteiten samengebracht in één package.
 
-🔗 **FORUM TOPIC**
+🔗 - **FORUM TOPIC**
 <https://forum.tribalwars.nl/index.php?threads/devils-off-pack.206109/>
 
-📜 **SNELLIJST CODE**
+📜 - **SNELLIJST CODE**
 ```js
 javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Off-Pack_206109.js');
 ```
 
-📝 **SCRIPT UITLEG**
+📝 - **SCRIPT UITLEG**
 Placeholder tekst voor uitgebreide uitleg
 """,
 
