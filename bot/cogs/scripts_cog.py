@@ -554,18 +554,25 @@ class ScriptsCog(commands.Cog):
 
     @commands.command(name="scripts", help="Finds a specific script by name.")
     async def get_script_description(self, ctx, *, script_name: str):
-        script_name = script_name.lower()
-        matching_script = descriptions.get(script_name)
+        script_name = script_name.lower()  # Normalize input to lowercase
+        matching_script = descriptions.get(script_name)  # Try to find an exact match
 
         if matching_script:
-            embed = create_embed(script_name.capitalize(), matching_script)
+            # Format title and description for exact match
+            title = f"━━━━━━ {script_name.upper()} ━━━━━━"
+            embed = create_embed(title=title, description=matching_script)
             await ctx.send(embed=embed)
         else:
+            # No exact match, use fuzzy matching to find the closest script
             closest_match, score = process.extractOne(script_name, descriptions.keys())
-            if score > 60:
-                embed = create_embed(closest_match.capitalize(), descriptions[closest_match])
+            
+            if score > 60:  # Threshold for considering a match
+                # Format title and description for closest match
+                title = f"━━━━━━ {closest_match.upper()} ━━━━━━"
+                embed = create_embed(title=title, description=descriptions[closest_match])
                 await ctx.send(embed=embed)
             else:
+                # No close match found, inform the user
                 embed = create_embed("Script Not Found", f"No script found matching '{script_name}'.")
                 await ctx.send(embed=embed)
                 
