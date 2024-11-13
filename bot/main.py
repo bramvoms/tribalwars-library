@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 import os
 import asyncio
 from pathlib import Path
@@ -35,21 +36,22 @@ def create_embed(title: str, description: str) -> discord.Embed:
 async def on_ready():
     print(f"Logged in as {bot.user} ({bot.user.id})")
     
-    # Register the context menu command in on_ready to ensure bot is fully loaded
+    # Delay context menu registration until cog is loaded
     report_cog = bot.get_cog("ReportToModsCog")
     if report_cog:
+        # Register the context menu command directly in on_ready
         report_command = app_commands.ContextMenu(
             name="Report to Mods",
             callback=report_cog.report_message
         )
-        bot.tree.add_command(report_command)
-    
-    # Sync the commands with Discord
-    try:
-        await bot.tree.sync()
-        print("Commands synced successfully.")
-    except Exception as e:
-        print(f"Error syncing commands: {e}")
+        try:
+            bot.tree.add_command(report_command)
+            await bot.tree.sync()
+            print("Context menu command registered and synced successfully.")
+        except Exception as e:
+            print(f"Error syncing commands: {e}")
+    else:
+        print("ReportToModsCog not loaded; context menu not registered.")
 
 @bot.event
 async def on_guild_join(guild):
