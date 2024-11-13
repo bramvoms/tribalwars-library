@@ -42,23 +42,27 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Resolved", style=discord.ButtonStyle.success)
     async def resolved_button(self, button: discord.ui.Button, interaction: discord.Interaction):
-        # Acknowledge the interaction to prevent "Interaction failed" messages
-        await interaction.response.defer()
-
         # Disable the button after it's clicked to prevent further clicks
         button.disabled = True
 
         # Safely retrieve the embed, if present, and update it to indicate resolution
         if interaction.message.embeds:
             embed = interaction.message.embeds[0]
-            embed.title = "✅ Report Resolved"
+            embed.title = "✅ Resolved Report"
             embed.color = discord.Color.green()
+            
+            # Add the "Resolved by" field to mention the moderator
+            embed.add_field(name="Resolved by", value=interaction.user.mention, inline=False)
             embed.set_footer(text="This report has been marked as resolved by the moderation team.")
 
             # Edit the message in the mod channel with the updated embed and disabled button
             await interaction.message.edit(embed=embed, view=self)
-        else:
-            print("No embed found on the message to update.")
 
+            # Send an ephemeral message to the moderator confirming the action
+            await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
+        else:
+            # If no embed is found, send an ephemeral message notifying of the issue
+            await interaction.response.send_message("No embed found on the message to update.", ephemeral=True)
+            
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
