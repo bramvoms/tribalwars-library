@@ -85,15 +85,15 @@ class AMView(View):
 class AMCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
- # Slash command to show AM options
-    @commands.command(name="am")
-    async def am_command(self, ctx):
-        embed = create_embed("AM sjablonen", "Selecteer welk sjabloon je wilt bekijken")
-        await ctx.send(embed=embed, view=AMView(self.bot))
 
-    # Text command for !am <template_name>
-    @commands.command(name="am", help="Finds a specific AM template by name.")
+    # Slash command to show AM options
+    @app_commands.command(name="am", description="Displays the AM options menu.")
+    async def am(self, interaction: Interaction):
+        embed = create_embed("AM sjablonen", "Selecteer het sjabloon welke je wilt bekijken")
+        await interaction.response.send_message(embed=embed, view=AMView(self.bot), ephemeral=True)
+
+    # Text command for !am <template_name> for direct template lookup
+    @commands.command(name="am_template", help="Finds a specific AM template by name.")
     async def get_am_template_description(self, ctx, *, template_name: str):
         template_name = template_name.lower()  # Normalize input to lowercase
         matching_template = am_descriptions.get(template_name)  # Try to find an exact match
