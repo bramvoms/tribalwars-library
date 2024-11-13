@@ -7,7 +7,7 @@ class ReportToModsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         # Replace with your server's specific moderator channel ID
-        self.moderator_channel_id = 123456789012345678  # Replace with actual channel ID
+        self.moderator_channel_id = 1241668734528258101  # Replace with actual channel ID
 
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
         mod_channel = self.bot.get_channel(self.moderator_channel_id)
@@ -57,3 +57,11 @@ class ReportView(discord.ui.View):
 
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
+    
+    # Register the context menu command directly in setup
+    report_command = app_commands.ContextMenu(
+        name="Report to Mods",
+        callback=bot.get_cog("ReportToModsCog").report_message
+    )
+    bot.tree.add_command(report_command)
+    await bot.tree.sync()  # Sync the commands to ensure it registers with Discord
