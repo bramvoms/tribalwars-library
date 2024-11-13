@@ -22,7 +22,11 @@ def create_embed(title: str, description: str) -> discord.Embed:
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} ({bot.user.id})")
-    await bot.tree.sync()  # Sync app commands with Discord
+    try:
+        await bot.tree.sync()  # Syncs commands with Discord
+        print("Commands synced successfully.")
+    except Exception as e:
+        print(f"Error syncing commands: {e}")
 
 async def load_cogs():
     # Path to the `cogs` directory
