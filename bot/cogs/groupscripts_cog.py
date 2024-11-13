@@ -16,7 +16,7 @@ class GroupScriptsCog(commands.Cog):
 
         # Create a view with script selections and a combine button
         view = ScriptCombineView(interaction.user)  # Pass the command initiator to the view
-        embed = create_embed("Selecteer scripts om te groeperen", "Selecteer de scripts en klik op "groeperen" om de code in DM gestuurd te krijgen.")
+        embed = create_embed("Selecteer scripts om te groeperen", "Selecteer de scripts en klik op groeperen om de code in DM gestuurd te krijgen.")
         await interaction.followup.send(embed=embed, view=view)
 
 class ScriptCombineView(View):
