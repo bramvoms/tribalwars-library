@@ -21,8 +21,11 @@ class GroupScriptsCog(commands.Cog):
     # Slash command to open the modal for combining scripts
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
     async def group_scripts(self, interaction: Interaction):
-        await interaction.response.send_message("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot), ephemeral=True)
-
+        # Acknowledge the interaction immediately to prevent timeout
+        await interaction.response.defer(ephemeral=True)
+        
+        # Send the selection view after deferring the response
+        await interaction.followup.send("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot))
 
 # Modal for grouping scripts
 class ScriptCombineModal(Modal):
@@ -38,7 +41,6 @@ class ScriptCombineModal(Modal):
             description=f"```js\n{combined_code}\n```"
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
-
 
 # Selection view for combining scripts
 class ScriptCombineView(View):
@@ -66,7 +68,6 @@ class ScriptCombineView(View):
             await interaction.response.send_message("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
         else:
             await interaction.response.send_modal(ScriptCombineModal(self.bot, self.selected_scripts))
-
 
 async def setup(bot):
     await bot.add_cog(GroupScriptsCog(bot))
