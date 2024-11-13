@@ -79,13 +79,17 @@ class AMView(View):
 
     async def go_to_main_menu(self, interaction: Interaction):
         # Redirect to the main AM menu
-        embed = create_embed("AM sjablonen", "Selecteer het sjabloon welke je wilt bekijken")
+        embed = create_embed("AM sjablonen", "Selecteer welk sjabloon je wilt bekijken")
         await interaction.response.edit_message(embed=embed, view=self)
 
+class AMCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        
  # Slash command to show AM options
     @commands.command(name="am")
     async def am_command(self, ctx):
-        embed = create_embed("AM sjablonen", "Selecteer het sjabloon welke je wilt bekijken")
+        embed = create_embed("AM sjablonen", "Selecteer welk sjabloon je wilt bekijken")
         await ctx.send(embed=embed, view=AMView(self.bot))
 
     # Text command for !am <template_name>
