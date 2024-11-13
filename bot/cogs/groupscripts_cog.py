@@ -58,48 +58,38 @@ class ScriptCombineView(View):
         super().__init__(timeout=None)
         self.bot = bot
         self.selected_scripts = []
-        print("Initialized ScriptCombineView")  # Debug print
 
-        # Divide options into chunks of 25 or less
-        option_chunks = [list(descriptions.keys())[i:i+25] for i in range(0, len(descriptions), 25)]
-        
-        # Create a dropdown for each chunk of options
-        for i, chunk in enumerate(option_chunks, start=1):
-            options = [discord.SelectOption(label=script) for script in chunk]
-            select = Select(placeholder=f"Select scripts (set {i})", options=options, min_values=1, max_values=len(options))
-            select.callback = self.select_scripts
-            self.add_item(select)
-            print(f"Added script selection dropdown for chunk {i}")  # Debug print
+        # Dropdown selection for multiple scripts
+        options = [discord.SelectOption(label=script) for script in descriptions.keys()]
+        self.select = Select(placeholder="Select scripts to combine", options=options, min_values=1, max_values=len(options))
+        self.select.callback = self.select_scripts
+        self.add_item(self.select)
 
-        # Add "Combine" button to confirm selection and show combined code
+        # Add "Combine" button to confirm selection and send combined code
         combine_button = Button(label="Combineer Geselecteerde Scripts", style=discord.ButtonStyle.success)
-        combine_button.callback = self.show_combine_modal
+        combine_button.callback = self.send_combined_code  # Send the combined code directly
         self.add_item(combine_button)
-        print("Added Combine Scripts button")  # Debug print
 
-    async def select_scripts(self, interaction: discord.Interaction):
-        # Append selected scripts from dropdown
-        selected_values = interaction.data["values"]
-        self.selected_scripts.extend(selected_values)
-        
-        # Remove duplicates
-        self.selected_scripts = list(set(self.selected_scripts))
-        print(f"Current selected scripts: {self.selected_scripts}")  # Debug print
+    async def select_scripts(self, interaction: Interaction):
+        self.selected_scripts = self.select.values
+        print(f"Current selected scripts: {self.selected_scripts}")
 
-        # Acknowledge the interaction with a deferred response to avoid "interaction failed"
-        await interaction.response.defer() 
-
-    async def show_combine_modal(self, interaction: discord.Interaction):
-        print("Combine button clicked")  # Debug print
+    async def send_combined_code(self, interaction: Interaction):
         if not self.selected_scripts:
             await interaction.response.send_message("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
-            print("No scripts selected message sent")  # Debug print
         else:
-            print(f"Opening combine modal with selected scripts: {self.selected_scripts}")  # Debug print
-            try:
-                await interaction.response.send_modal(ScriptCombineModal(self.bot, self.selected_scripts))
-            except Exception as e:
-                print(f"Error opening combine modal: {e}")  # Capture any issues with the modal
+            print("Combine button clicked")
+            combined_code = get_combined_script_code(self.selected_scripts)
+            
+            # Split the combined code if it’s too long for a single embed
+            code_chunks = [combined_code[i:i+2000] for i in range(0, len(combined_code), 2000)]
+            
+            for chunk in code_chunks:
+                embed = create_embed(
+                    title="Gecombineerde scriptcode",
+                    description=f"```js\n{chunk}\n```"
+                )
+                await interaction.followup.send(embed=embed, ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(GroupScriptsCog(bot))
