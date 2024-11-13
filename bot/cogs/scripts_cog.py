@@ -15,7 +15,8 @@ descriptions = {
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Off-Pack_206109.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Off-Pack_206109.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -77,7 +78,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Noble-Spam-Planner-Enhancer_206110.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Noble-Spam-Planner-Enhancer_206110.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -91,7 +93,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Template-Enhancer._207122.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Template-Enhancer._207122.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -123,7 +126,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Def-Pack_206163.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Devils-Def-Pack_206163.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -137,7 +141,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Snipe-Calculator._206313.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Snipe-Calculator._206313.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -151,7 +156,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-incomings-enhancer._207109_4265usvb.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-incomings-enhancer._207109_4265usvb.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -181,7 +187,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/UnitsDivide_206400.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/UnitsDivide_206400.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -196,7 +203,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MapFunctions_206294.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MapFunctions_206294.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -210,7 +218,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Overwatch_206196.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Overwatch_206196.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -224,7 +233,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordGrabber_206127.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordGrabber_206127.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -238,7 +248,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeLines_206290.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeLines_206290.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -252,7 +263,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/ClaimEnhancer_206296.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/ClaimEnhancer_206296.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -267,7 +279,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmGod_208446.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmGod_208446.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -281,7 +294,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmShaper_206157.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/FarmShaper_206157.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -312,7 +326,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Scavenge-Unlocking-Tool._207420.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Scavenge-Unlocking-Tool._207420.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -327,7 +342,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/GS-Balancer_207166_88qrx570.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/GS-Balancer_207166_88qrx570.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -341,7 +357,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeShare_206804_anu64me9.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TribeShare_206804_anu64me9.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -355,7 +372,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordFilter_206247.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/CoordFilter_206247.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -387,7 +405,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Village-renamer_206245.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Village-renamer_206245.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -401,7 +420,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Group-Placer_208611.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Group-Placer_208611.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -415,7 +435,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Remaining-build-time-clears_206135.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Remaining-build-time-clears_206135.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -429,7 +450,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MintTimer_207014.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/MintTimer_207014.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -459,7 +481,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Munten-slaan-enhancer_205833.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Munten-slaan-enhancer_205833.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -473,7 +496,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Vlaggen-Upgrader_206619.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Vlaggen-Upgrader_206619.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -488,7 +512,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/noble_ms.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/noble_ms.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -502,7 +527,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Troop-Counter_206111.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Troop-Counter_206111.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -516,7 +542,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-PP-Logger_208854.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-PP-Logger_208854.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -531,7 +558,8 @@ Placeholder tekst voor uitgebreide uitleg
 
 📜 - **SNELLIJST CODE**
 ```js
-javascript: $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Sangu-Package_206130.js');
+javascript: 
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Sangu-Package_206130.js');
 ```
 
 📝 - **SCRIPT UITLEG**
