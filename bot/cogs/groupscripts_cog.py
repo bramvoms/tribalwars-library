@@ -20,7 +20,7 @@ class GroupScriptsCog(commands.Cog):
 
     # Slash command to open the modal for combining scripts
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
-    async def group_scripts(self, interaction: "discord.Interaction"):
+    async def group_scripts(self, interaction: discord.Interaction):
         print("Received /group_scripts command")  # Debug print
         await interaction.response.defer(ephemeral=True)
         print("Interaction deferred successfully")  # Debug print
@@ -38,7 +38,7 @@ class ScriptCombineModal(Modal):
         self.bot = bot
         self.selected_scripts = selected_scripts
 
-    async def on_submit(self, interaction: "discord.Interaction"):
+    async def on_submit(self, interaction: discord.Interaction):
         combined_code = get_combined_script_code(self.selected_scripts)
         embed = create_embed(
             title="Gecombineerde scriptcode",
@@ -70,11 +70,13 @@ class ScriptCombineView(View):
         self.add_item(combine_button)
         print("Added Combine Scripts button")  # Debug print
 
-    async def select_scripts(self, interaction: "discord.Interaction"):
+    async def select_scripts(self, interaction: discord.Interaction):
+        # Add selected scripts from the dropdown to self.selected_scripts
         self.selected_scripts.extend(self.select.values)
         print(f"Selected scripts: {self.selected_scripts}")  # Debug print to confirm selection
+        await interaction.response.defer()  # Defer the response to avoid "interaction failed" error
 
-    async def show_combine_modal(self, interaction: "discord.Interaction"):
+    async def show_combine_modal(self, interaction: discord.Interaction):
         print("Combine button clicked")  # Debug print
         if not self.selected_scripts:
             await interaction.response.send_message("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
