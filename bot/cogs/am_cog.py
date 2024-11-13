@@ -89,7 +89,7 @@ class AMCog(commands.Cog):
     # Slash command to show AM options
     @app_commands.command(name="am", description="Displays the AM options menu.")
     async def am(self, interaction: Interaction):
-        embed = create_embed("AM sjablonen", "Selecteer het sjabloon welke je wilt bekijken")
+        embed = create_embed("AM sjablonen", "Selecteer welk sjabloon je wilt bekijken")
         await interaction.response.send_message(embed=embed, view=AMView(self.bot), ephemeral=True)
 
     # Text command for !am <template_name> for direct template lookup
