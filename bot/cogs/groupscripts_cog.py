@@ -80,9 +80,13 @@ class ScriptCombineView(View):
         # Combine the selected scripts into one
         combined_code = get_combined_script_code(self.selected_scripts)
 
-        # Show two buttons to either send the code to DM or upload to Pastebin
+        # Send the confirmation message with the combined code and two buttons
         confirmation_view = ConfirmationView(self.bot, combined_code)
-        await interaction.followup.send("Kies een optie om de gecombineerde scriptcode te verzenden.", view=confirmation_view)
+        await interaction.followup.send(
+            "Scripts succesvol gecombineerd! Kies een optie om door te gaan.",
+            view=confirmation_view,
+            ephemeral=True  # Make it ephemeral so it only appears to the user
+        )
 
 class ConfirmationView(View):
     def __init__(self, bot, combined_code):
