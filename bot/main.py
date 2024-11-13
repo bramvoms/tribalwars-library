@@ -93,6 +93,12 @@ async def reload(ctx, cog: str):
         await ctx.send(f"Successfully reloaded `{cog}`.")
     except Exception as e:
         await ctx.send(f"Failed to reload `{cog}`: {e}")    
+
+@bot.command(name="sync")
+@commands.is_owner()
+async def sync(ctx):
+    await bot.tree.sync()
+    await ctx.send("Commands synced successfully!")
         
 # Run the asynchronous main function
 if __name__ == "__main__":
