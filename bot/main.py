@@ -397,7 +397,7 @@ class PublicMenuView(View):
     def __init__(self, bot):
         super().__init__(timeout=None)
         self.bot = bot
-        self.message = None  # Placeholder to store the initial message
+        self.message = None  # Will store the initial message reference
         self.add_main_buttons()
         self.add_search_button()
 
@@ -415,9 +415,14 @@ class PublicMenuView(View):
 
     def show_private_menu(self, category):
         async def callback(interaction: discord.Interaction):
-            embed = Embed(title=f"{category} scripts", description="", color=embed_color)
-            embed.set_footer(text="Created by Victorious")
-            await self.message.edit(embed=embed, view=PrivateMenuView(self.bot, category))
+            if self.message:
+                # Edit the stored message instead of sending a new one
+                embed = Embed(title=f"{category} scripts", description="", color=embed_color)
+                embed.set_footer(text="Created by Victorious")
+                await self.message.edit(embed=embed, view=PrivateMenuView(self.bot, category))
+            else:
+                # Fallback in case message wasn't set
+                await interaction.response.send_message("Error: Original message not found.", ephemeral=True)
         return callback
 
     async def show_search_modal(self, interaction: discord.Interaction):
@@ -755,14 +760,15 @@ async def on_ready():
 
 @bot.tree.command(name="scripts", description="Displays the script categories")
 async def scripts(interaction: discord.Interaction):
-    # Create the view and send the initial message with both embed and view
+    # Create the view and embed
     view = PublicMenuView(bot)
     embed = Embed(title="Scripts Menu", description=main_menu_description, color=embed_color)
     embed.set_footer(text="Created by Victorious")
 
-    # Send the initial message with the view and store the message reference in the view
-    message = await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
-    view.message = await message  # Store the message reference in the view for future edits
+    # Send the initial message
+    await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    # Use follow-up to retrieve the sent message and store it in the view
+    view.message = await interaction.original_response()
 
 @bot.command(name="scripts", help="Displays the description of a specific script by name.")
 async def get_script_description(ctx, *, script_name: str):
