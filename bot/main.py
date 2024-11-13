@@ -11,6 +11,9 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="&", intents=intents)
 
+# Define the bot owner's ID
+BOT_OWNER_ID = 284710799321202702  # Replace with your Discord user ID
+
 # Define a global helper function to create an embed
 embed_color = discord.Color.from_rgb(255, 255, 0)
 thumbnail_url = "https://i.imgur.com/GDJE1uD.png"
@@ -31,6 +34,14 @@ async def on_ready():
         print("Commands synced successfully.")
     except Exception as e:
         print(f"Error syncing commands: {e}")
+
+@bot.event
+async def on_guild_join(guild):
+    # Notify the bot owner via DM when it joins a new guild
+    owner = await bot.fetch_user(BOT_OWNER_ID)
+    if owner:
+        await owner.send(f"The bot has been added to the server: {guild.name} (ID: {guild.id})")
+    print(f"Bot joined the server: {guild.name}")
 
 async def load_cogs():
     # Define the cogs_path based on the location of main.py
