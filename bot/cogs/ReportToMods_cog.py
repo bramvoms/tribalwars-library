@@ -42,17 +42,20 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Resolved", style=discord.ButtonStyle.success)
     async def resolved_button(self, button: discord.ui.Button, interaction: discord.Interaction):
+        # Acknowledge the interaction to prevent "Interaction failed" messages
+        await interaction.response.defer()
+
         # Disable the button after it's clicked to prevent multiple resolutions
         button.disabled = True
+
         # Update the original message to indicate the report has been resolved
         embed = interaction.message.embeds[0]
         embed.title = "✅ Report Resolved"
         embed.color = discord.Color.green()
         embed.set_footer(text="This report has been marked as resolved.")
-        
+
         # Edit the message with the updated embed and disabled button
         await interaction.message.edit(embed=embed, view=self)
-        await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
