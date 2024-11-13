@@ -20,6 +20,8 @@ class BroadcastCog(commands.Cog):
             ["algemeen", "general"],  # Third priority: "algemeen" or "general"
         ]
 
+        successful_sends = 0  # Counter for successful sends
+
         for guild in self.bot.guilds:
             channel = None
 
@@ -40,12 +42,14 @@ class BroadcastCog(commands.Cog):
             if channel:
                 try:
                     await channel.send(embed=embed)
+                    successful_sends += 1  # Increment successful send count
                 except discord.Forbidden:
                     print(f"Could not send message to {guild.name} (permission issue)")
             else:
                 print(f"No suitable channel found in {guild.name}")
 
-        await ctx.send("Update verzonden.")
+        # Step 4: Send a confirmation message with the number of servers updated
+        await ctx.send(f"Update verzonden naar {successful_sends} servers.")
 
 # Setup function to add the cog
 async def setup(bot):
