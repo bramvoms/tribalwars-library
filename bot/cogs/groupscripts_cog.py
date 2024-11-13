@@ -53,13 +53,16 @@ class ScriptCombineView(View):
         self.selected_scripts = []
         print("Initialized ScriptCombineView")  # Debug print
 
-        # Dropdown selection for multiple scripts
-        options = [discord.SelectOption(label=script) for script in descriptions.keys()]
-        print(f"Options loaded: {options}")  # Debug print to show loaded options
-        self.select = Select(placeholder="Select scripts to combine", options=options, min_values=1, max_values=len(options))
-        self.select.callback = self.select_scripts
-        self.add_item(self.select)
-        print("Added script selection dropdown")  # Debug print
+        # Divide options into chunks of 25 or less
+        option_chunks = [list(descriptions.keys())[i:i+25] for i in range(0, len(descriptions), 25)]
+        
+        # Create a dropdown for each chunk of options
+        for i, chunk in enumerate(option_chunks, start=1):
+            options = [discord.SelectOption(label=script) for script in chunk]
+            select = Select(placeholder=f"Select scripts (set {i})", options=options, min_values=1, max_values=len(options))
+            select.callback = self.select_scripts
+            self.add_item(select)
+            print(f"Added script selection dropdown for chunk {i}")  # Debug print
 
         # Add "Combine" button to confirm selection and show combined code
         combine_button = Button(label="Combineer Geselecteerde Scripts", style=discord.ButtonStyle.success)
@@ -68,7 +71,7 @@ class ScriptCombineView(View):
         print("Added Combine Scripts button")  # Debug print
 
     async def select_scripts(self, interaction: "discord.Interaction"):
-        self.selected_scripts = self.select.values
+        self.selected_scripts.extend(self.select.values)
         print(f"Selected scripts: {self.selected_scripts}")  # Debug print to confirm selection
 
     async def show_combine_modal(self, interaction: "discord.Interaction"):
