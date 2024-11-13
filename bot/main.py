@@ -11,6 +11,13 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="&", intents=intents)
 
+# Initialize the bot with application_id
+bot = commands.Bot(
+    command_prefix="!",
+    intents=intents,
+    application_id=os.getenv("1305829332006207522")  # Ensure this environment variable is set
+)
+
 # Define the bot owner's ID
 BOT_OWNER_ID = 284710799321202702  # Replace with your Discord user ID
 
