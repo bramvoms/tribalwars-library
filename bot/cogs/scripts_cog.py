@@ -645,7 +645,7 @@ class SearchModal(Modal):
         # Create the view with top results
         view = ResultSelectionView(self.bot, top_results)
 
-        embed = create_embed("Selecteer het script welke je wilt bekijken:", "")
+        embed = create_embed("Selecteer welk script je wilt bekijken", "")
         await interaction.response.edit_message(
             content=None,
             embed=embed,
@@ -661,17 +661,17 @@ class ResultSelectionView(View):
         self.add_search_again_button()
         self.add_main_menu_button()
 
-def add_result_selector(self):
-    options = [
-        discord.SelectOption(
-            label=subcategory, 
-            description=(description.splitlines()[0][:97] + "..." if len(description.splitlines()[0]) > 97 else description.splitlines()[0])
-        )
-        for subcategory, description in self.results
-    ]
-    select = discord.ui.Select(placeholder="Choose a script...", options=options)
-    select.callback = self.show_description
-    self.add_item(select)
+    def add_result_selector(self):
+        options = [
+            discord.SelectOption(
+                label=subcategory, 
+                description=(description.splitlines()[0][:97] + "..." if len(description.splitlines()[0]) > 97 else description.splitlines()[0])
+            )
+            for subcategory, description in self.results
+        ]
+        select = discord.ui.Select(placeholder="Choose a script...", options=options)
+        select.callback = self.show_description
+        self.add_item(select)
 
     def add_search_again_button(self):
         search_again_button = Button(label="Opnieuw zoeken", style=discord.ButtonStyle.primary)
