@@ -584,7 +584,7 @@ class ScriptsCog(commands.Cog):
 
         if matching_script:
             # Format title and description for exact match
-            title = f"━━━━━━ {script_name.upper()} ━━━━━━"
+            title = f"━ {script_name.upper()} ━"
             embed = create_embed(title=title, description=matching_script)
             await ctx.send(embed=embed)
         else:
@@ -593,7 +593,7 @@ class ScriptsCog(commands.Cog):
             
             if score > 60:  # Threshold for considering a match
                 # Format title and description for closest match
-                title = f"━━━━━━ {closest_match.upper()} ━━━━━━"
+                title = f"━ {closest_match.upper()} ━"
                 embed = create_embed(title=title, description=descriptions[closest_match])
                 await ctx.send(embed=embed)
             else:
@@ -763,7 +763,7 @@ class PrivateMenuView(View):
     async def show_script_description(self, interaction: discord.Interaction, subcategory):
         # Display the description for the selected script
         description = descriptions.get(subcategory, "No description available.")
-        title = f"━━━━━━ {subcategory.upper()} ━━━━━━"
+        title = f"━ {subcategory.upper()} ━"
         embed = create_embed(title=title, description=description)
         main_menu_only_view = View()
         main_menu_button = Button(label="Main Menu", style=discord.ButtonStyle.danger)
