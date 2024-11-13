@@ -100,10 +100,16 @@ class ScriptCombineView(View):
         # Generate the combined script code
         combined_code = self.get_combined_script_code()
 
-        # Send the combined code to the user's DM
+         # Use the pre-configured embed style from main.py
+        embed = create_embed(
+            title="Gegroepeerde Script Code",
+            description=f"Hier is je gegroepeerde script:\n```js\n{combined_code}\n```"
+        )
+
+        # Send the embedded message to the user's DM
         try:
             user_dm = await interaction.user.create_dm()
-            await user_dm.send(f"Hier is je gegroepeerde script:\n```js\n{combined_code}\n```")
+            await user_dm.send(embed=embed)
             await interaction.response.send_message("Het gegroepeerde script is naar je DM verzonden.", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"Error sending DM: {e}", ephemeral=True)
