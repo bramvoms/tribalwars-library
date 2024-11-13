@@ -14,18 +14,12 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Embed color for a consistent style
+# Set the color for the embeds to a yellow sidebar
 embed_color = discord.Color.from_rgb(255, 255, 0)
 
-# Utility function to send an embedded message with a footer
-async def send_embed(context_or_interaction, content: str, title: str = "Bot Message", ephemeral: bool = False):
-    embed = Embed(title=title, description=content, color=embed_color)
-    embed.set_footer(text="Created by Victorious")
-    
-    if isinstance(context_or_interaction, commands.Context):
-        await context_or_interaction.send(embed=embed)
-    elif isinstance(context_or_interaction, discord.Interaction):
-        await context_or_interaction.response.send_message(embed=embed, ephemeral=ephemeral)
+# Define a helper method to create embedded messages
+def create_embed(title: str, description: str) -> Embed:
+    return Embed(title=title, description=description, color=embed_color)
 
 # Updated descriptions dictionary with only the active scripts
 descriptions = {
@@ -397,7 +391,6 @@ class PublicMenuView(View):
     def __init__(self, bot):
         super().__init__(timeout=None)
         self.bot = bot
-        self.message = None  # Will store the initial message reference
         self.add_main_buttons()
         self.add_search_button()
 
@@ -415,14 +408,12 @@ class PublicMenuView(View):
 
     def show_private_menu(self, category):
         async def callback(interaction: discord.Interaction):
-            if self.message:
-                # Edit the stored message instead of sending a new one
-                embed = Embed(title=f"{category} scripts", description="", color=embed_color)
-                embed.set_footer(text="Created by Victorious")
-                await self.message.edit(embed=embed, view=PrivateMenuView(self.bot, category))
-            else:
-                # Fallback in case message wasn't set
-                await interaction.response.send_message("Error: Original message not found.", ephemeral=True)
+            embed = create_embed(f"**{category} scripts:**", "")
+            await interaction.response.edit_message(
+                content=None,
+                embed=embed,
+                view=PrivateMenuView(self.bot, category)
+            )
         return callback
 
     async def show_search_modal(self, interaction: discord.Interaction):
@@ -439,29 +430,44 @@ class SearchModal(Modal):
         query = self.query.value.lower()
         results = []
 
+        # Step 1: Exact match check
         if query in descriptions:
             results.append((query, descriptions[query]))
         else:
+            # Step 2: Advanced matching with substring and fuzzy matching
             matches = []
             for subcategory, description in descriptions.items():
                 subcategory_lower = subcategory.lower()
                 description_lower = description.lower()
 
+                # Direct substring match
                 if query in subcategory_lower or query in description_lower:
-                    matches.append((subcategory, description, 90))
+                    matches.append((subcategory, description, 90))  # High priority for direct substring matches
 
+                # Fuzzy match with a lower threshold
                 else:
                     score = max(fuzz.partial_ratio(query, subcategory_lower), fuzz.token_set_ratio(query, subcategory_lower))
                     if score > 50:
-                        matches.append((subcategory, description, score))
+                        matches.append((subcategory, description, score))  # Priority based on fuzzy score
 
+            # Sort matches by score to prioritize closer matches
             matches = sorted(matches, key=lambda x: x[2], reverse=True)
+
+            # Remove duplicates and keep only the subcategory and description fields
             results = [(subcategory, description) for subcategory, description, _ in matches]
 
+        # Limit the output to the top 2 results
         top_results = results[:2]
+
+        # Create the view with top results
         view = ResultSelectionView(self.bot, top_results)
-        await send_embed(interaction, "Select the script you want more details about:", ephemeral=True)
-        await interaction.response.edit_message(view=view)
+
+        embed = create_embed("Select the script you want more details about:", "")
+        await interaction.response.edit_message(
+            content=None,
+            embed=embed,
+            view=view
+        )
 
 class ResultSelectionView(View):
     def __init__(self, bot, results):
@@ -494,14 +500,15 @@ class ResultSelectionView(View):
     async def show_description(self, interaction: discord.Interaction):
         selected_script = interaction.data["values"][0]
         description = descriptions.get(selected_script, "No description available.")
-        await send_embed(interaction, description, title=selected_script, ephemeral=True)
+        embed = create_embed(selected_script, description)
+        await interaction.response.edit_message(embed=embed, view=self)
 
     async def search_again(self, interaction: discord.Interaction):
         await interaction.response.send_modal(SearchModal(self.bot))
 
     async def go_to_main_menu(self, interaction: discord.Interaction):
-        await send_embed(interaction, main_menu_description, title="Scripts Menu", ephemeral=True)
-        await interaction.response.edit_message(view=PublicMenuView(self.bot))
+        embed = create_embed("Scripts Menu", main_menu_description)
+        await interaction.response.edit_message(embed=embed, view=PublicMenuView(self.bot))
 
 class PrivateMenuView(View):
     def __init__(self, bot, category):
@@ -543,23 +550,31 @@ class PrivateMenuView(View):
     def show_subcategory_description(self, subcategory):
         async def callback(interaction: discord.Interaction):
             description = descriptions.get(subcategory, "No description available.")
-            await send_embed(interaction, description, title=subcategory, ephemeral=True)
+            embed = create_embed(subcategory, description)
+            main_menu_only_view = View()
+            main_menu_button = Button(label="Main Menu", style=discord.ButtonStyle.danger)
+            main_menu_button.callback = self.go_to_main_menu
+            main_menu_only_view.add_item(main_menu_button)
+
+            await interaction.response.edit_message(embed=embed, view=main_menu_only_view)
         return callback
 
     async def go_to_main_menu(self, interaction: discord.Interaction):
-        await send_embed(interaction, main_menu_description, title="Scripts Menu", ephemeral=True)
-        await interaction.response.edit_message(view=PublicMenuView(self.bot))
+        embed = create_embed("Scripts Menu", main_menu_description)
+        await interaction.response.edit_message(embed=embed, view=PublicMenuView(self.bot))
 
 # Purge command with embedded response
 @bot.tree.command(name="purge", description="Purge messages in a channel based on various criteria.")
 @app_commands.default_permissions(manage_messages=True)
 async def purge(interaction: discord.Interaction):
     if not interaction.user.guild_permissions.administrator:
-        await send_embed(interaction, "You do not have permission to use this command.", title="Error", ephemeral=True)
+        embed = create_embed("Error", "You do not have permission to use this command.")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
         return
 
-    await send_embed(interaction, "Choose a purge option:", title="Purge Options", ephemeral=True)
-    await interaction.response.edit_message(view=PurgeOptionsView())
+    embed = create_embed("Purge Options", "Choose a purge option:")
+    view = PurgeOptionsView()
+    await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 class PurgeOptionsSelect(discord.ui.Select):
     def __init__(self):
@@ -597,16 +612,17 @@ class PurgeOptionsView(discord.ui.View):
         await interaction.response.defer(thinking=True)
         total_deleted = 0
         delay_between_deletions = 1
-        command_message_id = interaction.id
+        command_message_id = interaction.id  # Capture the ID of the message that triggered /purge
 
         async for message in interaction.channel.history(limit=None):
             if message.id == command_message_id:
-                continue
+                continue  # Skip the /purge command message
 
             try:
                 await message.delete()
                 total_deleted += 1
-                await asyncio.sleep(delay_between_deletions)
+                await asyncio.sleep(delay_between_deletions)  # Delay to avoid rate limits
+
             except discord.HTTPException as e:
                 if e.status == 429:
                     retry_after = e.retry_after or 10
@@ -614,7 +630,8 @@ class PurgeOptionsView(discord.ui.View):
                 else:
                     break
 
-        await send_embed(interaction, f"Deleted {total_deleted} messages.", title="Purge Complete", ephemeral=True)
+        embed = create_embed("Purge Complete", f"Deleted {total_deleted} messages.")
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
     async def prompt_number_of_messages(self, interaction: discord.Interaction):
         modal = NumberInputModal()
@@ -628,12 +645,13 @@ class PurgeOptionsView(discord.ui.View):
 
         async for message in interaction.channel.history(limit=None):
             if message.id == command_message_id or message.author.bot:
-                continue
+                continue  # Skip the /purge command message and bot messages
 
             try:
                 await message.delete()
                 total_deleted += 1
                 await asyncio.sleep(delay_between_deletions)
+
             except discord.HTTPException as e:
                 if e.status == 429:
                     retry_after = e.retry_after or 10
@@ -641,7 +659,8 @@ class PurgeOptionsView(discord.ui.View):
                 else:
                     break
 
-        await send_embed(interaction, f"Deleted {total_deleted} non-bot messages.", title="Purge Complete", ephemeral=True)
+        embed = create_embed("Purge Complete", f"Deleted {total_deleted} non-bot messages.")
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
     async def purge_bot_messages(self, interaction: discord.Interaction):
         await interaction.response.defer(thinking=True)
@@ -651,12 +670,13 @@ class PurgeOptionsView(discord.ui.View):
 
         async for message in interaction.channel.history(limit=None):
             if message.id == command_message_id or not message.author.bot:
-                continue
+                continue  # Skip the /purge command message and non-bot messages
 
             try:
                 await message.delete()
                 total_deleted += 1
                 await asyncio.sleep(delay_between_deletions)
+
             except discord.HTTPException as e:
                 if e.status == 429:
                     retry_after = e.retry_after or 10
@@ -664,7 +684,9 @@ class PurgeOptionsView(discord.ui.View):
                 else:
                     break
 
-        await send_embed(interaction, f"Deleted {total_deleted} bot messages.", title="Purge Complete", ephemeral=True)
+        embed = create_embed("Purge Complete", f"Deleted {total_deleted} bot messages.")
+        await interaction.followup.send(embed=embed, ephemeral=True)
+
 
     async def prompt_user_selection(self, interaction: discord.Interaction):
         modal = UserSelectionModal()
@@ -685,11 +707,11 @@ class NumberInputModal(discord.ui.Modal, title="Purge Number of Messages"):
 
             await interaction.response.defer(thinking=True)
             deleted_count = 0
-            command_message_id = interaction.id
+            command_message_id = interaction.id  # ID of the /purge command
 
             async for message in interaction.channel.history(limit=limit + 1):
                 if message.id == command_message_id:
-                    continue
+                    continue  # Skip the /purge command message itself
 
                 if deleted_count < limit:
                     try:
@@ -704,10 +726,12 @@ class NumberInputModal(discord.ui.Modal, title="Purge Number of Messages"):
                 else:
                     break
 
-            await send_embed(interaction, f"Deleted {deleted_count} messages.", title="Purge Complete", ephemeral=True)
+            embed = create_embed("Purge Complete", f"Deleted {deleted_count} messages.")
+            await interaction.followup.send(embed=embed, ephemeral=True)
 
         except ValueError:
-            await send_embed(interaction, "Please enter a valid positive integer.", title="Error", ephemeral=True)
+            embed = create_embed("Error", "Please enter a valid positive integer.")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
 
 class UserSelectionModal(discord.ui.Modal, title="Purge Messages from a User"):
     user_input = TextInput(label="User ID or Mention", placeholder="Enter the user's ID or mention them", required=True)
@@ -728,9 +752,11 @@ class UserSelectionModal(discord.ui.Modal, title="Purge Messages from a User"):
 
             await interaction.response.defer(thinking=True)
             deleted = await interaction.channel.purge(limit=None, check=lambda m: m.author == user)
-            await send_embed(interaction, f"Deleted {len(deleted)} messages from {user.display_name}.", title="Purge Complete", ephemeral=True)
+            embed = create_embed("Purge Complete", f"Deleted {len(deleted)} messages from {user.display_name}.")
+            await interaction.followup.send(embed=embed, ephemeral=True)
         except Exception as e:
-            await send_embed(interaction, f"Error: {str(e)}", title="Error", ephemeral=True)
+            embed = create_embed("Error", f"Error: {str(e)}")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
 
 class TimeframeModal(discord.ui.Modal, title="Purge Messages from a Timeframe"):
     hours = TextInput(label="Hours", placeholder="Enter the number of hours", required=False)
@@ -749,54 +775,62 @@ class TimeframeModal(discord.ui.Modal, title="Purge Messages from a Timeframe"):
 
             await interaction.response.defer(thinking=True)
             deleted = await interaction.channel.purge(after=time_limit)
-            await send_embed(interaction, f"Deleted {len(deleted)} messages from the last {hours} hours and {minutes} minutes.", title="Purge Complete", ephemeral=True)
+            embed = create_embed("Purge Complete", f"Deleted {len(deleted)} messages from the last {hours} hours and {minutes} minutes.")
+            await interaction.followup.send(embed=embed, ephemeral=True)
         except ValueError as e:
-            await send_embed(interaction, str(e), title="Error", ephemeral=True)
+            embed = create_embed("Error", str(e))
+            await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} ({bot.user.id})")
-    await bot.tree.sync()
+    await bot.tree.sync()  # Sync commands with Discord
 
 @bot.tree.command(name="scripts", description="Displays the script categories")
 async def scripts(interaction: discord.Interaction):
-    # Create the view and embed
-    view = PublicMenuView(bot)
-    embed = Embed(title="Scripts Menu", description=main_menu_description, color=embed_color)
-    embed.set_footer(text="Created by Victorious")
-
-    # Send the initial message
-    await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
-    # Use follow-up to retrieve the sent message and store it in the view
-    view.message = await interaction.original_response()
+    embed = create_embed("Scripts Menu", main_menu_description)
+    await interaction.response.send_message(embed=embed, view=PublicMenuView(bot), ephemeral=True)
 
 @bot.command(name="scripts", help="Displays the description of a specific script by name.")
 async def get_script_description(ctx, *, script_name: str):
     script_name = script_name.lower()
+    
+    # Check for an exact match, ignoring case
     matching_script = next((name for name in descriptions if name.lower() == script_name), None)
 
     if matching_script:
-        await send_embed(ctx, descriptions[matching_script], title=matching_script)
+        # Found an exact match
+        embed = create_embed(matching_script, descriptions[matching_script])
+        await ctx.send(embed=embed)
     else:
+        # Attempt fuzzy matching if no exact match is found
         result = process.extractOne(script_name, descriptions.keys())
         if result:
             closest_match, score = result
-            if score > 60:
+            if score > 60:  # Adjust threshold as needed for better accuracy
+                # Suggest closest match
                 view = View()
                 suggestion_button = Button(label=f"Bedoelde je '{closest_match}'?", style=discord.ButtonStyle.primary)
 
                 async def suggestion_callback(interaction: discord.Interaction):
-                    await send_embed(interaction, descriptions[closest_match], title=closest_match)
+                    embed = create_embed(closest_match, descriptions[closest_match])
+                    await interaction.response.send_message(embed=embed)
 
                 suggestion_button.callback = suggestion_callback
                 view.add_item(suggestion_button)
 
-                await send_embed(ctx, f"Script '{script_name}' not found.", title="Script Not Found")
+                embed = create_embed("Script Not Found", f"Script '{script_name}' not found.")
+                await ctx.send(embed=embed, view=view)
             else:
-                await send_embed(ctx, f"Script '{script_name}' not found in the library.", title="Script Not Found")
+                # No close match found above the threshold
+                embed = create_embed("Script Not Found", f"Script '{script_name}' not found in the library.")
+                await ctx.send(embed=embed)
         else:
-            await send_embed(ctx, f"Script '{script_name}' not found in the library.", title="Script Not Found")
+            # No match or close match found
+            embed = create_embed("Script Not Found", f"Script '{script_name}' not found in the library.")
+            await ctx.send(embed=embed)
 
+# AM command with embedded responses
 class AMView(View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -816,36 +850,45 @@ class AMView(View):
         self.add_item(button)
 
     async def opslag_rush_callback(self, interaction: Interaction):
-        await send_embed(interaction, "Placeholder text for Opslag rush.", title="Opslag rush", ephemeral=True)
+        embed = create_embed("Opslag rush", "Placeholder text for Opslag rush.")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     async def zc_rush_callback(self, interaction: Interaction):
-        await send_embed(interaction, "Placeholder text for ZC rush.", title="ZC rush", ephemeral=True)
+        embed = create_embed("ZC rush", "Placeholder text for ZC rush.")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     async def ah_rush_callback(self, interaction: Interaction):
-        await send_embed(interaction, "Placeholder text for AH rush.", title="AH rush", ephemeral=True)
+        embed = create_embed("AH rush", "Placeholder text for AH rush.")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     async def muur_rush_callback(self, interaction: Interaction):
-        await send_embed(interaction, "Placeholder text for Muur rush.", title="Muur rush", ephemeral=True)
+        embed = create_embed("Muur rush", "Placeholder text for Muur rush.")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     async def toren_rush_callback(self, interaction: Interaction):
-        await send_embed(interaction, "Placeholder text for Toren rush.", title="Toren rush", ephemeral=True)
+        embed = create_embed("Toren rush", "Placeholder text for Toren rush.")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     async def kerk_rush_callback(self, interaction: Interaction):
-        await send_embed(interaction, "Placeholder text for Kerk rush.", title="Kerk rush", ephemeral=True)
+        embed = create_embed("Kerk rush", "Placeholder text for Kerk rush.")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     async def muur_spoed_callback(self, interaction: Interaction):
-        await send_embed(interaction, "Placeholder text for Muur spoed.", title="Muur spoed", ephemeral=True)
+        embed = create_embed("Muur spoed", "Placeholder text for Muur spoed.")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     async def off_sjabloon_callback(self, interaction: Interaction):
-        await send_embed(interaction, "Placeholder text for OFF sjabloon.", title="OFF sjabloon", ephemeral=True)
+        embed = create_embed("OFF sjabloon", "Placeholder text for OFF sjabloon.")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     async def def_sjabloon_callback(self, interaction: Interaction):
-        await send_embed(interaction, "Placeholder text for DEF sjabloon.", title="DEF sjabloon", ephemeral=True)
+        embed = create_embed("DEF sjabloon", "Placeholder text for DEF sjabloon.")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="am", description="Displays rush and template options for AM")
 async def am(interaction: Interaction):
-    await send_embed(interaction, "Select one of the options below for more information.", title="Choose an action:", ephemeral=True)
-    await interaction.response.edit_message(view=AMView(), ephemeral=True)
+    embed = create_embed("Choose an action:", "Select one of the options below for more information.")
+    await interaction.response.send_message(embed=embed, view=AMView(), ephemeral=True)
 
 if __name__ == "__main__":
     bot.run(os.getenv("DISCORD_TOKEN"))
