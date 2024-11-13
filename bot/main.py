@@ -29,15 +29,15 @@ async def on_ready():
         print(f"Error syncing commands: {e}")
 
 async def load_cogs():
-    # Path to the `cogs` directory
     cogs_path = Path("cogs")
     
-    # Iterate over all `.py` files in the `cogs` directory
     for cog_file in cogs_path.glob("*.py"):
-        # Load each cog by constructing its Python module path
-        cog_name = f"cogs.{cog_file.stem}"  # `stem` gives the filename without the extension
-        await bot.load_extension(cog_name)
-        print(f"Loaded cog: {cog_name}")
+        cog_name = f"cogs.{cog_file.stem}"
+        try:
+            await bot.load_extension(cog_name)
+            print(f"Successfully loaded cog: {cog_name}")
+        except Exception as e:
+            print(f"Failed to load cog {cog_name}: {e}")
 
 async def main():
     await load_cogs()  # Load all cogs asynchronously
