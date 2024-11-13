@@ -31,23 +31,22 @@ class GroupScriptsCog(commands.Cog):
     # Slash command to open the selection view for combining scripts
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
     async def group_scripts(self, interaction: discord.Interaction):
-        print("Received /group_scripts command")  # Debug print
+        print("Received /group_scripts command")
         await interaction.response.defer(ephemeral=True)
-        print("Interaction deferred successfully")  # Debug print
         
         # Send the selection view after deferring the response
         try:
             await interaction.followup.send("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot))
-            print("Sent ScriptCombineView to user")  # Debug print
+            print("Sent ScriptCombineView to user")
         except Exception as e:
-            print(f"Error sending ScriptCombineView: {e}")  # Print any errors encountered
+            print(f"Error sending ScriptCombineView: {e}")
 
 class ScriptCombineView(View):
     def __init__(self, bot):
         super().__init__(timeout=None)
         self.bot = bot
         self.selected_scripts = []
-        print("Initialized ScriptCombineView")  # Debug print
+        print("Initialized ScriptCombineView")
 
         # Divide options into chunks of 25 or less
         option_chunks = [list(descriptions.keys())[i:i+25] for i in range(0, len(descriptions), 25)]
@@ -58,35 +57,33 @@ class ScriptCombineView(View):
             select = Select(placeholder=f"Select scripts (set {i})", options=options, min_values=1, max_values=len(options))
             select.callback = self.select_scripts
             self.add_item(select)
-            print(f"Added script selection dropdown for chunk {i}")  # Debug print
+            print(f"Added script selection dropdown for chunk {i}")
 
         # Add "Combine" button to confirm selection and show combined code
         combine_button = Button(label="Combineer Geselecteerde Scripts", style=discord.ButtonStyle.success)
         combine_button.callback = self.show_combined_code
         self.add_item(combine_button)
-        print("Added Combine Scripts button")  # Debug print
+        print("Added Combine Scripts button")
 
     async def select_scripts(self, interaction: discord.Interaction):
-        # Append selected scripts from dropdown
         selected_values = interaction.data["values"]
         self.selected_scripts.extend(selected_values)
         
         # Remove duplicates
         self.selected_scripts = list(set(self.selected_scripts))
-        print(f"Current selected scripts: {self.selected_scripts}")  # Debug print
+        print(f"Current selected scripts: {self.selected_scripts}")
 
-        # Acknowledge the interaction with a deferred response to avoid "interaction failed"
-        await interaction.response.defer() 
+        # Acknowledge the dropdown selection interaction to avoid "interaction failed" messages
+        await interaction.response.defer()
 
     async def show_combined_code(self, interaction: discord.Interaction):
-        print("Combine button clicked")  # Debug print
+        print("Combine button clicked")
         if not self.selected_scripts:
             await interaction.response.send_message("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
-            print("No scripts selected message sent")  # Debug print
+            print("No scripts selected message sent")
         else:
             combined_code, missing_scripts = get_combined_script_code(self.selected_scripts)
             
-            # Notify user if there are missing scripts
             if missing_scripts:
                 missing_msg = f"De volgende scripts konden niet worden gevonden en zijn overgeslagen: {', '.join(missing_scripts)}"
                 await interaction.followup.send(missing_msg, ephemeral=True)
@@ -107,7 +104,7 @@ class ScriptCombineView(View):
                     description=f"```js\n{chunk}\n```"
                 )
                 await interaction.followup.send(embed=embed, ephemeral=True)
-                print(f"Sent code chunk {index} to user")  # Debug print
+                print(f"Sent code chunk {index} to user")
 
 async def setup(bot):
     await bot.add_cog(GroupScriptsCog(bot))
