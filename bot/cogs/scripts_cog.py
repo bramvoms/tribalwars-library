@@ -370,16 +370,34 @@ Placeholder tekst voor uitgebreide uitleg
 main_menu_description = """**TribalWars Library: Scripts**
 
 Gebruik de knoppen hieronder om een categorie en daarna het script te selecteren waar je uitleg over wilt."""
+                
+class PublicMenuView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.add_main_buttons()
+
+    def add_main_buttons(self):
+        categories = ["Must haves", "Aanval", "Verdediging", "Kaart", "Farmen", "Rooftochten", "Overig", "Stats", "Package"]
+        for category in categories:
+            button = discord.ui.Button(label=category, style=discord.ButtonStyle.primary)
+            button.callback = self.show_category(category)
+            self.add_item(button)
+
+    def show_category(self, category):
+        async def callback(interaction: Interaction):
+            embed = create_embed(f"{category} Scripts", f"Displaying scripts for the {category} category.")
+            await interaction.response.edit_message(embed=embed, view=self)
+        return callback
 
 class ScriptsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="scripts", description="Displays the script categories")  # Slash command
+    @app_commands.command(name="scripts", description="Displays the script categories")
     async def scripts(self, interaction: Interaction):
-        embed = create_embed("Scripts Menu", "Main menu for scripts")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
+        embed = create_embed("Scripts Menu", "Select a category to view scripts.")
+        await interaction.response.send_message(embed=embed, view=PublicMenuView(), ephemeral=True)
+ 
     # Text command for !scripts <script_name>
     @commands.command(name="scripts", help="Finds a specific script by name.")
     async def get_script_description(self, ctx, *, script_name: str):
@@ -403,38 +421,6 @@ class ScriptsCog(commands.Cog):
                 embed = create_embed("Script Not Found", f"No script found matching '{script_name}'.")
                 await ctx.send(embed=embed)
                 
-class PublicMenuView(View):
-    def __init__(self, bot):
-        super().__init__(timeout=None)
-        self.bot = bot
-        self.add_main_buttons()
-        self.add_search_button()
-
-    def add_main_buttons(self):
-        categories = ["Must haves", "Aanval", "Verdediging", "Kaart", "Farmen", "Rooftochten", "Overig", "Stats", "Package"]
-        for category in categories:
-            button = Button(label=category, style=discord.ButtonStyle.primary)
-            button.callback = self.show_private_menu(category)
-            self.add_item(button)
-
-    def add_search_button(self):
-        search_button = Button(label="Search", style=discord.ButtonStyle.secondary)
-        search_button.callback = self.show_search_modal
-        self.add_item(search_button)
-
-    def show_private_menu(self, category):
-        async def callback(interaction: discord.Interaction):
-            embed = create_embed(f"**{category} scripts:**", "")
-            await interaction.response.edit_message(
-                content=None,
-                embed=embed,
-                view=PrivateMenuView(self.bot, category)
-            )
-        return callback
-
-    async def show_search_modal(self, interaction: discord.Interaction):
-        await interaction.response.send_modal(SearchModal(self.bot))
-
 class SearchModal(Modal):
     def __init__(self, bot):
         super().__init__(title="Search Scripts")
