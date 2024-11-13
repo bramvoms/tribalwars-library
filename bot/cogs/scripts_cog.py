@@ -371,23 +371,6 @@ main_menu_description = """**TribalWars Library: Scripts**
 
 Gebruik de knoppen hieronder om een categorie en daarna het script te selecteren waar je uitleg over wilt."""
                 
-class PublicMenuView(discord.ui.View):
-    def __init__(self, bot):
-        super().__init__(timeout=None)
-        self.bot = bot
-        self.add_main_buttons()
-
-    def add_main_buttons(self):
-        categories = ["Must haves", "Aanval", "Verdediging", "Kaart", "Farmen", "Rooftochten", "Overig", "Stats", "Package"]
-        for category in categories:
-            button = discord.ui.Button(label=category, style=discord.ButtonStyle.primary)
-            button.callback = lambda interaction, category=category: self.show_category(interaction, category)
-            self.add_item(button)
-
-    async def show_category(self, interaction: Interaction, category):
-        embed = create_embed(f"{category} Scripts", f"Displaying scripts for the {category} category.")
-        await interaction.response.edit_message(embed=embed, view=PrivateMenuView(self.bot, category))
-
 class ScriptsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -414,6 +397,23 @@ class ScriptsCog(commands.Cog):
                 embed = create_embed("Script Not Found", f"No script found matching '{script_name}'.")
                 await ctx.send(embed=embed)
                 
+class PublicMenuView(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+        self.add_main_buttons()
+
+    def add_main_buttons(self):
+        categories = ["Must haves", "Aanval", "Verdediging", "Kaart", "Farmen", "Rooftochten", "Overig", "Stats", "Package"]
+        for category in categories:
+            button = discord.ui.Button(label=category, style=discord.ButtonStyle.primary)
+            button.callback = lambda interaction, category=category: self.show_category(interaction, category)
+            self.add_item(button)
+
+    async def show_category(self, interaction: Interaction, category):
+        embed = create_embed(f"{category} Scripts", f"Displaying scripts for the {category} category.")
+        await interaction.response.edit_message(embed=embed, view=PrivateMenuView(self.bot, category))          
+        
 class SearchModal(Modal):
     def __init__(self, bot):
         super().__init__(title="Search Scripts")
