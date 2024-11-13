@@ -11,11 +11,12 @@ class GroupScriptsCog(commands.Cog):
 
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
     async def group_scripts(self, interaction: discord.Interaction):
-        await interaction.response.defer(ephemeral=True)
+        # Defer the interaction to acknowledge it, and then follow up with the view
+        await interaction.response.defer()
         
         view = ScriptCombineView()
         embed = create_embed("Select Scripts to Combine", "Select scripts to add or remove them from the combined code.")
-        await interaction.followup.send(embed=embed, view=view, ephemeral=True)  # Ensure this remains private
+        await interaction.followup.send(embed=embed, view=view)  # Send as public message
 
 class ScriptCombineView(View):
     def __init__(self):
@@ -52,9 +53,9 @@ class ScriptCombineView(View):
             if description:
                 combined_code += self.extract_script_lines(description)
 
-        # Update the interaction message with the current combined code using followup to ensure ephemeral works
+        # Update the interaction message with the current combined code
         embed = create_embed("Combined Script Code", f"```js\n{combined_code}\n```")
-        await interaction.followup.edit_message(message_id=interaction.message.id, embed=embed, view=self)
+        await interaction.message.edit(embed=embed, view=self)
 
     def extract_script_lines(self, description):
         # Helper function to extract lines with $.getScript or variable definitions
