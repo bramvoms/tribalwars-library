@@ -15,7 +15,7 @@ class GroupScriptsCog(commands.Cog):
         
         view = ScriptCombineView()
         embed = create_embed("Select Scripts to Combine", "Select scripts to add or remove them from the combined code.")
-        await interaction.followup.send(embed=embed, view=view, ephemeral=True)  # Make this private
+        await interaction.followup.send(embed=embed, view=view, ephemeral=True)  # Ensure this remains private
 
 class ScriptCombineView(View):
     def __init__(self):
@@ -52,9 +52,9 @@ class ScriptCombineView(View):
             if description:
                 combined_code += self.extract_script_lines(description)
 
-        # Update the interaction message with the current combined code and refresh the view
+        # Update the interaction message with the current combined code using followup to ensure ephemeral works
         embed = create_embed("Combined Script Code", f"```js\n{combined_code}\n```")
-        await interaction.response.edit_message(embed=embed, view=self, ephemeral=True)
+        await interaction.followup.edit_message(message_id=interaction.message.id, embed=embed, view=self)
 
     def extract_script_lines(self, description):
         # Helper function to extract lines with $.getScript or variable definitions
