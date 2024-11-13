@@ -9,14 +9,14 @@ class GroupScriptsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
+    @app_commands.command(name="group_scripts", description="Groepeer scripts tot één om laadtijden te bevoorderen.")
     async def group_scripts(self, interaction: discord.Interaction):
         # Defer the interaction to acknowledge it
         await interaction.response.defer()
 
         # Create a view with script selections and a combine button
         view = ScriptCombineView(interaction.user)  # Pass the command initiator to the view
-        embed = create_embed("Select Scripts to Combine", "Select scripts and click 'Combine Now' to receive the combined code in your DMs.")
+        embed = create_embed("Selecteer scripts om te groeperen", "Selecteer de scripts en klik op "groeperen" om de code in DM gestuurd te krijgen.")
         await interaction.followup.send(embed=embed, view=view)
 
 class ScriptCombineView(View):
@@ -36,17 +36,17 @@ class ScriptCombineView(View):
             self.add_item(select)
 
         # Add the "Combine Now" button to finalize the selection and send combined code
-        combine_button = Button(label="Combine Now", style=discord.ButtonStyle.success)
+        combine_button = Button(label="Groeperen", style=discord.ButtonStyle.success)
         combine_button.callback = self.send_combined_code
         self.add_item(combine_button)
 
         # Add "Clear Selection" button to reset selections
-        clear_button = Button(label="Clear Selection", style=discord.ButtonStyle.danger)
+        clear_button = Button(label="Selectie wissen", style=discord.ButtonStyle.danger)
         clear_button.callback = self.clear_selection
         self.add_item(clear_button)
 
         # Add "Delete Message" button to delete the interaction message
-        delete_button = Button(label="Delete Message", style=discord.ButtonStyle.danger)
+        delete_button = Button(label="Verwijder bericht", style=discord.ButtonStyle.danger)
         delete_button.callback = self.delete_message
         self.add_item(delete_button)
 
@@ -103,8 +103,8 @@ class ScriptCombineView(View):
         # Send the combined code to the user's DM
         try:
             user_dm = await interaction.user.create_dm()
-            await user_dm.send(f"Here is your combined script code:\n```js\n{combined_code}\n```")
-            await interaction.response.send_message("The combined script code has been sent to your DMs.", ephemeral=True)
+            await user_dm.send(f"Hier is je gegroepeerde script:\n```js\n{combined_code}\n```")
+            await interaction.response.send_message("Het gegroepeerde script is naar je DM verzonden.", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"Error sending DM: {e}", ephemeral=True)
 
