@@ -755,8 +755,10 @@ async def on_ready():
 
 @bot.tree.command(name="scripts", description="Displays the script categories")
 async def scripts(interaction: discord.Interaction):
+    # Send both the embed and the view in a single response
     await send_embed(interaction, main_menu_description, title="Scripts Menu", ephemeral=True)
-    await interaction.response.edit_message(view=PublicMenuView(bot))
+    # Send the view along with the embed in the same response to avoid double responding
+    await interaction.followup.send(view=PublicMenuView(bot), ephemeral=True)
 
 @bot.command(name="scripts", help="Displays the description of a specific script by name.")
 async def get_script_description(ctx, *, script_name: str):
