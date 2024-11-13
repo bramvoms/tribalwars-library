@@ -379,9 +379,6 @@ class ScriptsCog(commands.Cog):
     async def scripts(self, interaction: Interaction):
         embed = create_embed("Scripts Menu", "Main menu for scripts")
         await interaction.response.send_message(embed=embed, view=PublicMenuView(self.bot), ephemeral=True)
-
-async def setup(bot):
-    await bot.add_cog(ScriptsCog(bot))
     
 class PublicMenuView(View):
     def __init__(self, bot):
