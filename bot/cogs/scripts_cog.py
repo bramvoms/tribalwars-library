@@ -94,7 +94,6 @@ Placeholder tekst voor uitgebreide uitleg
 ```js
 javascript:
 var timeGap = false;
-
 $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Mobile-Attack-Enhancer_208673_rw6i55c8.js');
 ```
 
