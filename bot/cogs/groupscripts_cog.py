@@ -33,20 +33,32 @@ class GroupScriptsCog(commands.Cog):
         except Exception as e:
             print(f"Error sending ScriptCombineView: {e}")  # Print any errors encountered
 
+# Modal for grouping scripts
 class ScriptCombineModal(Modal):
     def __init__(self, bot, selected_scripts):
         super().__init__(title="Gecombineerde Script Code")
         self.bot = bot
         self.selected_scripts = selected_scripts
 
-    async def on_submit(self, interaction: discord.Interaction):
+    async def on_submit(self, interaction: Interaction):
+        # Generate the combined script code
         combined_code = get_combined_script_code(self.selected_scripts)
-        embed = create_embed(
-            title="Gecombineerde scriptcode",
-            description=f"```js\n{combined_code}\n```"
-        )
-        print("Sending combined script code embed")  # Debug print
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        
+        # Check if combined code is within Discord's limit for messages (2000 characters)
+        if len(combined_code) <= 2000:
+            # If it's within the limit, show it as an ephemeral message
+            embed = create_embed(
+                title="Gecombineerde scriptcode",
+                description=f"```js\n{combined_code}\n```"
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        else:
+            # If it exceeds the limit, notify the user
+            await interaction.response.send_message(
+                "De gegenereerde scriptcode is te lang om in één bericht weer te geven. Kies minder scripts of "
+                "deel de code op.",
+                ephemeral=True
+            )
 
 class ScriptCombineView(View):
     def __init__(self, bot):
