@@ -3,7 +3,7 @@ import requests  # This will let us make requests to Pastebin
 from discord.ext import commands
 from discord import app_commands, Interaction
 from discord.ui import View, Button, Select
-from cogs.scripts_cog import descriptions
+from cogs.scripts_cog import descriptions  # Import descriptions from scripts_cog
 from main import create_embed
 
 # Your Pastebin API Key
