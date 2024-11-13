@@ -42,6 +42,7 @@ class GroupScriptsCog(commands.Cog):
     async def group_scripts(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)  # Defer to prevent timeout
         try:
+            # Send the script selection view after deferring
             await interaction.followup.send("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot))
         except Exception as e:
             print(f"Error sending script selection view: {e}")
@@ -68,8 +69,8 @@ class ScriptCombineView(View):
     async def select_scripts(self, interaction: discord.Interaction):
         selected_values = interaction.data["values"]
         self.selected_scripts.extend(selected_values)
-        self.selected_scripts = list(set(self.selected_scripts))
-        await interaction.response.defer()
+        self.selected_scripts = list(set(self.selected_scripts))  # Remove duplicates
+        await interaction.response.defer()  # Defer response to avoid timeout
 
     async def show_combined_code(self, interaction: discord.Interaction):
         if not self.selected_scripts:
