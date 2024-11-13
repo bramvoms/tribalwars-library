@@ -21,17 +21,24 @@ class GroupScriptsCog(commands.Cog):
         self.bot = bot
         print("Initialized GroupScriptsCog")  # Debug print
 
-    # Slash command to open the modal for combining scripts
-    @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
-    async def group_scripts(self, interaction: Interaction):
-        print("Received /group_scripts command")  # Debug print
-        
-        # Acknowledge the interaction immediately to prevent timeout
+# Slash command to open the modal for combining scripts
+@app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
+async def group_scripts(self, interaction: Interaction):
+    print("Received /group_scripts command")  # Debug print
+    
+    # Acknowledge the interaction immediately to prevent timeout
+    try:
         await interaction.response.defer(ephemeral=True)
-        
-        # Send the selection view after deferring the response
+        print("Interaction deferred successfully")  # Debug print
+    except Exception as e:
+        print(f"Error deferring interaction: {e}")  # Debug print
+    
+    # Send the selection view after deferring the response
+    try:
         await interaction.followup.send("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot))
         print("Sent ScriptCombineView to user")  # Debug print
+    except Exception as e:
+        print(f"Error sending followup message: {e}")  # Debug print
 
 # Modal for displaying combined scripts
 class ScriptCombineModal(Modal):
