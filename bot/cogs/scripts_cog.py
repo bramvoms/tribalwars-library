@@ -101,6 +101,22 @@ $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Mobil
 Placeholder tekst voor uitgebreide uitleg
 """,
 
+    "Millisecond Tagger": """Toevoegen van milliseconden aan bevelen om te zien of deze op tijd zijn en markeren wat de speling is in millisecondes.
+
+🔗 - **FORUM TOPIC**
+<https://forum.tribalwars.nl/index.php?threads/toxic-donuts-millisecond-tagger.207418/>
+
+📜 - **SNELLIJST CODE**
+```js
+javascript:
+var maxDelay = 25, tooLateColor = '#FF8886', onTimeColor = '#90EE90', tooEarlyColor = '#FF8886';
+$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/Toxic-Donuts-Millisecond-Tagger._207418.js');
+```
+
+📝 - **SCRIPT UITLEG**
+Placeholder tekst voor uitgebreide uitleg
+""",
+
     # Verdediging category
     "Defpack": """A collection of defensive utils (e.g. Stack health and wall health, incomings overview enhancements)
 
@@ -721,9 +737,9 @@ class PrivateMenuView(View):
                 "SnipeTool", "IncsEnhancer", "TribeShare", "NobleSpam", "CoordFilter", 
                 "Coordgrab", "Resource sender", "TribeLines", "Village renamer",
                 "MintTimer", "CoinPull", "Munt Enhancer", "Template Enhancer",
-                "GroupPlacer", "ClearsTimer", "UnitsDivide"
+                "GroupPlacer", "ClearsTimer", "UnitsDivide", "Millisecond tagger",
             ],
-            "Aanval": ["Offpack", "TimeTool", "EasyCommand", "NobleSpam", "Template Enhancer", "MobileAttSent"],
+            "Aanval": ["Offpack", "TimeTool", "EasyCommand", "NobleSpam", "Template Enhancer", "MobileAttSent", "Millisecond tagger"],
             "Verdediging": ["Defpack", "SnipeTool", "TimeTool", "IncsEnhancer", "TribeIncs", "UnitsDivide"],
             "Kaart": ["Mapfunctions", "Overwatch", "CoordGrab", "TribeLines", "ClaimEnhancer"],
             "Farmen": ["FarmGod", "FarmShaper"],
