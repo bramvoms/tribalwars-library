@@ -19,6 +19,7 @@ footer_icon_url = "https://i.imgur.com/N6Z8wxx.png"  # Same image or different a
 def create_embed(title: str, description: str) -> discord.Embed:
     embed = discord.Embed(title=title, description=description, color=embed_color)
     embed.set_thumbnail(url=thumbnail_url)  # Add the thumbnail image in the top right corner
+    embed.add_field(name="\u200b", value="\u200b", inline=False)  # Adds an empty space
     embed.set_footer(icon_url=footer_icon_url, text="TribalWars Library - Created by Victorious")  # Footer with image
     return embed
 
