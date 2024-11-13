@@ -93,7 +93,7 @@ class AMCog(commands.Cog):
         await interaction.response.send_message(embed=embed, view=AMView(self.bot), ephemeral=True)
 
     # Text command for !am <template_name> for direct template lookup
-    @commands.command(name="am_template", help="Finds a specific AM template by name.")
+    @commands.command(name="am", help="Finds a specific AM template by name.")
     async def get_am_template_description(self, ctx, *, template_name: str):
         template_name = template_name.lower()  # Normalize input to lowercase
         matching_template = am_descriptions.get(template_name)  # Try to find an exact match
