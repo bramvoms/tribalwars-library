@@ -48,14 +48,17 @@ class ReportView(discord.ui.View):
         # Disable the button after it's clicked to prevent further clicks
         button.disabled = True
 
-        # Update the original message to indicate the report has been resolved
-        embed = interaction.message.embeds[0]
-        embed.title = "✅ Report Resolved"
-        embed.color = discord.Color.green()
-        embed.set_footer(text="This report has been marked as resolved by the moderation team.")
-        
-        # Edit the message in the mod channel with the updated embed and disabled button
-        await interaction.message.edit(embed=embed, view=self)
-        
+        # Safely retrieve the embed, if present, and update it to indicate resolution
+        if interaction.message.embeds:
+            embed = interaction.message.embeds[0]
+            embed.title = "✅ Report Resolved"
+            embed.color = discord.Color.green()
+            embed.set_footer(text="This report has been marked as resolved by the moderation team.")
+
+            # Edit the message in the mod channel with the updated embed and disabled button
+            await interaction.message.edit(embed=embed, view=self)
+        else:
+            print("No embed found on the message to update.")
+
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
