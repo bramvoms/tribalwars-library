@@ -1,72 +1,117 @@
 import discord
 from discord.ext import commands
-from discord import app_commands, Interaction
+from discord import Interaction
 from discord.ui import View, Button
+from fuzzywuzzy import process  # Import for fuzzy matching
 from main import create_embed
 
-class AMCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
-    @app_commands.command(name="am", description="Displays rush and template options for AM")
-    async def am(self, interaction: Interaction):
-        embed = create_embed("Choose an action:", "Select one of the options below for more information.")
-        await interaction.response.send_message(embed=embed, view=AMView(), ephemeral=True)
+# Dictionary of descriptions for the AM functionality
+am_descriptions = {
+    "Opslag rush": """Placeholder text for Opslag rush.
+    
+    📁 - **TEMPLATE**
+    Placeholder voor template
+    """,
+    "ZC rush": """Placeholder text for ZC rush.
+    
+    📁 - **TEMPLATE**
+    Placeholder voor template
+    """,
+    "AH rush": """Bouw een adelshoeve in 8 dagen zonder PP inzet.
+    
+    📁 - **TEMPLATE**
+    Placeholder voor template
+    """,
+    "Muur rush": """Placeholder text for Muur rush.
+    
+    📁 - **TEMPLATE**
+    Placeholder voor template
+    """,
+    "Toren rush": """Placeholder text for Toren rush.
+    
+    📁 - **TEMPLATE**
+    Placeholder voor template
+    """,
+    "Kerk rush": """Placeholder text for Kerk rush.
+    
+    📁 - **TEMPLATE**
+    Placeholder voor template
+    """,
+    "Muur spoed": """Placeholder text for Muur spoed.
+    
+    📁 - **TEMPLATE**
+    Placeholder voor template
+    """,
+    "OFF sjabloon": """Placeholder text for OFF sjabloon.
+    
+    📁 - **TEMPLATE**
+    Placeholder voor template
+    """,
+    "DEF sjabloon": """Placeholder text for DEF sjabloon.
+    
+    📁 - **TEMPLATE**
+    Placeholder voor template
+    """,
+}
 
 class AMView(View):
-    def __init__(self):
+    def __init__(self, bot):
         super().__init__(timeout=None)
-        self.add_button("Opslag rush", self.opslag_rush_callback)
-        self.add_button("ZC rush", self.zc_rush_callback)
-        self.add_button("AH rush", self.ah_rush_callback)
-        self.add_button("Muur rush", self.muur_rush_callback)
-        self.add_button("Toren rush", self.toren_rush_callback)
-        self.add_button("Kerk rush", self.kerk_rush_callback)
-        self.add_button("Muur spoed", self.muur_spoed_callback)
-        self.add_button("OFF sjabloon", self.off_sjabloon_callback)
-        self.add_button("DEF sjabloon", self.def_sjabloon_callback)
+        self.bot = bot
+        for label in am_descriptions.keys():
+            button = Button(label=label, style=discord.ButtonStyle.primary)
+            button.callback = lambda interaction, label=label: self.show_am_description(interaction, label)
+            self.add_item(button)
 
-    def add_button(self, label, callback):
-        button = Button(label=label, style=discord.ButtonStyle.primary)
-        button.callback = callback
-        self.add_item(button)
+    async def show_am_description(self, interaction: Interaction, subcategory):
+        # Format the title and retrieve description
+        title = f"━━━━━━ {subcategory.upper()} ━━━━━━"
+        description = am_descriptions.get(subcategory, "No description available.")
+        embed = create_embed(title=title, description=description)
+        
+        # Create a main menu button view
+        main_menu_only_view = View()
+        main_menu_button = Button(label="Main Menu", style=discord.ButtonStyle.danger)
+        main_menu_button.callback = self.go_to_main_menu
+        main_menu_only_view.add_item(main_menu_button)
 
-    async def opslag_rush_callback(self, interaction: Interaction):
-        embed = create_embed("Opslag rush", "Placeholder text for Opslag rush.")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await interaction.response.edit_message(embed=embed, view=main_menu_only_view)
 
-    async def zc_rush_callback(self, interaction: Interaction):
-        embed = create_embed("ZC rush", "Placeholder text for ZC rush.")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+    async def go_to_main_menu(self, interaction: Interaction):
+        # Redirect to the main AM menu
+        embed = create_embed("AM sjablonen", "Selecteer het sjabloon welke je wilt bekijken")
+        await interaction.response.edit_message(embed=embed, view=self)
 
-    async def ah_rush_callback(self, interaction: Interaction):
-        embed = create_embed("AH rush", "Placeholder text for AH rush.")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+ # Slash command to show AM options
+    @commands.command(name="am")
+    async def am_command(self, ctx):
+        embed = create_embed("AM sjablonen", "Selecteer het sjabloon welke je wilt bekijken")
+        await ctx.send(embed=embed, view=AMView(self.bot))
 
-    async def muur_rush_callback(self, interaction: Interaction):
-        embed = create_embed("Muur rush", "Placeholder text for Muur rush.")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+    # Text command for !am <template_name>
+    @commands.command(name="am", help="Finds a specific AM template by name.")
+    async def get_am_template_description(self, ctx, *, template_name: str):
+        template_name = template_name.lower()  # Normalize input to lowercase
+        matching_template = am_descriptions.get(template_name)  # Try to find an exact match
 
-    async def toren_rush_callback(self, interaction: Interaction):
-        embed = create_embed("Toren rush", "Placeholder text for Toren rush.")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
-    async def kerk_rush_callback(self, interaction: Interaction):
-        embed = create_embed("Kerk rush", "Placeholder text for Kerk rush.")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
-    async def muur_spoed_callback(self, interaction: Interaction):
-        embed = create_embed("Muur spoed", "Placeholder text for Muur spoed.")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
-    async def off_sjabloon_callback(self, interaction: Interaction):
-        embed = create_embed("OFF sjabloon", "Placeholder text for OFF sjabloon.")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
-    async def def_sjabloon_callback(self, interaction: Interaction):
-        embed = create_embed("DEF sjabloon", "Placeholder text for DEF sjabloon.")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        if matching_template:
+            # Send the exact match description
+            title = f"━━━━━━ {template_name.upper()} ━━━━━━"
+            embed = create_embed(title=title, description=matching_template)
+            await ctx.send(embed=embed)
+        else:
+            # No exact match, use fuzzy matching to find the closest template
+            closest_match, score = process.extractOne(template_name, am_descriptions.keys())
+            
+            if score > 60:  # Threshold for considering a match
+                # Show the closest match automatically
+                title = f"━━━━━━ {closest_match.upper()} ━━━━━━"
+                embed = create_embed(title=title, description=am_descriptions[closest_match])
+                await ctx.send(embed=embed)
+            else:
+                # No close match found
+                embed = create_embed("Template Not Found", f"No template found matching '{template_name}'.")
+                await ctx.send(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(AMCog(bot))
-
