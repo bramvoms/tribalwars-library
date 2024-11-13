@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import app_commands, Interaction
 from main import create_embed  # Import the pre-configured embed function
 
 class ReportToModsCog(commands.Cog):
@@ -8,14 +9,16 @@ class ReportToModsCog(commands.Cog):
         # Replace with your server's specific moderator channel ID
         self.moderator_channel_id = 1241668734528258101  # Replace with actual channel ID
 
-    # Create a context menu command
-    @commands.Cog.listener()
-    async def on_ready(self):
-        report_command = discord.app_commands.ContextMenu(
+        # Create a command tree instance for context menus
+        self.tree = app_commands.CommandTree(self.bot)
+
+    async def cog_load(self):
+        # Register the context menu command on cog load
+        self.tree.add_command(app_commands.ContextMenu(
             name="Report to Mods",
             callback=self.report_message
-        )
-        self.bot.tree.add_command(report_command)
+        ))
+        await self.tree.sync()  # Sync commands with Discord
 
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
         mod_channel = self.bot.get_channel(self.moderator_channel_id)
