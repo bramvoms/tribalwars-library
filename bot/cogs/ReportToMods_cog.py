@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from discord import app_commands
 from main import create_embed  # Import the pre-configured embed function
 
 class ReportToModsCog(commands.Cog):
@@ -57,11 +56,3 @@ class ReportView(discord.ui.View):
 
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
-    
-    # Register the context menu command directly in setup
-    report_command = app_commands.ContextMenu(
-        name="Report to Mods",
-        callback=bot.get_cog("ReportToModsCog").report_message
-    )
-    bot.tree.add_command(report_command)
-    await bot.tree.sync()  # Sync the commands to ensure it registers with Discord
