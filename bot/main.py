@@ -54,10 +54,6 @@ async def main():
     await load_cogs()  # Load all cogs asynchronously
     await bot.start(os.getenv("DISCORD_TOKEN"))  # Start the bot
     
-@bot.tree.command(name="test", description="A test command to check slash commands.")
-async def test(interaction: discord.Interaction):
-    await interaction.response.send_message("Test command is working!")
-
 # Run the asynchronous main function
 if __name__ == "__main__":
     asyncio.run(main())
