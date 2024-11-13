@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 import os
+import asyncio
+from pathlib import Path  # Import Path to work with directories
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -23,8 +25,15 @@ async def on_ready():
     await bot.tree.sync()  # Sync app commands with Discord
 
 async def load_cogs():
-    for cog in ["scripts_cog", "purge_cog", "am_cog"]:
-        await bot.load_extension(f"cogs.{cog}")
+    # Path to the `cogs` directory
+    cogs_path = Path("cogs")
+    
+    # Iterate over all `.py` files in the `cogs` directory
+    for cog_file in cogs_path.glob("*.py"):
+        # Load each cog by constructing its Python module path
+        cog_name = f"cogs.{cog_file.stem}"  # `stem` gives the filename without the extension
+        await bot.load_extension(cog_name)
+        print(f"Loaded cog: {cog_name}")
 
 # Run the bot and load cogs
 if __name__ == "__main__":
