@@ -42,27 +42,34 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Resolved", style=discord.ButtonStyle.success)
     async def resolved_button(self, button: discord.ui.Button, interaction: discord.Interaction):
-        # Disable the button after it's clicked to prevent further clicks
-        button.disabled = True
+        try:
+            # Acknowledge the interaction immediately
+            await interaction.response.defer()
 
-        # Safely retrieve the embed, if present, and update it to indicate resolution
-        if interaction.message.embeds:
-            embed = interaction.message.embeds[0]
-            embed.title = "✅ Resolved Report"
-            embed.color = discord.Color.green()
-            
-            # Add the "Resolved by" field to mention the moderator
-            embed.add_field(name="Resolved by", value=interaction.user.mention, inline=False)
-            embed.set_footer(text="This report has been marked as resolved by the moderation team.")
+            # Disable the button to prevent further clicks
+            button.disabled = True
 
-            # Edit the message in the mod channel with the updated embed and disabled button
-            await interaction.message.edit(embed=embed, view=self)
+            # Safely retrieve and update the embed
+            if interaction.message.embeds:
+                embed = interaction.message.embeds[0]
+                embed.title = "✅ Resolved Report"
+                embed.color = discord.Color.green()
+                embed.add_field(name="Resolved by", value=interaction.user.mention, inline=False)
+                embed.set_footer(text="This report has been marked as resolved by the moderation team.")
 
-            # Send an ephemeral message to the moderator confirming the action
-            await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
-        else:
-            # If no embed is found, send an ephemeral message notifying of the issue
-            await interaction.response.send_message("No embed found on the message to update.", ephemeral=True)
-            
+                # Edit the message in the mod channel with the updated embed and disabled button
+                await interaction.message.edit(embed=embed, view=self)
+
+                # Send an ephemeral confirmation to the moderator
+                await interaction.followup.send("This report has been marked as resolved.", ephemeral=True)
+            else:
+                # Log and inform if no embed was found
+                await interaction.followup.send("No embed found on the message to update.", ephemeral=True)
+                print("Error: No embed found in the report message.")
+        except Exception as e:
+            # Log the error for troubleshooting
+            await interaction.followup.send("An error occurred while resolving the report.", ephemeral=True)
+            print(f"Error handling resolved interaction: {e}")
+
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
