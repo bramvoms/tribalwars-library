@@ -7,7 +7,7 @@ class ReportToModsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         # Replace with your server's specific moderator channel ID
-        self.moderator_channel_id = 1241668734528258101  # Replace with actual channel ID
+        self.moderator_channel_id = 123456789012345678  # Replace with actual channel ID
 
     async def cog_load(self):
         # Register the context menu command directly to the existing command tree
@@ -60,4 +60,10 @@ class ReportView(discord.ui.View):
         embed.color = discord.Color.green()
         embed.set_footer(text="This report has been marked as resolved.")
         
-        # Edit the message w
+        # Edit the message with the updated embed and disabled button
+        await interaction.message.edit(embed=embed, view=self)
+        await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
+
+# Ensure the setup function is defined correctly
+async def setup(bot):
+    await bot.add_cog(ReportToModsCog(bot))
