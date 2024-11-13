@@ -48,7 +48,7 @@ class ScriptCombineModal(Modal):
         self.selected_scripts = selected_scripts
         print("Initialized ScriptCombineModal")  # Debug print
 
-    async def on_submit(self, interaction: Interaction):
+    async def on_submit(self, interaction: "Interaction"):
         print("Submitting combined script modal")  # Debug print
         combined_code = get_combined_script_code(self.selected_scripts)
         embed = create_embed(
@@ -80,12 +80,12 @@ class ScriptCombineView(View):
         self.add_item(combine_button)
         print("Added Combine Scripts button")  # Debug print
 
-    async def select_scripts(self, interaction: Interaction):
+    async def select_scripts(self, interaction: "Interaction"):
         self.selected_scripts = self.select.values
         print(f"Selected scripts: {self.selected_scripts}")  # Debug print
         await interaction.response.defer()
 
-    async def show_combine_modal(self, interaction: Interaction):
+    async def show_combine_modal(self, interaction: "Interaction"):
         if not self.selected_scripts:
             print("No scripts selected")  # Debug print
             await interaction.response.send_message("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
