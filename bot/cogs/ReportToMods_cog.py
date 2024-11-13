@@ -9,13 +9,10 @@ class ReportToModsCog(commands.Cog):
         self.moderator_channel_id = 1241668734528258101  # Replace with actual channel ID
 
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
-        mod_channel = self.bot.get_channel(self.moderator_channel_id)
-        
-        if mod_channel is None:
-            await interaction.response.send_message("Moderator channel not found. Please contact an admin.", ephemeral=True)
-            return
+        # Send a private confirmation to the user who reported the message
+        await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
 
-        # Prepare the title and description using your preferred embed style
+        # Prepare the title and description for the mod channel report message
         title = "⚠️ New Message Report"
         description = (
             f"**Reported Message**: {message.content}\n\n"
@@ -28,13 +25,16 @@ class ReportToModsCog(commands.Cog):
         # Use create_embed from main.py for consistent embed styling
         embed = create_embed(title=title, description=description)
         embed.set_footer(text="Use this information for appropriate moderation actions.")
-
-        # Create a button view for the "Resolved" button
+        
+        # Create a button view with the "Resolved" button for mods to mark the report as resolved
         view = ReportView()
 
-        # Send the embed to the moderators' channel with the "Resolved" button
-        await mod_channel.send(embed=embed, view=view)
-        await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
+        # Send the embed publicly in the moderators' channel
+        mod_channel = self.bot.get_channel(self.moderator_channel_id)
+        if mod_channel:
+            await mod_channel.send(embed=embed, view=view)
+        else:
+            print("Moderator channel not found.")
 
 class ReportView(discord.ui.View):
     def __init__(self):
@@ -45,17 +45,17 @@ class ReportView(discord.ui.View):
         # Acknowledge the interaction to prevent "Interaction failed" messages
         await interaction.response.defer()
 
-        # Disable the button after it's clicked to prevent multiple resolutions
+        # Disable the button after it's clicked to prevent further clicks
         button.disabled = True
 
         # Update the original message to indicate the report has been resolved
         embed = interaction.message.embeds[0]
         embed.title = "✅ Report Resolved"
         embed.color = discord.Color.green()
-        embed.set_footer(text="This report has been marked as resolved.")
-
-        # Edit the message with the updated embed and disabled button
+        embed.set_footer(text="This report has been marked as resolved by the moderation team.")
+        
+        # Edit the message in the mod channel with the updated embed and disabled button
         await interaction.message.edit(embed=embed, view=self)
-
+        
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
