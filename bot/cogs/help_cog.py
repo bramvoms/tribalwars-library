@@ -10,7 +10,7 @@ class HelpCog(commands.Cog):
     async def help_command(self, ctx):
         # Create an embed for the help menu
         embed = create_embed(
-            title="TribalWars Library",
+            title=f"━━━━━━ TribalWars Library ━━━━━━",
             description="Here is a list of all available commands and their descriptions. Use them to navigate and utilize bot functionalities."
         )
 
@@ -51,7 +51,7 @@ class HelpCog(commands.Cog):
             inline=False
         )
 
-        embed.set_footer(text="Use commands with prefixes '&' or '/' as specified.")
+        embed.set_footer(text="Use commands with prefixes '&' or '/' as specified\nTribalWars Library - Created by Victorious")
 
         await ctx.send(embed=embed)
 
