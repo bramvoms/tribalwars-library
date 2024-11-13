@@ -54,7 +54,7 @@ class ScriptCombineView(View):
 
     async def send_combined_code(self, interaction: discord.Interaction):
         if not self.selected_scripts:
-            await interaction.response.send_message("No scripts selected. Please select at least one script.", ephemeral=True)
+            await interaction.followup.send("No scripts selected. Please select at least one script.", ephemeral=True)
             return
 
         # Generate the combined script code
@@ -64,12 +64,13 @@ class ScriptCombineView(View):
         try:
             user_dm = await interaction.user.create_dm()
             await user_dm.send(f"Here is your combined script code:\n```js\n{combined_code}\n```")
-            await interaction.response.send_message("The combined script code has been sent to your DMs.", ephemeral=True)
+            await interaction.followup.send("The combined script code has been sent to your DMs.", ephemeral=True)
 
             # Clear the selection after sending the code
             self.clear_selection()
+            await interaction.message.edit(view=self)  # Update the view to reflect cleared selections
         except Exception as e:
-            await interaction.response.send_message(f"Error sending DM: {e}", ephemeral=True)
+            await interaction.followup.send(f"Error sending DM: {e}", ephemeral=True)
 
     def get_combined_script_code(self):
         # Combine the selected scripts into the final code
