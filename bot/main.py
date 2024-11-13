@@ -34,7 +34,7 @@ def create_embed(title: str, description: str) -> discord.Embed:
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} ({bot.user.id})")
-    
+
     # Register the context menu command in on_ready
     report_command = app_commands.ContextMenu(
         name="Report to Mods",
@@ -42,10 +42,11 @@ async def on_ready():
     )
     bot.tree.add_command(report_command)
     
-    # Sync the commands with Discord
+    # Sync and print the registered commands
     try:
         await bot.tree.sync()
         print("Commands synced successfully.")
+        print("Registered commands:", bot.tree.get_commands())  # Print the list of commands
     except Exception as e:
         print(f"Error syncing commands: {e}")
 
