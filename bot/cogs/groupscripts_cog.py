@@ -65,6 +65,9 @@ class ScriptCombineView(View):
             user_dm = await interaction.user.create_dm()
             await user_dm.send(f"Here is your combined script code:\n```js\n{combined_code}\n```")
             await interaction.response.send_message("The combined script code has been sent to your DMs.", ephemeral=True)
+
+            # Clear the selection after sending the code
+            self.clear_selection()
         except Exception as e:
             await interaction.response.send_message(f"Error sending DM: {e}", ephemeral=True)
 
@@ -78,6 +81,14 @@ class ScriptCombineView(View):
                 script_lines = [line.strip() for line in description.splitlines() if line.strip().startswith("$.getScript") or "var" in line]
                 combined_code += "\n".join(script_lines) + "\n"
         return combined_code.strip()
+
+    def clear_selection(self):
+        """Clear selected scripts and reset all select options."""
+        self.selected_scripts.clear()
+        for select in self.children:
+            if isinstance(select, Select):
+                for option in select.options:
+                    option.default = False  # Unselect each option
 
 async def setup(bot):
     await bot.add_cog(GroupScriptsCog(bot))
