@@ -75,7 +75,7 @@ class AMView(View):
 
     async def show_am_description(self, interaction: Interaction, subcategory):
         # Format the title and retrieve description
-        title = f"━━━━━━ {subcategory.upper()} ━━━━━━"
+        title = f"━ {subcategory.upper()} ━"
         description = am_descriptions.get(subcategory, "No description available.")
         embed = create_embed(title=title, description=description)
         
@@ -89,7 +89,7 @@ class AMView(View):
 
     async def go_to_main_menu(self, interaction: Interaction):
         # Redirect to the main AM menu
-        title = f"━━━━━━ AM SJABLONEN ━━━━━━"
+        title = f"━ AM SJABLONEN ━"
         embed = create_embed(title=title, description="Selecteer welk sjabloon je wilt bekijken.\nKopieer de tekst onder TEMPLATE en plak dit ingame:\nAccount Manager > Bouw > Sjablonen beheren > Sjabloon importeren\n\nSjablonen voor bouwen tot 10.435 punten, tenzij het een rush sjabloon is.")
         await interaction.response.edit_message(embed=embed, view=self)
 
@@ -100,7 +100,7 @@ class AMCog(commands.Cog):
     # Slash command to show AM options
     @app_commands.command(name="am", description="Toont het AM sjablonen menu")
     async def am(self, interaction: Interaction):
-        title = f"━━━━━━ AM SJABLONEN ━━━━━━"
+        title = f"━ AM SJABLONEN ━"
         embed = create_embed(title=title, description="Selecteer welk sjabloon je wilt bekijken")
         await interaction.response.send_message(embed=embed, view=AMView(self.bot), ephemeral=True)
 
@@ -112,7 +112,7 @@ class AMCog(commands.Cog):
 
         if matching_template:
             # Send the exact match description
-            title = f"━━━━━━ {template_name.upper()} ━━━━━━"
+            title = f"━ {template_name.upper()} ━"
             embed = create_embed(title=title, description=matching_template)
             await ctx.send(embed=embed)
         else:
@@ -121,7 +121,7 @@ class AMCog(commands.Cog):
             
             if score > 60:  # Threshold for considering a match
                 # Show the closest match automatically
-                title = f"━━━━━━ {closest_match.upper()} ━━━━━━"
+                title = f"━ {closest_match.upper()} ━"
                 embed = create_embed(title=title, description=am_descriptions[closest_match])
                 await ctx.send(embed=embed)
             else:
