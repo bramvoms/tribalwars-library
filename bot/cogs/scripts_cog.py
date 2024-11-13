@@ -31,12 +31,7 @@ Placeholder tekst voor uitgebreide uitleg
 📜 - **SNELLIJST CODE**
 ```js
 javascript:
-
-var timeColor = "green";
-var waitingColor = "#ff9933";
-var noDateColor = "green";
-var timeBarWidth = false;
-
+var timeColor="#00BFFF", waitingColor="#ff9933", noDateColor="green", timeBarWidth=false;
 $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/TimeTool_206574.js');
 ```
 
@@ -52,19 +47,8 @@ Placeholder tekst voor uitgebreide uitleg
 📜 - **SNELLIJST CODE**
 ```js
 javascript:
-
-var ECsettings = {
-minPop : 12000,
-colors_on : true,
-colors : {
-'offence': '#90ef81',
-'defence': '#00FFFF',
-'noble': '#FFFF00',
-'none': '#F4E4BC'
-}
-};
-
-$.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/EasyCommand_206303.js');
+var ECsettings = {minPop: 1000, colors_on: true, colors: {offence: '#90ef81', defence: '#00FFFF', noble: '#FFFF00', none: '#F4E4BC'}};
+$.getScript('https://media.innogames.com/com_DS_NL/scripts/EasyCommand_206303.js');
 ```
 
 📝 - **SCRIPT UITLEG**
@@ -388,9 +372,7 @@ Placeholder tekst voor uitgebreide uitleg
 📜 - **SNELLIJST CODE**
 ```js
 javascript:
-var targetVillage = [473,431];
-var GMprijs = [56000,60000,50000];
-var HandelarenThuisLaten = 0;
+var targetVillage=[473,431], GMprijs=[56000,60000,50000], HandelarenThuisLaten=0;
 $.getScript('https://media.innogamescdn.com/com_DS_NL/scripts/GsToTargetVillage_207833_342g9meb.js');
 ```
 
