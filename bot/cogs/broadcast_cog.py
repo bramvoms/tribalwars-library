@@ -10,7 +10,8 @@ class BroadcastCog(commands.Cog):
     @commands.is_owner()  # Ensures only the bot owner can run this command
     async def update(self, ctx, *, message: str):
         # Create the embed using the pre-configured format
-        embed = create_embed(title="Update Notification", description=message)
+        title = f"━━━━━━ UPDATE ━━━━━━"
+        embed = create_embed(title=title, description=message)
 
         # List of prioritized channel name patterns
         priority_channels = [
@@ -44,7 +45,7 @@ class BroadcastCog(commands.Cog):
             else:
                 print(f"No suitable channel found in {guild.name}")
 
-        await ctx.send("Broadcast completed.")
+        await ctx.send("Update verzonden.")
 
 # Setup function to add the cog
 async def setup(bot):
