@@ -11,8 +11,8 @@ class GroupScriptsCog(commands.Cog):
 
     @app_commands.command(name="group_scripts", description="Combine scripts into a single script for faster loading.")
     async def group_scripts(self, interaction: discord.Interaction):
-        # Defer the response immediately to prevent the interaction from failing
-        await interaction.response.defer(ephemeral=True)  # Mark the interaction as pending
+        # Defer the interaction immediately to prevent a timeout
+        await interaction.response.defer(ephemeral=True)
         try:
             # Send the script selection view after deferring
             await interaction.followup.send("Selecteer scripts om te combineren:", view=ScriptCombineView(self.bot))
@@ -49,6 +49,7 @@ class ScriptCombineView(View):
             await interaction.followup.send("Geen scripts geselecteerd. Selecteer ten minste één script.", ephemeral=True)
             return
 
+        # Combine the selected scripts into one
         combined_code = self.get_combined_script_code(self.selected_scripts)
 
         # Send the combined code directly to the user's DM
