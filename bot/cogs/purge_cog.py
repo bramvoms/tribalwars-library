@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands, Interaction
-from discord.ui import View, Select, Modal, TextInput
+from discord.ui import View, Select, Modal, TextInput, Button
 import asyncio
 from main import create_embed
 
@@ -27,6 +27,16 @@ class PurgeOptionsView(View):
         self.add_item(PurgeOptionsSelect())
 
     async def purge_all_messages(self, interaction: discord.Interaction):
+        # Send a warning message with a confirmation button
+        embed = create_embed(
+            "⚠️ Confirm Purge All",
+            "You are about to delete **all messages** in this channel. This action is irreversible. Do you want to continue?"
+        )
+        view = ConfirmPurgeAllView(self)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+    async def perform_purge_all_messages(self, interaction: discord.Interaction):
+        """Perform the actual purge of all messages after confirmation."""
         await interaction.response.defer(thinking=True)
         total_deleted = 0
         delay_between_deletions = 1.5  # Conservative delay to avoid rate limits
@@ -43,7 +53,7 @@ class PurgeOptionsView(View):
                 else:
                     break
 
-        # Send an ephemeral follow-up message to the user with the total deleted count
+        # Send an ephemeral follow-up message with the total deleted count
         await interaction.followup.send(f"Purge complete: Deleted {total_deleted} messages.", ephemeral=True)
 
     async def prompt_number_of_messages(self, interaction: discord.Interaction):
@@ -95,6 +105,25 @@ class PurgeOptionsView(View):
 
         # Send an ephemeral follow-up message to the user with the total deleted count
         await interaction.followup.send(f"Purge complete: Deleted {total_deleted} bot messages.", ephemeral=True)
+
+class ConfirmPurgeAllView(View):
+    def __init__(self, parent_view):
+        super().__init__(timeout=None)
+        self.parent_view = parent_view
+
+        # Add confirmation and cancel buttons
+        self.add_item(Button(label="Confirm", style=discord.ButtonStyle.danger, custom_id="confirm_purge_all"))
+        self.add_item(Button(label="Cancel", style=discord.ButtonStyle.secondary, custom_id="cancel_purge_all"))
+
+    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.danger)
+    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+        # Perform the purge
+        await self.parent_view.perform_purge_all_messages(interaction)
+
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.secondary)
+    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+        # Cancel the action and notify the user
+        await interaction.response.send_message("Purge all messages canceled.", ephemeral=True)
 
 class PurgeOptionsSelect(discord.ui.Select):
     def __init__(self):
