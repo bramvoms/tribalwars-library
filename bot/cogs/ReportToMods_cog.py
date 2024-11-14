@@ -228,7 +228,6 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-out author", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.mark_as_resolved(interaction)
         view = TimeoutDurationView(self.message.author, self.message, self)
         await interaction.message.edit(content="Select a time-out duration for the user:", view=view)
 
