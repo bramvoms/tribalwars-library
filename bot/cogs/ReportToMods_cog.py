@@ -97,8 +97,8 @@ class ReportView(discord.ui.View):
         await self.message.delete()
         await interaction.response.send_message("Message deleted and author notified (if possible).", ephemeral=True)
 
-  @discord.ui.button(label="Time-Out Options", style=discord.ButtonStyle.danger)
-async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @discord.ui.button(label="Time-Out Options", style=discord.ButtonStyle.danger)
+    async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
     # Send the TimeoutDurationView with both the member and message
     await interaction.response.send_message(
         "Select a time-out duration for the user:", 
