@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import app_commands, Interaction
 from datetime import datetime, timedelta
 import os
 import psycopg2
