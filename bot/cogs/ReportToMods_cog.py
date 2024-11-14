@@ -200,7 +200,7 @@ class ReportView(discord.ui.View):
             try:
                 await author.timeout(timedelta(days=1), reason="Accumulated 3 warnings in 8 hours.")
                 dm_message = (
-                    f"You have been timed out for 1 day in **{interaction.guild.name}** due to multiple violations. Your message in {self.message.channel.mention} was: \n\n"
+                    f"You have been timed out for 24 hours in **{interaction.guild.name}** due to multiple violations. Your message in {self.message.channel.mention} was: \n\n"
                     f"**Message content:**\n{self.message.content}"
                 )
             except discord.Forbidden:
@@ -284,7 +284,6 @@ class TimeoutDurationView(discord.ui.View):
                 f"{self.member.mention} has been timed out for {formatted_duration}, message deleted, and author notified.",
                 ephemeral=True
             )
-            await self.report_view.mark_as_resolved(interaction)
         except discord.Forbidden:
             await interaction.response.send_message("Unable to time out the user or delete the message due to permission issues.", ephemeral=True)
 
