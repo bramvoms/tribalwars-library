@@ -79,12 +79,15 @@ class ReportToModsCog(commands.Cog):
         )
         warnings = self.cursor.fetchall()
 
-        # Build the moderator warning information for the report message
-        warning_info = f"{len(warnings)} warning(s) in the last 8 hours.\n"
-        for mod_id, timestamp in warnings:
-            mod_member = interaction.guild.get_member(mod_id)
-            mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
-            warning_info += f"- Warning given by {mod_name} at {timestamp}\n"
+        # Build the warning information in chronological order
+        if warnings:
+            warning_info = f"{len(warnings)} warning(s) in the last 8 hours.\n"
+            for mod_id, timestamp in warnings:
+                mod_member = interaction.guild.get_member(mod_id)
+                mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
+                warning_info += f"- Warning given by {mod_name} at {timestamp}\n"
+        else:
+            warning_info = "No warnings in the last 8 hours."
 
         # Add warning information to the embed
         embed = create_embed(title=title, description=description)
