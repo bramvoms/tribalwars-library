@@ -84,7 +84,7 @@ class ReportToModsCog(commands.Cog):
         warning_info = f"{warning_count} warning(s) in the last 8 hours.\n"
         for mod_id, timestamp in zip(moderator_ids, timestamps):
             mod_member = interaction.guild.get_member(mod_id)
-            mod_name = mod_member.name if mod_member else f"Moderator ID: {mod_id}"
+            mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
             warning_info += f"- {mod_name} at {timestamp}\n"
 
         # Add warning information to the embed
