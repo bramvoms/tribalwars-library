@@ -58,7 +58,7 @@ class HelpCog(commands.Cog):
         )
 
         embed.add_field(
-            name="`&setmodchannel <channel_name>",
+            name="`&setmodchannel <channel_name>`",
             value="Set the moderator-only channel to use for reported messages. E.g.: &setmodchannel #moderator-only",
             inline=False
         )
