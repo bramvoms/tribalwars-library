@@ -6,19 +6,6 @@ import os
 import psycopg2
 from psycopg2 import sql
 from main import create_embed
-import logging
-import sys
-
-# Enhanced logging configuration for Heroku
-logging.basicConfig(
-    level=logging.DEBUG,  # Switch to DEBUG to capture everything during testing
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    stream=sys.stdout
-)
-logger = logging.getLogger(__name__)
-
-# Example startup log to check if it appears
-logger.info("Bot is starting up...")  # Check if this appears in Heroku logs
 
 class ReportToModsCog(commands.Cog):
     def __init__(self, bot):
@@ -28,7 +15,6 @@ class ReportToModsCog(commands.Cog):
         self.cursor = self.db.cursor()
 
         # Create the tables if they don't exist
-        logger.debug("Creating tables if they do not exist.")
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS mod_channels (
                 guild_id BIGINT PRIMARY KEY,
@@ -47,7 +33,6 @@ class ReportToModsCog(commands.Cog):
         self.db.commit()
 
     def set_moderator_channel(self, guild_id: int, channel_id: int):
-        logger.info(f"Setting moderator channel for guild {guild_id} to {channel_id}")
         self.cursor.execute(
             sql.SQL("INSERT INTO mod_channels (guild_id, channel_id) VALUES (%s, %s) ON CONFLICT (guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id"),
             (guild_id, channel_id)
@@ -55,13 +40,11 @@ class ReportToModsCog(commands.Cog):
         self.db.commit()
 
     def get_moderator_channel(self, guild_id: int):
-        logger.info(f"Retrieving moderator channel for guild {guild_id}")
         self.cursor.execute(
             sql.SQL("SELECT channel_id FROM mod_channels WHERE guild_id = %s"),
             (guild_id,)
         )
         result = self.cursor.fetchone()
-        logger.debug(f"Moderator channel result: {result}")
         return result[0] if result else None
 
     @commands.command(name="setmodchannel")
@@ -72,7 +55,6 @@ class ReportToModsCog(commands.Cog):
         await ctx.send(f"Moderator channel set to {channel.mention}")
 
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
-        logger.info(f"Report message triggered by {interaction.user.id} for message ID {message.id}")
         await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
 
         title = "⚠️ New Message Report!"
@@ -84,10 +66,8 @@ class ReportToModsCog(commands.Cog):
             f"[Jump to Message]({message.jump_url})"
         )
 
-        # Fetch warning information for the author in the last 8 hours
         guild_id = interaction.guild.id
         current_time = datetime.utcnow()
-        logger.info("Fetching recent warnings from the database...")
         self.cursor.execute(
             """
             SELECT warning_id, moderator_id, timestamp
@@ -98,9 +78,7 @@ class ReportToModsCog(commands.Cog):
             (message.author.id, guild_id, current_time - timedelta(hours=8))
         )
         results = self.cursor.fetchall()
-        logger.debug(f"Database results for warnings: {results}")
 
-        # Build warning information for each line in the embed
         warning_info = f"{len(results)} warning(s) in the last 8 hours.\n"
         if results:
             for warning_id, mod_id, timestamp in results:
@@ -108,16 +86,9 @@ class ReportToModsCog(commands.Cog):
                 mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
                 formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
                 warning_info += f"- Warning #{warning_id} | {formatted_timestamp} | Moderator: {mod_name}\n"
-                logger.info(
-                    "Processed Warning Info - Warning #%s | Timestamp: %s | Moderator: %s",
-                    warning_id,
-                    formatted_timestamp,
-                    mod_name
-                )
         else:
             warning_info += "No recent warnings."
 
-        # Add warning information to the embed
         embed = create_embed(title=title, description=description)
         embed.add_field(name="Previous Warnings", value=warning_info, inline=False)
         embed.set_footer(text="Use this information for appropriate moderation actions.")
@@ -139,7 +110,6 @@ class ReportToModsCog(commands.Cog):
     async def removewarnings(self, interaction: discord.Interaction, user: discord.User, all: str, timeframe: int = 0):
         guild_id = interaction.guild.id
 
-        # Verify that the specified user exists in the guild
         guild_member = interaction.guild.get_member(user.id)
         if not guild_member:
             await interaction.response.send_message("The specified user is not a member of this guild.", ephemeral=True)
@@ -147,14 +117,12 @@ class ReportToModsCog(commands.Cog):
 
         try:
             if all.upper() == 'Y':
-                logger.info(f"Removing all warnings for user {user.id} in guild {guild_id}")
                 self.cursor.execute(
                     "DELETE FROM warnings WHERE user_id = %s AND guild_id = %s",
                     (user.id, guild_id)
                 )
             else:
                 timeframe_delta = datetime.utcnow() - timedelta(hours=timeframe)
-                logger.info(f"Removing warnings within timeframe for user {user.id} in guild {guild_id}")
                 self.cursor.execute(
                     "DELETE FROM warnings WHERE user_id = %s AND guild_id = %s AND timestamp > %s",
                     (user.id, guild_id, timeframe_delta)
@@ -162,9 +130,8 @@ class ReportToModsCog(commands.Cog):
             self.db.commit()
             await interaction.response.send_message(f"Warnings for {guild_member.display_name} have been removed.", ephemeral=True)
         except Exception as e:
-            logger.error(f"An error occurred while removing warnings: {e}")
             await interaction.response.send_message(f"An error occurred while removing warnings: {str(e)}", ephemeral=True)
-            
+
     def set_moderator_channel(self, guild_id: int, channel_id: int):
         self.cursor.execute(
             sql.SQL("INSERT INTO mod_channels (guild_id, channel_id) VALUES (%s, %s) ON CONFLICT (guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id"),
@@ -197,12 +164,10 @@ class ReportView(discord.ui.View):
             embed.set_footer(text="This report has been marked as resolved by the moderation team.")
             await interaction.message.edit(embed=embed, view=self)
         
-        # Avoid sending a second response if already responded
         if not interaction.response.is_done():
             await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
 
     async def send_violation_dm(self, member, message, reason):
-        """Sends a DM to the user with details of their message violation."""
         title = "Moderator message"
         description = (
             f"Your message in {self.message.channel.mention} was removed for violating server rules.\n\n"
@@ -229,17 +194,14 @@ class ReportView(discord.ui.View):
     async def warn_author(self, interaction: discord.Interaction):
         author = self.message.author
         guild_id = interaction.guild.id
-        current_time = datetime.utcnow().replace(microsecond=0)  # Remove milliseconds
+        current_time = datetime.utcnow().replace(microsecond=0)
 
-        # Add warning to the database
         self.bot.get_cog("ReportToModsCog").cursor.execute(
             "INSERT INTO warnings (user_id, guild_id, timestamp, moderator_id) VALUES (%s, %s, %s, %s)",
             (author.id, guild_id, current_time, interaction.user.id)
         )
         self.bot.get_cog("ReportToModsCog").db.commit()
-        logger.debug(f"Warning logged in database for user {author.id}")
 
-        # Count warnings in the last 8 hours
         self.bot.get_cog("ReportToModsCog").cursor.execute(
             """
             SELECT COUNT(*) FROM warnings
@@ -265,7 +227,6 @@ class ReportView(discord.ui.View):
                 f"Your message in {self.message.channel.mention} was: \n\n{self.message.content}"
             )
 
-        # Send DM to the user
         try:
             embed = create_embed(
                 title="Moderator message",
@@ -275,7 +236,6 @@ class ReportView(discord.ui.View):
         except discord.Forbidden:
             await interaction.response.send_message("Unable to send a DM to the user.", ephemeral=True)
 
-        # Delete the original message
         await self.message.delete()
         if not interaction.response.is_done():
             await interaction.response.send_message("Author warned and message deleted.", ephemeral=True)
@@ -302,7 +262,7 @@ class TimeoutDurationView(discord.ui.View):
         super().__init__(timeout=None)
         self.member = member
         self.message = message
-        self.report_view = report_view  # Store reference to ReportView
+        self.report_view = report_view
 
     async def apply_timeout(self, interaction: discord.Interaction, duration: timedelta):
         try:
@@ -313,7 +273,6 @@ class TimeoutDurationView(discord.ui.View):
                 f"{self.member.mention} has been timed out for {duration}, message deleted, and author notified.",
                 ephemeral=True
             )
-            # Mark the report as resolved after the time-out duration is applied
             await self.report_view.mark_as_resolved(interaction)
         except discord.Forbidden:
             await interaction.response.send_message("Unable to time out the user or delete the message due to permission issues.", ephemeral=True)
