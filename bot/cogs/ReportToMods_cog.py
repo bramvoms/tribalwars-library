@@ -63,58 +63,58 @@ class ReportToModsCog(commands.Cog):
         self.set_moderator_channel(guild_id, channel.id)
         await ctx.send(f"Moderator channel set to {channel.mention}")
 
-        async def report_message(self, interaction: discord.Interaction, message: discord.Message):
-            await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
+    async def report_message(self, interaction: discord.Interaction, message: discord.Message):
+        await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
 
-            title = "⚠️ New Message Report!"
-            description = (
-                f"**Reported Message**: \n{message.content}\n\n"
-                f"**Reported by**: {interaction.user.mention}\n"
-                f"**Author**: {message.author.mention}\n"
-                f"**Channel**: {message.channel.mention}\n"
-                f"[Jump to Message]({message.jump_url})"
-            )
+        title = "⚠️ New Message Report!"
+        description = (
+            f"**Reported Message**: \n{message.content}\n\n"
+            f"**Reported by**: {interaction.user.mention}\n"
+            f"**Author**: {message.author.mention}\n"
+            f"**Channel**: {message.channel.mention}\n"
+            f"[Jump to Message]({message.jump_url})"
+        )
 
-            # Fetch warning information for the author in the last 8 hours
-            guild_id = interaction.guild.id
-            current_time = datetime.utcnow()
-            self.cursor.execute(
-                """
-                SELECT warning_id, moderator_id, timestamp
-                FROM warnings
-                WHERE user_id = %s AND guild_id = %s AND timestamp > %s
-                ORDER BY warning_id ASC
-                """,
-                (message.author.id, guild_id, current_time - timedelta(hours=8))
-            )
-            results = self.cursor.fetchall()
+        # Fetch warning information for the author in the last 8 hours
+        guild_id = interaction.guild.id
+        current_time = datetime.utcnow()
+        self.cursor.execute(
+            """
+            SELECT warning_id, moderator_id, timestamp
+            FROM warnings
+            WHERE user_id = %s AND guild_id = %s AND timestamp > %s
+            ORDER BY warning_id ASC
+            """,
+            (message.author.id, guild_id, current_time - timedelta(hours=8))
+        )
+        results = self.cursor.fetchall()
 
-            # Build warning info with inline format for table-like display
-            warning_info = f"{len(results)} warning(s) in the last 8 hours.\n"
-            warning_info += "Warning # | Timestamp | Moderator\n"
-            warning_info += "-----------|----------------|------------\n"
-
+        # Build warning information for each line in the embed
+        warning_info = f"{len(results)} warning(s) in the last 8 hours.\n"
+        if results:
             for warning_id, mod_id, timestamp in results:
                 mod_member = interaction.guild.get_member(mod_id)
                 mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
                 formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
-                warning_info += f"{warning_id} | {formatted_timestamp} | {mod_name}\n"
+                warning_info += f"- Warning #{warning_id} | {formatted_timestamp} | Moderator: {mod_name}\n"
+        else:
+            warning_info += "No recent warnings."
 
-            # Add warning information to the embed
-            embed = create_embed(title=title, description=description)
-            embed.add_field(name="Previous Warnings", value=warning_info, inline=False)
-            embed.set_footer(text="Use this information for appropriate moderation actions.")
+        # Add warning information to the embed
+        embed = create_embed(title=title, description=description)
+        embed.add_field(name="Previous Warnings", value=warning_info, inline=False)
+        embed.set_footer(text="Use this information for appropriate moderation actions.")
 
-            mod_channel_id = self.get_moderator_channel(guild_id)
-            if mod_channel_id:
-                mod_channel = self.bot.get_channel(mod_channel_id)
-                if mod_channel:
-                    view = ReportView(message, self.bot)
-                    await mod_channel.send(embed=embed, view=view)
-                else:
-                    await interaction.followup.send("Moderator channel not found.", ephemeral=True)
+        mod_channel_id = self.get_moderator_channel(guild_id)
+        if mod_channel_id:
+            mod_channel = self.bot.get_channel(mod_channel_id)
+            if mod_channel:
+                view = ReportView(message, self.bot)
+                await mod_channel.send(embed=embed, view=view)
             else:
-                await interaction.followup.send("Moderator channel has not been set. Please contact an admin.", ephemeral=True)
+                await interaction.followup.send("Moderator channel not found.", ephemeral=True)
+        else:
+            await interaction.followup.send("Moderator channel has not been set. Please contact an admin.", ephemeral=True)
 
     @app_commands.command(name="removewarnings", description="Remove warnings for a specified user.")
     @app_commands.describe(user="The user to remove warnings from within this guild.", all="Remove all warnings? (Y/N)", timeframe="If 'N', specify timeframe in hours")
