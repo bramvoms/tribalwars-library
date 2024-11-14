@@ -100,7 +100,7 @@ class ReportToModsCog(commands.Cog):
                 mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
                 formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
-                # Each warning with inline details
+                # Add each warning as its own field in the embed
                 embed.add_field(
                     name=f"Warning #{warning_id}",
                     value=f"**Timestamp**: {formatted_timestamp}\n**Moderator**: {mod_name}",
