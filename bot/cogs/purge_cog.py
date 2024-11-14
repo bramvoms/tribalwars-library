@@ -33,7 +33,8 @@ class PurgeOptionsView(View):
         total_deleted = 0
         delay_between_deletions = 1.5
         status_view = StopPurgeView(self)
-        status_message = await interaction.followup.send("Deleting messages...", view=status_view)
+        # Make the "Deleting messages..." status message ephemeral
+        status_message = await interaction.followup.send("Deleting messages...", view=status_view, ephemeral=True)
 
         # Fetch more messages to account for skipped command message and others
         async for message in interaction.channel.history(limit=(limit + 10 if limit else None)):
@@ -56,6 +57,7 @@ class PurgeOptionsView(View):
             if limit and total_deleted >= limit:
                 break
 
+        # Make the final completion message ephemeral
         final_text = f"Purge complete: Deleted {total_deleted} messages." if not self.stop_deletion else f"Purge stopped: {total_deleted} messages deleted."
         await status_message.edit(content=final_text, view=None)
 
