@@ -70,7 +70,7 @@ class HelpCog(commands.Cog):
         )
         
         footer_icon_url = "https://i.imgur.com/N6Z8wxx.png"
-        embed.set_footer(text="Use commands with prefixes '&' or '/' as stated\nTribalWars Library - Created by Victorious")
+        embed.set_footer(icon_url=footer_icon_url, text="Use commands with prefixes '&' or '/' as stated\nTribalWars Library - Created by Victorious")
 
         await ctx.send(embed=embed)
 
