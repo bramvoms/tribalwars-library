@@ -89,13 +89,16 @@ class ReportToModsCog(commands.Cog):
             )
             results = self.cursor.fetchall()
 
-            # Build the warning info with requested inline format
+            # Build warning info with inline format for table-like display
             warning_info = f"{len(results)} warning(s) in the last 8 hours.\n"
+            warning_info += "Warning # | Timestamp | Moderator\n"
+            warning_info += "-----------|----------------|------------\n"
+
             for warning_id, mod_id, timestamp in results:
                 mod_member = interaction.guild.get_member(mod_id)
                 mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
                 formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
-                warning_info += f"- Warning #{warning_id} | {formatted_timestamp} | Moderator: {mod_name}\n"
+                warning_info += f"{warning_id} | {formatted_timestamp} | {mod_name}\n"
 
             # Add warning information to the embed
             embed = create_embed(title=title, description=description)
