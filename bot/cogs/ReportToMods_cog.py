@@ -120,7 +120,7 @@ class ReportView(discord.ui.View):
         guild_id = interaction.guild.id
         current_time = datetime.utcnow()
 
-        # Insert the new warning into the database
+        # Insert the new warning into the database only when "Warn Author" is clicked
         self.bot.get_cog("ReportToModsCog").cursor.execute(
             "INSERT INTO warnings (user_id, guild_id, timestamp) VALUES (%s, %s, %s)",
             (author.id, guild_id, current_time)
