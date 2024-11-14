@@ -78,10 +78,6 @@ class ReportToModsCog(commands.Cog):
         else:
             await interaction.followup.send("Moderator channel has not been set. Please contact an admin.", ephemeral=True)
 
-import discord
-from datetime import datetime, timedelta
-from main import create_embed
-
 class ReportView(discord.ui.View):
     def __init__(self, message, bot):
         super().__init__(timeout=None)
@@ -144,7 +140,7 @@ class ReportView(discord.ui.View):
         if warning_count >= 3:
             # Timeout the user for 1 day
             try:
-                await author.timeout(duration=timedelta(days=1), reason="Accumulated 3 warnings in 8 hours.")
+                await author.timeout(timedelta(days=1), reason="Accumulated 3 warnings in 8 hours.")
                 dm_message = (
                     f"You have been timed out for 1 day in **{interaction.guild.name}** due to multiple violations. "
                     f"Your message in {self.message.channel.mention} was: \n\n{self.message.content}"
