@@ -156,8 +156,8 @@ class ReportView(discord.ui.View):
         title = "⚠️ MODERATER MESSAGE"
         description = (
             f"Your message in {self.message.channel.mention} was removed for violating server rules.\n\n"
-            f"**Message Content:**\n{message.content}\n\n"
-            f"**Action Taken:** \n{reason}"
+            f"**Message content:**\n{message.content}\n\n"
+            f"**Action taken:** \n{reason}"
         )
         embed = create_embed(title=title, description=description)
         try:
@@ -201,16 +201,17 @@ class ReportView(discord.ui.View):
                 await author.timeout(timedelta(days=1), reason="Accumulated 3 warnings in 8 hours.")
                 dm_message = (
                     f"You have been timed out for 1 day in **{interaction.guild.name}** due to multiple violations. "
-                    f"Your message in {self.message.channel.mention} was: \n\n{self.message.content}"
+                    f"Your message in {self.message.channel.mention} was:\n\n
+                    f"**Message content:**\n{self.message.content}"
                 )
             except discord.Forbidden:
                 await interaction.response.send_message("Unable to timeout the user due to permission issues.", ephemeral=True)
                 return
         else:
             dm_message = (
-                f"You have received a warning in {self.message.channel.mention} for violating server rules. If you accumulate three or more warning within 8 hours, you will get timed-out. \n\n"
-                f"**Message Content:**\n{self.message.content}\n\n"
-                f"**Action Taken:** \nWarning"
+                f"You have received a warning in {self.message.channel.mention} for violating server rules. If you accumulate three or more warnings within 8 hours, you will get timed-out. \n\n"
+                f"**Message content:**\n{self.message.content}\n\n"
+                f"**Action taken:** \nWarning"
             )
 
         try:
@@ -239,13 +240,13 @@ class ReportView(discord.ui.View):
         # Create the ban message using the server name instead of the channel mention
         dm_message = (
             f"You have been banned from **{interaction.guild.name}** due to a serious violation of server rules.\n\n"
-            f"**Message Content:**\n{self.message.content}\n\n"
-            f"**Action Taken:**\nPermanent ban"
+            f"**Message content:**\n{self.message.content}\n\n"
+            f"**Action taken:**\nPermanent ban"
         )
 
         # Send DM to the author with the ban details before banning them
         try:
-            embed = create_embed(title="Ban Notification", description=dm_message)
+            embed = create_embed(title="⛔ MODERATOR MESSAGE", description=dm_message)
             await author.send(embed=embed)
         except discord.Forbidden:
             await interaction.response.send_message("Unable to send a DM to the user.", ephemeral=True)
@@ -268,7 +269,7 @@ class TimeoutDurationView(discord.ui.View):
 
     async def apply_timeout(self, interaction: discord.Interaction, duration: timedelta):
         try:
-            await self.report_view.send_violation_dm(self.member, self.message, f"Timed out for {duration}")
+            await self.report_view.send_violation_dm(self.member, self.message, f"Message deleted and timed out for {duration}")
             await self.member.timeout(duration, reason="Violation of server rules.")
             await self.message.delete()
             await interaction.response.send_message(
