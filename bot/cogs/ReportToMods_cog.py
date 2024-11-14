@@ -132,21 +132,6 @@ class ReportToModsCog(commands.Cog):
         except Exception as e:
             await interaction.response.send_message(f"An error occurred while removing warnings: {str(e)}", ephemeral=True)
 
-    def set_moderator_channel(self, guild_id: int, channel_id: int):
-        self.cursor.execute(
-            sql.SQL("INSERT INTO mod_channels (guild_id, channel_id) VALUES (%s, %s) ON CONFLICT (guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id"),
-            (guild_id, channel_id)
-        )
-        self.db.commit()
-
-    def get_moderator_channel(self, guild_id: int):
-        self.cursor.execute(
-            sql.SQL("SELECT channel_id FROM mod_channels WHERE guild_id = %s"),
-            (guild_id,)
-        )
-        result = self.cursor.fetchone()
-        return result[0] if result else None
-
 class ReportView(discord.ui.View):
     def __init__(self, message, bot):
         super().__init__(timeout=None)
@@ -223,8 +208,9 @@ class ReportView(discord.ui.View):
                 return
         else:
             dm_message = (
-                f"You have received a warning in **{interaction.guild.name}** for violating server rules. If you accumulate three warnings within 8 hours, you will get timed-out."
-                f"Your message in {self.message.channel.mention} was: \n\n{self.message.content}"
+                f"You have received a warning in **{interaction.guild.name}** for violating server rules.\n\n"
+                f"**Message Content:**\n{self.message.content}\n\n"
+                f"**Action Taken:** Warning"
             )
 
         try:
