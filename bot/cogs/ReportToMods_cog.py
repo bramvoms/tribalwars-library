@@ -6,6 +6,10 @@ import os
 import psycopg2
 from psycopg2 import sql
 from main import create_embed
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class ReportToModsCog(commands.Cog):
     def __init__(self, bot):
@@ -80,7 +84,7 @@ class ReportToModsCog(commands.Cog):
         warnings = self.cursor.fetchall()
 
         # Log the warnings fetched from the database for debugging
-        print("Fetched warnings:", warnings)  
+        logger.info(f"Fetched warnings: {warnings}")
 
         # Initialize warning info and check if there are any warnings
         warning_info = f"{len(warnings)} warning(s) in the last 8 hours.\n" if warnings else "No warnings in the last 8 hours."
@@ -94,11 +98,11 @@ class ReportToModsCog(commands.Cog):
             formatted_timestamp = timestamp.replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S')
 
             # Log each formatted warning for debugging
-            print(f"Formatted warning entry: {mod_name} at {formatted_timestamp}")
+            logger.info(f"Formatted warning entry: {mod_name} at {formatted_timestamp}")
 
             # Add each warning entry to the warning_info string
             warning_info += f"- Warning given by {mod_name} at {formatted_timestamp}\n"
-            print(f"Current warning_info: {warning_info}")
+            logger.info(f"Current warning_info: {warning_info}")
 
         # Add warning information to the embed
         embed = create_embed(title=title, description=description)
