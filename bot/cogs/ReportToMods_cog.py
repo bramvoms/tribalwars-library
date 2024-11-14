@@ -270,7 +270,7 @@ class ReportView(discord.ui.View):
     async def warn_author(self, interaction: discord.Interaction):
         author = self.message.author
         guild_id = interaction.guild.id
-        current_time = datetime.utcnow()
+        current_time = datetime.utcnow().replace(microsecond=0)  # Remove milliseconds
 
         # Add warning to the database
         self.bot.get_cog("ReportToModsCog").cursor.execute(
