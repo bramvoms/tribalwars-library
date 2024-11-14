@@ -79,28 +79,26 @@ class ReportToModsCog(commands.Cog):
         )
         warnings = self.cursor.fetchall()
 
-        # Log the warnings fetched from the database
-        print("Fetched warnings:", warnings)  # Log the entire list of warnings
+        # Log the warnings fetched from the database for debugging
+        print("Fetched warnings:", warnings)  
 
-        # Build the warning information in chronological order
-        if warnings:
-            warning_info = f"{len(warnings)} warning(s) in the last 8 hours.\n"
-            for mod_id, timestamp in warnings:
-                mod_member = interaction.guild.get_member(mod_id)
-                mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
-                
-                # Format timestamp without milliseconds
-                formatted_timestamp = timestamp.replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S')
-                
-                # Log the formatted timestamp without milliseconds
-                print(f"Formatted timestamp (no milliseconds): {formatted_timestamp}")
+        # Initialize warning info and check if there are any warnings
+        warning_info = f"{len(warnings)} warning(s) in the last 8 hours.\n" if warnings else "No warnings in the last 8 hours."
+        
+        # Build warning details for each warning fetched
+        for mod_id, timestamp in warnings:
+            mod_member = interaction.guild.get_member(mod_id)
+            mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
 
-                warning_info += f"- Warning given by {mod_name} at {formatted_timestamp}\n"
-                # Log each warning added to warning_info
-                print(f"Adding to warning_info: {mod_name} at {formatted_timestamp}")
-        else:
-            warning_info = "No warnings in the last 8 hours."
-            print("No warnings found for the user in the last 8 hours.")  # Log if no warnings are found
+            # Format timestamp without milliseconds
+            formatted_timestamp = timestamp.replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S')
+
+            # Log each formatted warning for debugging
+            print(f"Formatted warning entry: {mod_name} at {formatted_timestamp}")
+
+            # Add each warning entry to the warning_info string
+            warning_info += f"- Warning given by {mod_name} at {formatted_timestamp}\n"
+            print(f"Current warning_info: {warning_info}")
 
         # Add warning information to the embed
         embed = create_embed(title=title, description=description)
