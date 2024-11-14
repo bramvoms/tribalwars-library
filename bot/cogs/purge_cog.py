@@ -4,6 +4,7 @@ from discord import app_commands, Interaction
 from discord.ui import View, Button, Modal, TextInput
 import asyncio
 from main import create_embed
+from datetime import datetime, timedelta, timezone
 
 class PurgeCog(commands.Cog):
     def __init__(self, bot):
@@ -184,7 +185,7 @@ class UserSelectionModal(Modal, title="Purge messages from a User"):
             return
         await PurgeOptionsView().confirm_and_purge(interaction, check_func=lambda m: m.author.id == user_id and m.id < self.command_message_id, confirmation_text=f"This will delete messages from the specified user.")
 
-class TimeframeModal(Modal, title="Purge Messages from a Timeframe"):
+class TimeframeModal(Modal, title="Purge messages from a timeframe"):
     def __init__(self, command_message_id):
         super().__init__()
         self.command_message_id = command_message_id
@@ -198,9 +199,16 @@ class TimeframeModal(Modal, title="Purge Messages from a Timeframe"):
         if hours == 0 and minutes == 0:
             await interaction.response.send_message("Please enter a valid timeframe.", ephemeral=True)
             return
-        from datetime import datetime, timedelta
-        time_limit = datetime.utcnow() - timedelta(hours=hours, minutes=minutes)
-        await PurgeOptionsView().confirm_and_purge(interaction, check_func=lambda m: m.created_at >= time_limit and m.id < self.command_message_id, confirmation_text=f"This will delete messages from the past {hours} hours and {minutes} minutes.")
-
+        
+        # Set time_limit to be timezone-aware with UTC timezone
+        time_limit = datetime.now(timezone.utc) - timedelta(hours=hours, minutes=minutes)
+        
+        # Call confirm_and_purge with a timezone-aware check_func
+        await PurgeOptionsView().confirm_and_purge(
+            interaction,
+            check_func=lambda m: m.created_at >= time_limit and m.id < self.command_message_id,
+            confirmation_text=f"This will delete messages from the past {hours} hours and {minutes} minutes."
+        )
+        
 async def setup(bot):
     await bot.add_cog(PurgeCog(bot))
