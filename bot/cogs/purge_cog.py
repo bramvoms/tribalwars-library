@@ -111,17 +111,17 @@ class ConfirmPurgeAllView(View):
         super().__init__(timeout=None)
         self.parent_view = parent_view
 
-        # Add confirmation and cancel buttons
+        # Add confirmation and cancel buttons once
         self.add_item(Button(label="Confirm", style=discord.ButtonStyle.danger, custom_id="confirm_purge_all"))
         self.add_item(Button(label="Cancel", style=discord.ButtonStyle.secondary, custom_id="cancel_purge_all"))
 
-    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.danger)
-    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.danger, custom_id="confirm_purge_all")
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
         # Perform the purge
         await self.parent_view.perform_purge_all_messages(interaction)
 
-    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.secondary)
-    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.secondary, custom_id="cancel_purge_all")
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         # Cancel the action and notify the user
         await interaction.response.send_message("Purge all messages canceled.", ephemeral=True)
 
