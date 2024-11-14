@@ -1,5 +1,7 @@
+import asyncio
 import discord
 from discord.ext import commands
+from datetime import timedelta
 import os
 import psycopg2
 from psycopg2 import sql
@@ -118,11 +120,17 @@ class MuteModal(discord.ui.Modal, title="Mute Duration"):
 
     async def callback(self, interaction: discord.Interaction):
         duration = int(self.children[0].value)
+        timeout_duration = timedelta(minutes=duration)
+        
         try:
+            # Notify the user about the mute
             await self.message.author.send(f"Your message has been deleted and you have been muted for {duration} minutes due to a violation of the server rules.")
-            # Here, you would apply the mute in your server
+            # Apply the Time-Out feature
+            await self.message.author.timeout(timeout_duration, reason="Muted due to violation of server rules.")
         except discord.Forbidden:
-            await interaction.response.send_message("Unable to notify the user via DM.", ephemeral=True)
+            await interaction.response.send_message("Unable to notify or mute the user due to permission issues.", ephemeral=True)
+            return
+        
         await self.message.delete()
         await interaction.response.send_message(f"{self.message.author.mention} has been muted for {duration} minutes and notified (if possible).", ephemeral=True)
 
