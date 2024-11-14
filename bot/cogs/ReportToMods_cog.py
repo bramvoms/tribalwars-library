@@ -99,14 +99,12 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-Out Options", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-    # Send the TimeoutDurationView with both the member and message
+        # Send the TimeoutDurationView with both the member and message
         await interaction.response.send_message(
-        "Select a time-out duration for the user:", 
-        view=TimeoutDurationView(self.message.author, self.message),
-        ephemeral=True
-    )
-
-
+            "Select a time-out duration for the user:", 
+            view=TimeoutDurationView(self.message.author, self.message),
+            ephemeral=True
+        )
 
     @discord.ui.button(label="Ban Author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
