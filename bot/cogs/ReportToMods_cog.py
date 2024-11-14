@@ -208,9 +208,9 @@ class ReportView(discord.ui.View):
                 return
         else:
             dm_message = (
-                f"You have received a warning in **{interaction.guild.name}** for violating server rules.\n\n"
+                f"You have received a warning in {self.message.channel.mention} for violating server rules. If you accumulate three or more warning within 8 hours, you will get timed-out. \n\n"
                 f"**Message Content:**\n{self.message.content}\n\n"
-                f"**Action Taken:** Warning"
+                f"**Action Taken:** \nWarning"
             )
 
         try:
