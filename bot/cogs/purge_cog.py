@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands, Interaction
-from discord.ui import View, Select, Modal, TextInput, Button
+from discord.ui import View, Select, Modal, TextInput
 import asyncio
 from main import create_embed
 
@@ -111,16 +111,12 @@ class ConfirmPurgeAllView(View):
         super().__init__(timeout=None)
         self.parent_view = parent_view
 
-        # Add confirmation and cancel buttons with unique custom IDs
-        self.add_item(Button(label="Confirm", style=discord.ButtonStyle.danger, custom_id="confirm_purge_all_unique"))
-        self.add_item(Button(label="Cancel", style=discord.ButtonStyle.secondary, custom_id="cancel_purge_all_unique"))
-
-    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.danger, custom_id="confirm_purge_all_unique")
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
         # Perform the purge
         await self.parent_view.perform_purge_all_messages(interaction)
 
-    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.secondary, custom_id="cancel_purge_all_unique")
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         # Cancel the action and notify the user
         await interaction.response.send_message("Purge all messages canceled.", ephemeral=True)
