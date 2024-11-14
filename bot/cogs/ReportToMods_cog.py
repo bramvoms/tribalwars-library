@@ -267,7 +267,7 @@ class TimeoutDurationView(discord.ui.View):
 
     async def apply_timeout(self, interaction: discord.Interaction, duration: timedelta):
         try:
-            await ReportView.send_violation_dm(self, self.member, self.message, f"Timed Out for {duration}")
+            await self.report_view.send_violation_dm(self, self.member, self.message, f"Timed Out for {duration}")
             await self.member.timeout(duration, reason="Violation of server rules.")
             await self.message.delete()
             await interaction.response.send_message(f"{self.member.mention} has been timed out for {duration}, message deleted, and author notified.", ephemeral=True)
