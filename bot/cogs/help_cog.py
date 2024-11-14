@@ -10,7 +10,7 @@ class HelpCog(commands.Cog):
     async def help_command(self, ctx):
         # Create an embed for the help menu
         embed = create_embed(
-            title=f"📜 TribalWars Library 📜",
+            title=f"📜 **━━━━━━ TribalWars Library ━━━━━━** 📜",
             description="This bot provides a range of commands and functionalities to enhance your experience. Below is a list of all available commands and features."
         )
 
