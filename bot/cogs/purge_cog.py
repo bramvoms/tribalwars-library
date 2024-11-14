@@ -27,16 +27,30 @@ class PurgeOptionsView(View):
         self.stop_deletion = False
         self.add_item(PurgeOptionsSelect())
 
+    async def confirm_and_purge(self, interaction: discord.Interaction, check_func, limit=None, confirmation_text=""):
+        """Calculate messages to delete, show confirmation, and proceed if confirmed."""
+        # Calculate the count of messages to be deleted
+        total_count = 0
+        async for message in interaction.channel.history(limit=(limit + 10 if limit else None)):
+            if message.id >= interaction.id or not check_func(message):
+                continue
+            total_count += 1
+            if limit and total_count >= limit:
+                break
+
+        # Show confirmation message
+        embed = create_embed("Confirmation", f"{confirmation_text} Are you sure you want to delete {total_count} messages?")
+        view = ConfirmPurgeView(self, interaction.id, check_func, limit)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
     async def perform_purge_with_stop(self, interaction: discord.Interaction, check_func, limit=None):
         """Perform the purge with a 'Stop' button, deleting messages before the command message."""
         await interaction.response.defer(ephemeral=True)
         total_deleted = 0
         delay_between_deletions = 1.5
         status_view = StopPurgeView(self)
-        # Make the "Deleting messages..." status message ephemeral
         status_message = await interaction.followup.send("Deleting messages...", view=status_view, ephemeral=True)
 
-        # Fetch more messages to account for skipped command message and others
         async for message in interaction.channel.history(limit=(limit + 10 if limit else None)):
             if self.stop_deletion or message.id >= interaction.id:
                 continue
@@ -57,24 +71,23 @@ class PurgeOptionsView(View):
             if limit and total_deleted >= limit:
                 break
 
-        # Make the final completion message ephemeral
         final_text = f"Purge complete: Deleted {total_deleted} messages." if not self.stop_deletion else f"Purge stopped: {total_deleted} messages deleted."
         await status_message.edit(content=final_text, view=None)
 
     async def purge_all_messages(self, interaction: discord.Interaction):
-        # Display a warning confirmation message
+        # Display a warning confirmation message for Purge All
         embed = create_embed(
             "⚠️ Confirm Purge All",
             "You are about to delete **all messages** in this channel. This action is irreversible. Do you want to continue?"
         )
-        view = ConfirmPurgeAllView(self, command_message_id=interaction.id)
+        view = ConfirmPurgeView(self, interaction.id, check_func=lambda _: True)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
     async def purge_non_bot_messages(self, interaction: discord.Interaction):
-        await self.perform_purge_with_stop(interaction, check_func=lambda m: not m.author.bot)
+        await self.confirm_and_purge(interaction, check_func=lambda m: not m.author.bot, confirmation_text="This will delete all non-bot messages.")
 
     async def purge_bot_messages(self, interaction: discord.Interaction):
-        await self.perform_purge_with_stop(interaction, check_func=lambda m: m.author.bot)
+        await self.confirm_and_purge(interaction, check_func=lambda m: m.author.bot, confirmation_text="This will delete all bot messages.")
 
     async def prompt_number_of_messages(self, interaction: discord.Interaction):
         modal = NumberInputModal(command_message_id=interaction.id)
@@ -99,19 +112,21 @@ class StopPurgeView(View):
         button.disabled = True
         await interaction.response.edit_message(view=self)
 
-class ConfirmPurgeAllView(View):
-    def __init__(self, parent_view, command_message_id):
+class ConfirmPurgeView(View):
+    def __init__(self, parent_view, command_message_id, check_func, limit=None):
         super().__init__(timeout=None)
         self.parent_view = parent_view
         self.command_message_id = command_message_id
+        self.check_func = check_func
+        self.limit = limit
 
     @discord.ui.button(label="Confirm", style=discord.ButtonStyle.danger)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.parent_view.perform_purge_with_stop(interaction, check_func=lambda m: m.id < self.command_message_id)
+        await self.parent_view.perform_purge_with_stop(interaction, check_func=self.check_func, limit=self.limit)
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.secondary)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("Purge all messages canceled.", ephemeral=True)
+        await interaction.response.send_message("Purge canceled.", ephemeral=True)
 
 class PurgeOptionsSelect(discord.ui.Select):
     def __init__(self):
@@ -149,7 +164,7 @@ class NumberInputModal(Modal, title="Purge number of messages"):
 
     async def on_submit(self, interaction: discord.Interaction):
         limit = int(self.number.value)
-        await PurgeOptionsView().perform_purge_with_stop(interaction, check_func=lambda m: m.id < self.command_message_id, limit=limit)
+        await PurgeOptionsView().confirm_and_purge(interaction, check_func=lambda m: m.id < self.command_message_id, limit=limit, confirmation_text=f"This will delete the last {limit} messages.")
 
 class UserSelectionModal(Modal, title="Purge messages from a User"):
     def __init__(self, command_message_id):
@@ -163,7 +178,7 @@ class UserSelectionModal(Modal, title="Purge messages from a User"):
         if not user_id:
             await interaction.response.send_message("Invalid user ID or mention.", ephemeral=True)
             return
-        await PurgeOptionsView().perform_purge_with_stop(interaction, check_func=lambda m: m.author.id == user_id and m.id < self.command_message_id)
+        await PurgeOptionsView().confirm_and_purge(interaction, check_func=lambda m: m.author.id == user_id and m.id < self.command_message_id, confirmation_text=f"This will delete messages from the specified user.")
 
 class TimeframeModal(Modal, title="Purge Messages from a Timeframe"):
     def __init__(self, command_message_id):
@@ -181,7 +196,7 @@ class TimeframeModal(Modal, title="Purge Messages from a Timeframe"):
             return
         from datetime import datetime, timedelta
         time_limit = datetime.utcnow() - timedelta(hours=hours, minutes=minutes)
-        await PurgeOptionsView().perform_purge_with_stop(interaction, check_func=lambda m: m.created_at >= time_limit and m.id < self.command_message_id)
+        await PurgeOptionsView().confirm_and_purge(interaction, check_func=lambda m: m.created_at >= time_limit and m.id < self.command_message_id, confirmation_text=f"This will delete messages from the past {hours} hours and {minutes} minutes.")
 
 async def setup(bot):
     await bot.add_cog(PurgeCog(bot))
