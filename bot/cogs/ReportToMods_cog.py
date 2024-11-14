@@ -80,22 +80,22 @@ class ReportToModsCog(commands.Cog):
             current_time = datetime.utcnow()
             self.cursor.execute(
                 """
-                SELECT moderator_id, timestamp
+                SELECT warning_id, moderator_id, timestamp
                 FROM warnings
                 WHERE user_id = %s AND guild_id = %s AND timestamp > %s
-                ORDER BY timestamp ASC
+                ORDER BY warning_id ASC
                 """,
                 (message.author.id, guild_id, current_time - timedelta(hours=8))
             )
             results = self.cursor.fetchall()
 
-            # Build the warning info for the report message, listing all warnings
+            # Build the warning info with requested inline format
             warning_info = f"{len(results)} warning(s) in the last 8 hours.\n"
-            for mod_id, timestamp in results:
+            for warning_id, mod_id, timestamp in results:
                 mod_member = interaction.guild.get_member(mod_id)
                 mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
                 formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
-                warning_info += f"- Warning given by {mod_name} at {formatted_timestamp}\n"
+                warning_info += f"- Warning #{warning_id} | {formatted_timestamp} | Moderator: {mod_name}\n"
 
             # Add warning information to the embed
             embed = create_embed(title=title, description=description)
