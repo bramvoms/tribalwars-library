@@ -57,7 +57,7 @@ class ReportToModsCog(commands.Cog):
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
         await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
 
-        title = "⚠️ New Message Report!"
+        title = "⚠️ NEW REPORTED MESSAGE"
         description = (
             f"**Reported Message**: \n{message.content}\n\n"
             f"**Reported by**: {interaction.user.mention}\n"
@@ -153,7 +153,7 @@ class ReportView(discord.ui.View):
             await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
 
     async def send_violation_dm(self, member, message, reason):
-        title = "Moderator message"
+        title = "⚠️ MODERATER MESSAGE"
         description = (
             f"Your message in {self.message.channel.mention} was removed for violating server rules.\n\n"
             f"**Message Content:**\n{message.content}\n\n"
@@ -215,7 +215,7 @@ class ReportView(discord.ui.View):
 
         try:
             embed = create_embed(
-                title="Moderator message",
+                title="⚠️ MODERATER MESSAGE",
                 description=dm_message
             )
             await author.send(embed=embed)
@@ -234,7 +234,23 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Ban author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.send_violation_dm(self.message.author, self.message, "Permanent ban")
+        author = self.message.author
+
+        # Create the ban message using the server name instead of the channel mention
+        dm_message = (
+            f"You have been banned from **{interaction.guild.name}** due to a serious violation of server rules.\n\n"
+            f"**Message Content:**\n{self.message.content}\n\n"
+            f"**Action Taken:**\nPermanent ban"
+        )
+
+        # Send DM to the author with the ban details before banning them
+        try:
+            embed = create_embed(title="Ban Notification", description=dm_message)
+            await author.send(embed=embed)
+        except discord.Forbidden:
+            await interaction.response.send_message("Unable to send a DM to the user.", ephemeral=True)
+
+        # Ban the user and delete their message
         await self.message.author.ban(reason="Violation of server rules")
         await self.message.delete()
         await self.mark_as_resolved(interaction)
