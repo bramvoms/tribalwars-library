@@ -57,7 +57,7 @@ class ReportToModsCog(commands.Cog):
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
         await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
 
-        title = "⚠️ NEW REPORTED MESSAGE"
+        title = "⚠️ NEW REPORTED MESSAGE ⚠️"
         description = (
             f"**Reported Message**: \n{message.content}\n\n"
             f"**Reported by**: {interaction.user.mention}\n"
@@ -153,7 +153,7 @@ class ReportView(discord.ui.View):
             await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
 
     async def send_violation_dm(self, member, message, reason):
-        title = "⚠️ MODERATOR MESSAGE"
+        title = "⚠️ MODERATOR MESSAGE ⚠️"
         description = (
             f"Your message in {self.message.channel.mention} was removed for violating server rules.\n\n"
             f"**Message content:**\n{message.content}\n\n"
@@ -215,7 +215,7 @@ class ReportView(discord.ui.View):
 
         try:
             embed = create_embed(
-                title="⚠️ MODERATOR MESSAGE",
+                title="⚠️ MODERATOR MESSAGE ⚠️",
                 description=dm_message
             )
             await author.send(embed=embed)
@@ -245,7 +245,7 @@ class ReportView(discord.ui.View):
 
         # Send DM to the author with the ban details before banning them
         try:
-            embed = create_embed(title="⛔ MODERATOR MESSAGE", description=dm_message)
+            embed = create_embed(title="⛔ MODERATOR MESSAGE ⛔", description=dm_message)
             await author.send(embed=embed)
         except discord.Forbidden:
             await interaction.response.send_message("Unable to send a DM to the user.", ephemeral=True)
