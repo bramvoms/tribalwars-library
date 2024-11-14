@@ -89,7 +89,7 @@ class AMView(View):
 
     async def go_to_main_menu(self, interaction: Interaction):
         # Redirect to the main AM menu
-        title = f"━ AM SJABLONEN ━"
+        title = f"⚙️ AM SJABLONEN ⚙️"
         embed = create_embed(title=title, description="Selecteer welk sjabloon je wilt bekijken.\nKopieer de tekst onder TEMPLATE en plak dit ingame:\nAccount Manager > Bouw > Sjablonen beheren > Sjabloon importeren\n\nSjablonen voor bouwen tot 10.435 punten, tenzij het een rush sjabloon is.")
         await interaction.response.edit_message(embed=embed, view=self)
 
@@ -100,7 +100,7 @@ class AMCog(commands.Cog):
     # Slash command to show AM options
     @app_commands.command(name="am", description="Toont het AM sjablonen menu")
     async def am(self, interaction: Interaction):
-        title = f"━ AM SJABLONEN ━"
+        title = f"⚙️ AM SJABLONEN ⚙️"
         embed = create_embed(title=title, description="Selecteer welk sjabloon je wilt bekijken")
         await interaction.response.send_message(embed=embed, view=AMView(self.bot), ephemeral=True)
 
