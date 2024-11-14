@@ -181,9 +181,10 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-Out Options", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # Open the TimeoutDurationView without marking as resolved
         await interaction.response.send_message(
             "Select a time-out duration for the user:", 
-            view=TimeoutDurationView(self.message.author, self.message, self),
+            view=TimeoutDurationView(self.message.author, self.message, self, interaction),
             ephemeral=True
         )
 
@@ -197,18 +198,19 @@ class ReportView(discord.ui.View):
 
 
 class TimeoutDurationView(discord.ui.View):
-    def __init__(self, member, message, report_view):
+    def __init__(self, member, message, report_view, main_interaction):
         super().__init__(timeout=None)
         self.member = member
         self.message = message
-        self.report_view = report_view  # Reference to mark as resolved after selection
+        self.report_view = report_view  # Reference to ReportView to mark as resolved after selection
+        self.main_interaction = main_interaction  # Reference to main interaction to update resolved status
 
     async def apply_timeout(self, interaction: discord.Interaction, duration: timedelta):
         try:
             await self.report_view.send_violation_dm(self.member, self.message, f"Timed Out for {duration}")
             await self.member.timeout(duration, reason="Violation of server rules.")
             await self.message.delete()
-            await self.report_view.mark_as_resolved(interaction)
+            await self.report_view.mark_as_resolved(self.main_interaction)
             await interaction.response.send_message(
                 f"{self.member.mention} has been timed out for {duration}, message deleted, and author notified.",
                 ephemeral=True
