@@ -1,38 +1,42 @@
 import discord
 from discord.ext import commands
-import sqlite3
+import os
+import psycopg2
+from psycopg2 import sql
 from main import create_embed  # Import the pre-configured embed function
 
 class ReportToModsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.db = sqlite3.connect("moderator_channels.db")
+        # Connect to the PostgreSQL database using DATABASE_URL from Heroku
+        database_url = os.getenv("DATABASE_URL")
+        self.db = psycopg2.connect(database_url, sslmode="require")
         self.cursor = self.db.cursor()
+        
         # Create the table if it doesn't exist
-        self.cursor.execute(
-            "CREATE TABLE IF NOT EXISTS mod_channels (guild_id INTEGER PRIMARY KEY, channel_id INTEGER)"
-        )
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS mod_channels (
+                guild_id BIGINT PRIMARY KEY,
+                channel_id BIGINT
+            );
+        """)
         self.db.commit()
 
     def set_moderator_channel(self, guild_id: int, channel_id: int):
         """Set the moderator channel in the database."""
         self.cursor.execute(
-            "INSERT OR REPLACE INTO mod_channels (guild_id, channel_id) VALUES (?, ?)",
-            (guild_id, channel_id),
+            sql.SQL("INSERT INTO mod_channels (guild_id, channel_id) VALUES (%s, %s) ON CONFLICT (guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id"),
+            (guild_id, channel_id)
         )
         self.db.commit()
-        print(f"Set moderator channel for guild {guild_id} to channel {channel_id}")  # Debug
 
     def get_moderator_channel(self, guild_id: int):
         """Get the moderator channel ID for a guild from the database."""
         self.cursor.execute(
-            "SELECT channel_id FROM mod_channels WHERE guild_id = ?", (guild_id,)
+            sql.SQL("SELECT channel_id FROM mod_channels WHERE guild_id = %s"),
+            (guild_id,)
         )
         result = self.cursor.fetchone()
-        if result:
-            print(f"Retrieved moderator channel for guild {guild_id}: {result[0]}")  # Debug
-        else:
-            print(f"No moderator channel found for guild {guild_id}")  # Debug
         return result[0] if result else None
 
     @commands.command(name="setmodchannel")
