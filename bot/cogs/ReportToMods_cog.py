@@ -115,7 +115,7 @@ class ReportView(discord.ui.View):
         await self.warn_author(interaction)
         await self.mark_as_resolved(interaction)
 
-    async def warn_author(self, interaction: discord.Interaction):
+async def warn_author(self, interaction: discord.Interaction):
     author = self.message.author
     guild_id = interaction.guild.id
     current_time = datetime.utcnow()
@@ -140,7 +140,7 @@ class ReportView(discord.ui.View):
     if warning_count >= 3:
         # Timeout the user for 1 day
         try:
-            await author.timeout(timedelta(days=1), reason="Accumulated 3 warnings in 8 hours.")
+            await author.timeout(until=datetime.now() + timedelta(days=1), reason="Accumulated 3 warnings in 8 hours.")
             dm_message = (
                 f"You have been timed out for 1 day in **{interaction.guild.name}** due to multiple violations. "
                 f"Your message in {self.message.channel.mention} was: \n\n{self.message.content}"
@@ -167,6 +167,7 @@ class ReportView(discord.ui.View):
     # Delete the original message
     await self.message.delete()
     await interaction.response.send_message("Author warned and message deleted.", ephemeral=True)
+
 
     @discord.ui.button(label="Resolved", style=discord.ButtonStyle.success)
     async def resolved_button(self, interaction: discord.Interaction, button: discord.ui.Button):
