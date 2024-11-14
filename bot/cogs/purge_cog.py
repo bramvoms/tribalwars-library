@@ -103,6 +103,9 @@ class ConfirmPurgeAllView(View):
 
     @discord.ui.button(label="Confirm", style=discord.ButtonStyle.danger, custom_id="confirm_purge_all_unique")
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # Defer the interaction to prevent webhook errors
+        await interaction.response.defer()
+        # Perform the purge with a stop button
         await self.parent_view.perform_purge_with_stop(interaction, check_func=lambda _: True)
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.secondary, custom_id="cancel_purge_all_unique")
@@ -144,10 +147,15 @@ class NumberInputModal(Modal, title="Purge number of messages"):
             limit = int(self.number.value)
             if limit <= 0:
                 raise ValueError("Number must be positive.")
+            
+            # Defer the interaction response to avoid webhook errors
+            await interaction.response.defer(thinking=True)
+            
             deleted_count = 0
             delay_between_deletions = 1.5
-            status_view = StopPurgeView(self)
+            status_view = StopPurgeView(self)  # Assuming StopPurgeView is defined with stop functionality
             status_message = await interaction.followup.send("Deleting messages...", view=status_view)
+            
             async for message in interaction.channel.history(limit=limit):
                 if getattr(self, "stop_deletion", False):
                     break
@@ -161,8 +169,10 @@ class NumberInputModal(Modal, title="Purge number of messages"):
                         await asyncio.sleep(retry_after)
                     else:
                         break
+            
             final_text = f"Purge complete: Deleted {deleted_count} messages." if not getattr(self, "stop_deletion", False) else f"Purge stopped: {deleted_count} messages deleted."
             await status_message.edit(content=final_text, view=None)
+        
         except ValueError:
             embed = create_embed("Error", "Please enter a valid positive integer.")
             await interaction.response.send_message(embed=embed, ephemeral=True)
