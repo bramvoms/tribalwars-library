@@ -15,18 +15,11 @@ class TestButtonCog(commands.Cog):
 class TestView(discord.ui.View):
     @discord.ui.button(label="Click Me", style=discord.ButtonStyle.primary)
     async def test_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # Now interaction is correctly defined as discord.Interaction
-        print("Interaction object:", interaction)
-        print("Interaction type:", type(interaction))
-        print("Interaction attributes:", dir(interaction))  # Lists all available attributes
+        # Disable the button to prevent further clicks
+        button.disabled = True
 
-        try:
-            # Directly respond to the interaction with a simple message
-            await interaction.response.send_message("Button clicked!", ephemeral=True)
-            print("Interaction response sent successfully.")  # For debugging
-        except Exception as e:
-            # Log any errors to understand where the issue may lie
-            print(f"Error in interaction: {e}")
+        # Edit the original message to display "Button clicked!" and disable the button
+        await interaction.message.edit(content="Button clicked!", view=self)
 
 async def setup(bot):
     await bot.add_cog(TestButtonCog(bot))
