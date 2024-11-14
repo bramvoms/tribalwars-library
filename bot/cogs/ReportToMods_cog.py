@@ -119,6 +119,9 @@ class ReportView(discord.ui.View):
             embed.add_field(name="Resolved by", value=interaction.user.mention, inline=False)
             embed.set_footer(text="This report has been marked as resolved by the moderation team.")
             await interaction.message.edit(embed=embed, view=self)
+        
+        # Avoid sending a second response if already responded
+        if not interaction.response.is_done():
             await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
 
     async def send_violation_dm(self, member, message, reason):
@@ -145,40 +148,23 @@ class ReportView(discord.ui.View):
         guild_id = interaction.guild.id
         current_time = datetime.utcnow()
 
-        # Get the current moderator (interaction.user)
-        moderator = interaction.user
-
-        # Insert the new warning into the database
+        # Add warning to the database
         self.bot.get_cog("ReportToModsCog").cursor.execute(
             "INSERT INTO warnings (user_id, guild_id, timestamp, moderator_id) VALUES (%s, %s, %s, %s)",
-            (author.id, guild_id, current_time, moderator.id)
+            (author.id, guild_id, current_time, interaction.user.id)
         )
         self.bot.get_cog("ReportToModsCog").db.commit()
 
-        # Retrieve warnings in the last 8 hours along with the moderator(s) who applied them
+        # Count warnings in the last 8 hours
         self.bot.get_cog("ReportToModsCog").cursor.execute(
             """
-            SELECT COUNT(*), array_agg(DISTINCT moderator_id), array_agg(DISTINCT timestamp)
-            FROM warnings
+            SELECT COUNT(*) FROM warnings
             WHERE user_id = %s AND guild_id = %s AND timestamp > %s
             """,
             (author.id, guild_id, current_time - timedelta(hours=8))
         )
-        result = self.bot.get_cog("ReportToModsCog").cursor.fetchone()
-        warning_count = result[0]
-        moderator_ids = result[1] if result[1] else []
-        timestamps = result[2] if result[2] else []
+        warning_count = self.bot.get_cog("ReportToModsCog").cursor.fetchone()[0]
 
-        # Build the message showing moderator(s) and their warnings
-        moderator_names = []
-        for mod_id, timestamp in zip(moderator_ids, timestamps):
-            mod_member = interaction.guild.get_member(mod_id)  # Get the moderator member object
-            if mod_member:
-                moderator_names.append(f"{mod_member.name} at {timestamp}")
-            else:
-                moderator_names.append(f"Unknown Moderator (ID: {mod_id}) at {timestamp}")
-
-        # Construct the warning message
         if warning_count >= 3:
             try:
                 await author.timeout(timedelta(days=1), reason="Accumulated 3 warnings in 8 hours.")
@@ -201,15 +187,14 @@ class ReportView(discord.ui.View):
                 title="⚠️ Warning Notification",
                 description=dm_message
             )
-            # Add the moderator warning details to the embed
-            for moderator_name in moderator_names:
-                embed.add_field(name="Moderator Warning", value=moderator_name, inline=False)
             await author.send(embed=embed)
         except discord.Forbidden:
             await interaction.response.send_message("Unable to send a DM to the user.", ephemeral=True)
 
+        # Delete the original message
         await self.message.delete()
-        await interaction.response.send_message("Author warned and message deleted.", ephemeral=True)
+        if not interaction.response.is_done():
+            await interaction.response.send_message("Author warned and message deleted.", ephemeral=True)
 
     @discord.ui.button(label="Resolved", style=discord.ButtonStyle.success)
     async def resolved_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -223,10 +208,7 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-Out Options", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # Mark as resolved right after clicking "Time-Out Options"
         await self.mark_as_resolved(interaction)
-        
-        # Send the time-out options without causing a second response to the same interaction
         view = TimeoutDurationView(self.message.author, self.message, self)
         await interaction.message.edit(content="Select a time-out duration for the user:", view=view)
 
