@@ -12,7 +12,7 @@ class ReportToModsCog(commands.Cog):
         database_url = os.getenv("DATABASE_URL")
         self.db = psycopg2.connect(database_url, sslmode="require")
         self.cursor = self.db.cursor()
-        
+
         # Create the tables if they don't exist
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS mod_channels (
@@ -52,18 +52,6 @@ class ReportToModsCog(commands.Cog):
         self.set_moderator_channel(guild_id, channel.id)
         await ctx.send(f"Moderator channel set to {channel.mention}")
 
-    @commands.command(name="removewarnings")
-    @commands.has_permissions(administrator=True)
-    async def remove_warnings(self, ctx, user_id: int):
-        """Remove all warnings for a user."""
-        guild_id = ctx.guild.id
-        self.cursor.execute(
-            "DELETE FROM warnings WHERE user_id = %s AND guild_id = %s", 
-            (user_id, guild_id)
-        )
-        self.db.commit()
-        await ctx.send(f"All warnings for user {user_id} have been removed.")
-
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
         await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
 
@@ -76,30 +64,9 @@ class ReportToModsCog(commands.Cog):
             f"[Jump to Message]({message.jump_url})"
         )
 
-        # Fetch warnings for the author in the last 8 hours
-        self.cursor.execute(
-            """
-            SELECT COUNT(*), array_agg(DISTINCT moderator_id), array_agg(timestamp) 
-            FROM warnings
-            WHERE user_id = %s AND guild_id = %s AND timestamp > %s
-            """,
-            (message.author.id, interaction.guild.id, datetime.utcnow() - timedelta(hours=8))
-        )
-        warning_data = self.cursor.fetchone()
-        warning_count = warning_data[0]
-        moderators = ", ".join([str(mod_id) for mod_id in warning_data[1]]) if warning_data[1] else "None"
-        timestamps = ", ".join([str(ts) for ts in warning_data[2]]) if warning_data[2] else "None"
-
-        # Include warning details in the embed description
-        description += (
-            f"\n\n**Warnings in the last 8 hours**: {warning_count}\n"
-            f"**When warnings were applied**: {timestamps}\n"
-            f"**Moderators who applied warnings**: {moderators}"
-        )
-
         embed = create_embed(title=title, description=description)
         embed.set_footer(text="Use this information for appropriate moderation actions.")
-        
+
         guild_id = interaction.guild.id
         mod_channel_id = self.get_moderator_channel(guild_id)
         if mod_channel_id:
@@ -154,21 +121,40 @@ class ReportView(discord.ui.View):
         guild_id = interaction.guild.id
         current_time = datetime.utcnow()
 
+        # Get the current moderator (interaction.user)
+        moderator = interaction.user
+
+        # Insert the new warning into the database
         self.bot.get_cog("ReportToModsCog").cursor.execute(
             "INSERT INTO warnings (user_id, guild_id, timestamp, moderator_id) VALUES (%s, %s, %s, %s)",
-            (author.id, guild_id, current_time, interaction.user.id)
+            (author.id, guild_id, current_time, moderator.id)
         )
         self.bot.get_cog("ReportToModsCog").db.commit()
 
+        # Retrieve warnings in the last 8 hours along with the moderator(s) who applied them
         self.bot.get_cog("ReportToModsCog").cursor.execute(
             """
-            SELECT COUNT(*) FROM warnings
+            SELECT COUNT(*), array_agg(DISTINCT moderator_id), array_agg(DISTINCT timestamp)
+            FROM warnings
             WHERE user_id = %s AND guild_id = %s AND timestamp > %s
             """,
             (author.id, guild_id, current_time - timedelta(hours=8))
         )
-        warning_count = self.bot.get_cog("ReportToModsCog").cursor.fetchone()[0]
+        result = self.bot.get_cog("ReportToModsCog").cursor.fetchone()
+        warning_count = result[0]
+        moderator_ids = result[1] if result[1] else []
+        timestamps = result[2] if result[2] else []
 
+        # Build the message showing moderator(s) and their warnings
+        moderator_names = []
+        for mod_id, timestamp in zip(moderator_ids, timestamps):
+            mod_member = interaction.guild.get_member(mod_id)  # Get the moderator member object
+            if mod_member:
+                moderator_names.append(f"{mod_member.name} at {timestamp}")
+            else:
+                moderator_names.append(f"Unknown Moderator (ID: {mod_id}) at {timestamp}")
+
+        # Construct the warning message
         if warning_count >= 3:
             try:
                 await author.timeout(timedelta(days=1), reason="Accumulated 3 warnings in 8 hours.")
@@ -185,10 +171,12 @@ class ReportView(discord.ui.View):
                 f"Your message in {self.message.channel.mention} was: \n\n{self.message.content}"
             )
 
+        # Send DM to the user
         try:
             embed = create_embed(
                 title="⚠️ Warning Notification",
-                description=dm_message
+                description=dm_message,
+                fields=[("Moderators in the last 8 hours", "\n".join(moderator_names), False)]
             )
             await author.send(embed=embed)
         except discord.Forbidden:
@@ -209,12 +197,12 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-Out Options", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # Mark as resolved right after clicking "Time-Out Options"
         await self.mark_as_resolved(interaction)
-        await interaction.response.send_message(
-            "Select a time-out duration for the user:", 
-            view=TimeoutDurationView(self.message.author, self.message, self),
-            ephemeral=True
-        )
+        
+        # Send the time-out options without causing a second response to the same interaction
+        view = TimeoutDurationView(self.message.author, self.message, self)
+        await interaction.message.edit(content="Select a time-out duration for the user:", view=view)
 
     @discord.ui.button(label="Ban Author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -229,14 +217,18 @@ class TimeoutDurationView(discord.ui.View):
         super().__init__(timeout=None)
         self.member = member
         self.message = message
-        self.report_view = report_view
+        self.report_view = report_view  # Store reference to ReportView
 
     async def apply_timeout(self, interaction: discord.Interaction, duration: timedelta):
         try:
             await self.report_view.send_violation_dm(self.member, self.message, f"Timed Out for {duration}")
             await self.member.timeout(duration, reason="Violation of server rules.")
             await self.message.delete()
-            await interaction.response.send_message(f"{self.member.mention} has been timed out for {duration}, message deleted, and author notified.", ephemeral=True)
+            await interaction.response.send_message(
+                f"{self.member.mention} has been timed out for {duration}, message deleted, and author notified.",
+                ephemeral=True
+            )
+            # Mark the report as resolved after the time-out duration is applied
             await self.report_view.mark_as_resolved(interaction)
         except discord.Forbidden:
             await interaction.response.send_message("Unable to time out the user or delete the message due to permission issues.", ephemeral=True)
@@ -267,7 +259,7 @@ class TimeoutDurationView(discord.ui.View):
 
     async def apply_timeout(self, interaction: discord.Interaction, duration: timedelta):
         try:
-            await self.report_view.send_violation_dm(self, self.member, self.message, f"Timed Out for {duration}")
+            await ReportView.send_violation_dm(self, self.member, self.message, f"Timed Out for {duration}")
             await self.member.timeout(duration, reason="Violation of server rules.")
             await self.message.delete()
             await interaction.response.send_message(f"{self.member.mention} has been timed out for {duration}, message deleted, and author notified.", ephemeral=True)
@@ -276,4 +268,3 @@ class TimeoutDurationView(discord.ui.View):
 
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
-
