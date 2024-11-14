@@ -9,13 +9,32 @@ from main import create_embed
 import logging
 import sys
 
-# Set up logging for Heroku
+# Enhanced logging configuration for Heroku
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,  # Switch to DEBUG to capture everything during testing
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     stream=sys.stdout
 )
 logger = logging.getLogger(__name__)
+
+# Example startup log to check if it appears
+logger.info("Bot is starting up...")  # Check if this appears in Heroku logs
+
+# Example database interaction with logging
+def fetch_warnings(cursor, user_id, guild_id, time_threshold):
+    logger.info("Fetching warnings from the database...")
+    cursor.execute(
+        """
+        SELECT warning_id, moderator_id, timestamp
+        FROM warnings
+        WHERE user_id = %s AND guild_id = %s AND timestamp > %s
+        ORDER BY warning_id ASC
+        """,
+        (user_id, guild_id, time_threshold)
+    )
+    results = cursor.fetchall()
+    logger.debug(f"Database Results: {results}")
+    return results
 
 class ReportToModsCog(commands.Cog):
     def __init__(self, bot):
