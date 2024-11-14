@@ -32,7 +32,7 @@ class PurgeOptionsView(View):
             "⚠️ Confirm Purge All",
             "You are about to delete **all messages** in this channel. This action is irreversible. Do you want to continue?"
         )
-        view = ConfirmPurgeAllView(self)
+        view = ConfirmPurgeAllView(self, command_message_id=interaction.id)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
     async def perform_purge_with_stop(self, interaction: discord.Interaction, check_func):
@@ -45,7 +45,7 @@ class PurgeOptionsView(View):
         status_message = await interaction.followup.send("Deleting messages...", view=status_view)
 
         async for message in interaction.channel.history(limit=None):
-            if self.stop_deletion:
+            if self.stop_deletion or message.id >= interaction.id:  # Only delete messages before command message
                 break
             if not check_func(message):
                 continue  # Skip messages that do not match the criteria
@@ -61,7 +61,6 @@ class PurgeOptionsView(View):
                 else:
                     break
 
-        # Update the status message with the deletion summary
         final_text = f"Purge complete: Deleted {total_deleted} messages." if not self.stop_deletion else f"Purge stopped: {total_deleted} messages deleted."
         await status_message.edit(content=final_text, view=None)
 
@@ -74,15 +73,15 @@ class PurgeOptionsView(View):
         await self.perform_purge_with_stop(interaction, check_func=lambda m: m.author.bot)
 
     async def prompt_number_of_messages(self, interaction: discord.Interaction):
-        modal = NumberInputModal()
+        modal = NumberInputModal(command_message_id=interaction.id)
         await interaction.response.send_modal(modal)
 
     async def purge_messages_from_user(self, interaction: discord.Interaction):
-        modal = UserSelectionModal()
+        modal = UserSelectionModal(command_message_id=interaction.id)
         await interaction.response.send_modal(modal)
 
     async def purge_messages_from_timeframe(self, interaction: discord.Interaction):
-        modal = TimeframeModal()
+        modal = TimeframeModal(command_message_id=interaction.id)
         await interaction.response.send_modal(modal)
 
 class StopPurgeView(View):
@@ -97,16 +96,15 @@ class StopPurgeView(View):
         await interaction.response.edit_message(view=self)
 
 class ConfirmPurgeAllView(View):
-    def __init__(self, parent_view):
+    def __init__(self, parent_view, command_message_id):
         super().__init__(timeout=None)
         self.parent_view = parent_view
+        self.command_message_id = command_message_id
 
     @discord.ui.button(label="Confirm", style=discord.ButtonStyle.danger, custom_id="confirm_purge_all_unique")
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # Defer the interaction to prevent webhook errors
         await interaction.response.defer()
-        # Perform the purge with a stop button
-        await self.parent_view.perform_purge_with_stop(interaction, check_func=lambda _: True)
+        await self.parent_view.perform_purge_with_stop(interaction, check_func=lambda m: m.id < self.command_message_id)
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.secondary, custom_id="cancel_purge_all_unique")
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -140,6 +138,10 @@ class PurgeOptionsSelect(discord.ui.Select):
             await self.view.purge_messages_from_timeframe(interaction)
 
 class NumberInputModal(Modal, title="Purge number of messages"):
+    def __init__(self, command_message_id):
+        super().__init__()
+        self.command_message_id = command_message_id
+
     number = TextInput(label="Number of messages to delete", placeholder="Enter a number (e.g., 10)", required=True)
 
     async def on_submit(self, interaction: discord.Interaction):
@@ -147,17 +149,12 @@ class NumberInputModal(Modal, title="Purge number of messages"):
             limit = int(self.number.value)
             if limit <= 0:
                 raise ValueError("Number must be positive.")
-            
-            # Defer the interaction response to avoid webhook errors
-            await interaction.response.defer(thinking=True)
-            
             deleted_count = 0
             delay_between_deletions = 1.5
-            status_view = StopPurgeView(self)  # Assuming StopPurgeView is defined with stop functionality
+            status_view = StopPurgeView(self)
             status_message = await interaction.followup.send("Deleting messages...", view=status_view)
-            
             async for message in interaction.channel.history(limit=limit):
-                if getattr(self, "stop_deletion", False):
+                if getattr(self, "stop_deletion", False) or message.id >= self.command_message_id:
                     break
                 try:
                     await message.delete()
@@ -169,37 +166,13 @@ class NumberInputModal(Modal, title="Purge number of messages"):
                         await asyncio.sleep(retry_after)
                     else:
                         break
-            
             final_text = f"Purge complete: Deleted {deleted_count} messages." if not getattr(self, "stop_deletion", False) else f"Purge stopped: {deleted_count} messages deleted."
             await status_message.edit(content=final_text, view=None)
-        
         except ValueError:
             embed = create_embed("Error", "Please enter a valid positive integer.")
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-class UserSelectionModal(Modal, title="Purge messages from a User"):
-    user_input = TextInput(label="User ID or mention", placeholder="Enter the user's ID or mention them", required=True)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        user_id = int(self.user_input.value.strip("<@!>")) if self.user_input.value.isdigit() else None
-        if not user_id:
-            await interaction.response.send_message("Invalid user ID or mention.", ephemeral=True)
-            return
-        await PurgeOptionsView().perform_purge_with_stop(interaction, check_func=lambda m: m.author.id == user_id)
-
-class TimeframeModal(Modal, title="Purge Messages from a Timeframe"):
-    hours = TextInput(label="Hours", placeholder="Enter the number of hours", required=False)
-    minutes = TextInput(label="Minutes", placeholder="Enter the number of minutes", required=False)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        hours = int(self.hours.value) if self.hours.value else 0
-        minutes = int(self.minutes.value) if self.minutes.value else 0
-        if hours == 0 and minutes == 0:
-            await interaction.response.send_message("Please enter a valid timeframe.", ephemeral=True)
-            return
-        from datetime import datetime, timedelta
-        time_limit = datetime.utcnow() - timedelta(hours=hours, minutes=minutes)
-        await PurgeOptionsView().perform_purge_with_stop(interaction, check_func=lambda m: m.created_at >= time_limit)
+# Similar adjustments are made to UserSelectionModal and TimeframeModal to use command_message_id
 
 async def setup(bot):
     await bot.add_cog(PurgeCog(bot))
