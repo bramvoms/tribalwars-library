@@ -1,4 +1,3 @@
-import asyncio
 import discord
 from discord.ext import commands
 from datetime import timedelta
@@ -119,20 +118,24 @@ class MuteModal(discord.ui.Modal, title="Mute Duration"):
         self.add_item(discord.ui.TextInput(label="Mute duration (in minutes)"))
 
     async def callback(self, interaction: discord.Interaction):
-        duration = int(self.children[0].value)
-        timeout_duration = timedelta(minutes=duration)
-        
+        try:
+            duration = int(self.children[0].value)
+            timeout_duration = timedelta(minutes=duration)
+        except ValueError:
+            await interaction.response.send_message("Invalid duration. Please enter a number.", ephemeral=True)
+            return
+
         try:
             # Notify the user about the mute
             await self.message.author.send(f"Your message has been deleted and you have been muted for {duration} minutes due to a violation of the server rules.")
             # Apply the Time-Out feature
             await self.message.author.timeout(timeout_duration, reason="Muted due to violation of server rules.")
+            await self.message.delete()
+            await interaction.response.send_message(f"{self.message.author.mention} has been muted for {duration} minutes and notified (if possible).", ephemeral=True)
         except discord.Forbidden:
             await interaction.response.send_message("Unable to notify or mute the user due to permission issues.", ephemeral=True)
-            return
-        
-        await self.message.delete()
-        await interaction.response.send_message(f"{self.message.author.mention} has been muted for {duration} minutes and notified (if possible).", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f"An error occurred: {str(e)}", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
