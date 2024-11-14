@@ -2,11 +2,20 @@ import discord
 from discord.ext import commands
 from main import create_embed  # Import the pre-configured embed function
 
+# Dictionary to store the moderator channel ID for each guild
+moderator_channels = {}
+
 class ReportToModsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        # Replace with your server's specific moderator channel ID
-        self.moderator_channel_id = 1241668734528258101  # Replace with actual channel ID
+
+    @commands.command(name="setmodchannel")
+    @commands.has_permissions(administrator=True)
+    async def set_mod_channel(self, ctx, channel: discord.TextChannel):
+        """Sets the moderator channel for the current server. Only for administrators."""
+        guild_id = ctx.guild.id
+        moderator_channels[guild_id] = channel.id
+        await ctx.send(f"Moderator channel set to {channel.mention}")
 
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
         # Send a private confirmation to the user who reported the message
@@ -26,15 +35,19 @@ class ReportToModsCog(commands.Cog):
         embed = create_embed(title=title, description=description)
         embed.set_footer(text="Use this information for appropriate moderation actions.")
         
-        # Create a button view with the "Resolved" button for mods to mark the report as resolved
-        view = ReportView()
-
-        # Send the embed publicly in the moderators' channel
-        mod_channel = self.bot.get_channel(self.moderator_channel_id)
-        if mod_channel:
-            await mod_channel.send(embed=embed, view=view)
+        # Get the moderator channel for the current guild
+        guild_id = interaction.guild.id
+        mod_channel_id = moderator_channels.get(guild_id)
+        if mod_channel_id:
+            mod_channel = self.bot.get_channel(mod_channel_id)
+            if mod_channel:
+                # Send the embed publicly in the moderator's channel
+                view = ReportView()
+                await mod_channel.send(embed=embed, view=view)
+            else:
+                await interaction.followup.send("Moderator channel not found.", ephemeral=True)
         else:
-            print("Moderator channel not found.")
+            await interaction.followup.send("Moderator channel has not been set. Please contact an admin.", ephemeral=True)
 
 class ReportView(discord.ui.View):
     def __init__(self):
