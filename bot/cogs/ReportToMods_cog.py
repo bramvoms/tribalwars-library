@@ -116,57 +116,57 @@ class ReportView(discord.ui.View):
         await self.mark_as_resolved(interaction)
 
     async def warn_author(self, interaction: discord.Interaction):
-        author = self.message.author
-        guild_id = interaction.guild.id
-        current_time = datetime.utcnow()
+    author = self.message.author
+    guild_id = interaction.guild.id
+    current_time = datetime.utcnow()
 
-        # Insert the new warning into the database
-        self.bot.get_cog("ReportToModsCog").cursor.execute(
-            "INSERT INTO warnings (user_id, guild_id, timestamp) VALUES (%s, %s, %s)",
-            (author.id, guild_id, current_time)
-        )
-        self.bot.get_cog("ReportToModsCog").db.commit()
+    # Insert the new warning into the database
+    self.bot.get_cog("ReportToModsCog").cursor.execute(
+        "INSERT INTO warnings (user_id, guild_id, timestamp) VALUES (%s, %s, %s)",
+        (author.id, guild_id, current_time)
+    )
+    self.bot.get_cog("ReportToModsCog").db.commit()
 
-        # Retrieve warnings in the last 8 hours
-        self.bot.get_cog("ReportToModsCog").cursor.execute(
-            """
-            SELECT COUNT(*) FROM warnings
-            WHERE user_id = %s AND guild_id = %s AND timestamp > %s
-            """,
-            (author.id, guild_id, current_time - timedelta(hours=8))
-        )
-        warning_count = self.bot.get_cog("ReportToModsCog").cursor.fetchone()[0]
+    # Retrieve warnings in the last 8 hours
+    self.bot.get_cog("ReportToModsCog").cursor.execute(
+        """
+        SELECT COUNT(*) FROM warnings
+        WHERE user_id = %s AND guild_id = %s AND timestamp > %s
+        """,
+        (author.id, guild_id, current_time - timedelta(hours=8))
+    )
+    warning_count = self.bot.get_cog("ReportToModsCog").cursor.fetchone()[0]
 
-        if warning_count >= 3:
-            # Timeout the user for 1 day
-            try:
-                await author.timeout_for(timedelta(days=1), reason="Accumulated 3 warnings in 8 hours.")
-                dm_message = (
-                    f"You have been timed out for 1 day in **{interaction.guild.name}** due to multiple violations. "
-                    f"Your message in {self.message.channel.mention} was: \n\n{self.message.content}"
-                )
-            except discord.Forbidden:
-                await interaction.response.send_message("Unable to timeout the user due to permission issues.", ephemeral=True)
-                return
-        else:
+    if warning_count >= 3:
+        # Timeout the user for 1 day
+        try:
+            await author.timeout(timedelta(days=1), reason="Accumulated 3 warnings in 8 hours.")
             dm_message = (
-                f"You have received a warning in **{interaction.guild.name}**. "
+                f"You have been timed out for 1 day in **{interaction.guild.name}** due to multiple violations. "
                 f"Your message in {self.message.channel.mention} was: \n\n{self.message.content}"
             )
-
-        # Send DM to the user
-        try:
-            embed = create_embed(
-                title="⚠️ Warning Notification",
-                description=dm_message
-            )
-            await author.send(embed=embed)
         except discord.Forbidden:
-            await interaction.response.send_message("Unable to send a DM to the user.", ephemeral=True)
+            await interaction.response.send_message("Unable to timeout the user due to permission issues.", ephemeral=True)
+            return
+    else:
+        dm_message = (
+            f"You have received a warning in **{interaction.guild.name}**. "
+            f"Your message in {self.message.channel.mention} was: \n\n{self.message.content}"
+        )
 
-        # Delete the original message
-        await self.message.delete()
-        await interaction.response.send_message("Author warned and message deleted.", ephemeral=True)
+    # Send DM to the user
+    try:
+        embed = create_embed(
+            title="⚠️ Warning Notification",
+            description=dm_message
+        )
+        await author.send(embed=embed)
+    except discord.Forbidden:
+        await interaction.response.send_message("Unable to send a DM to the user.", ephemeral=True)
+
+    # Delete the original message
+    await self.message.delete()
+    await interaction.response.send_message("Author warned and message deleted.", ephemeral=True)
 
     @discord.ui.button(label="Resolved", style=discord.ButtonStyle.success)
     async def resolved_button(self, interaction: discord.Interaction, button: discord.ui.Button):
