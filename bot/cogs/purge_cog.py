@@ -134,10 +134,10 @@ class NumberInputModal(Modal, title="Purge number of messages"):
             # Inform the user that the purge is starting
             await interaction.response.send_message(f"Purging up to {limit} messages...", ephemeral=True)
 
-            # Skip the interaction message itself
-            async for message in interaction.channel.history(limit=limit + 1):  # +1 to account for the interaction message
+            # Iterate through message history with the exact limit, skipping the command message
+            async for message in interaction.channel.history(limit=limit):
                 if message.id == interaction.message.id:
-                    continue  # Skip the command message
+                    continue  # Skip the command message itself
 
                 try:
                     await message.delete()
