@@ -1,20 +1,40 @@
 import discord
 from discord.ext import commands
+import sqlite3
 from main import create_embed  # Import the pre-configured embed function
-
-# Dictionary to store the moderator channel ID for each guild
-moderator_channels = {}
 
 class ReportToModsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.db = sqlite3.connect("moderator_channels.db")
+        self.cursor = self.db.cursor()
+        self.cursor.execute(
+            "CREATE TABLE IF NOT EXISTS mod_channels (guild_id INTEGER PRIMARY KEY, channel_id INTEGER)"
+        )
+        self.db.commit()
+
+    def set_moderator_channel(self, guild_id: int, channel_id: int):
+        """Set the moderator channel in the database."""
+        self.cursor.execute(
+            "INSERT OR REPLACE INTO mod_channels (guild_id, channel_id) VALUES (?, ?)",
+            (guild_id, channel_id),
+        )
+        self.db.commit()
+
+    def get_moderator_channel(self, guild_id: int):
+        """Get the moderator channel ID for a guild from the database."""
+        self.cursor.execute(
+            "SELECT channel_id FROM mod_channels WHERE guild_id = ?", (guild_id,)
+        )
+        result = self.cursor.fetchone()
+        return result[0] if result else None
 
     @commands.command(name="setmodchannel")
     @commands.has_permissions(administrator=True)
     async def set_mod_channel(self, ctx, channel: discord.TextChannel):
         """Sets the moderator channel for the current server. Only for administrators."""
         guild_id = ctx.guild.id
-        moderator_channels[guild_id] = channel.id
+        self.set_moderator_channel(guild_id, channel.id)
         await ctx.send(f"Moderator channel set to {channel.mention}")
 
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
@@ -22,7 +42,7 @@ class ReportToModsCog(commands.Cog):
         await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
 
         # Prepare the title and description for the mod channel report message
-        title = "⚠️ Nieuw gemeld bericht"
+        title = "⚠️ New Message Report"
         description = (
             f"**Reported Message**: {message.content}\n\n"
             f"**Reported by**: {interaction.user.mention}\n"
@@ -35,9 +55,9 @@ class ReportToModsCog(commands.Cog):
         embed = create_embed(title=title, description=description)
         embed.set_footer(text="Use this information for appropriate moderation actions.")
         
-        # Get the moderator channel for the current guild
+        # Retrieve the moderator channel from the database
         guild_id = interaction.guild.id
-        mod_channel_id = moderator_channels.get(guild_id)
+        mod_channel_id = self.get_moderator_channel(guild_id)
         if mod_channel_id:
             mod_channel = self.bot.get_channel(mod_channel_id)
             if mod_channel:
