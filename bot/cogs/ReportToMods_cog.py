@@ -175,9 +175,11 @@ class ReportView(discord.ui.View):
         try:
             embed = create_embed(
                 title="⚠️ Warning Notification",
-                description=dm_message,
-                fields=[("Moderators in the last 8 hours", "\n".join(moderator_names), False)]
+                description=dm_message
             )
+            # Add the moderator warning details to the embed
+            for moderator_name in moderator_names:
+                embed.add_field(name="Moderator Warning", value=moderator_name, inline=False)
             await author.send(embed=embed)
         except discord.Forbidden:
             await interaction.response.send_message("Unable to send a DM to the user.", ephemeral=True)
@@ -210,7 +212,6 @@ class ReportView(discord.ui.View):
         await self.message.author.ban(reason="Violation of server rules")
         await self.message.delete()
         await self.mark_as_resolved(interaction)
-
 
 class TimeoutDurationView(discord.ui.View):
     def __init__(self, member, message, report_view):
