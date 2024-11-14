@@ -29,18 +29,13 @@ class PurgeOptionsView(View):
     async def purge_all_messages(self, interaction: discord.Interaction):
         await interaction.response.defer(thinking=True)
         total_deleted = 0
-        delay_between_deletions = 1
-        command_message_id = interaction.id  # Capture the ID of the message that triggered /purge
+        delay_between_deletions = 1.5  # Conservative delay to avoid rate limits
 
         async for message in interaction.channel.history(limit=None):
-            if message.id == command_message_id:
-                continue  # Skip the /purge command message
-
             try:
                 await message.delete()
                 total_deleted += 1
-                await asyncio.sleep(delay_between_deletions)  # Delay to avoid rate limits
-
+                await asyncio.sleep(delay_between_deletions)
             except discord.HTTPException as e:
                 if e.status == 429:
                     retry_after = e.retry_after or 10
@@ -48,8 +43,8 @@ class PurgeOptionsView(View):
                 else:
                     break
 
-        embed = create_embed("Purge complete", f"Deleted {total_deleted} messages.")
-        await interaction.followup.send(embed=embed, ephemeral=True)
+        # Send an ephemeral follow-up message to the user with the total deleted count
+        await interaction.followup.send(f"Purge complete: Deleted {total_deleted} messages.", ephemeral=True)
 
     async def prompt_number_of_messages(self, interaction: discord.Interaction):
         modal = NumberInputModal()
@@ -58,18 +53,16 @@ class PurgeOptionsView(View):
     async def purge_non_bot_messages(self, interaction: discord.Interaction):
         await interaction.response.defer(thinking=True)
         total_deleted = 0
-        delay_between_deletions = 1
-        command_message_id = interaction.id
+        delay_between_deletions = 1.5
 
         async for message in interaction.channel.history(limit=None):
-            if message.id == command_message_id or message.author.bot:
-                continue  # Skip the /purge command message and bot messages
+            if message.author.bot:
+                continue  # Skip bot messages
 
             try:
                 await message.delete()
                 total_deleted += 1
                 await asyncio.sleep(delay_between_deletions)
-
             except discord.HTTPException as e:
                 if e.status == 429:
                     retry_after = e.retry_after or 10
@@ -77,24 +70,22 @@ class PurgeOptionsView(View):
                 else:
                     break
 
-        embed = create_embed("Purge complete", f"Deleted {total_deleted} non-bot messages.")
-        await interaction.followup.send(embed=embed, ephemeral=True)
+        # Send an ephemeral follow-up message to the user with the total deleted count
+        await interaction.followup.send(f"Purge complete: Deleted {total_deleted} non-bot messages.", ephemeral=True)
 
     async def purge_bot_messages(self, interaction: discord.Interaction):
         await interaction.response.defer(thinking=True)
         total_deleted = 0
-        delay_between_deletions = 1
-        command_message_id = interaction.id
+        delay_between_deletions = 1.5
 
         async for message in interaction.channel.history(limit=None):
-            if message.id == command_message_id or not message.author.bot:
-                continue  # Skip the /purge command message and non-bot messages
+            if not message.author.bot:
+                continue  # Skip non-bot messages
 
             try:
                 await message.delete()
                 total_deleted += 1
                 await asyncio.sleep(delay_between_deletions)
-
             except discord.HTTPException as e:
                 if e.status == 429:
                     retry_after = e.retry_after or 10
@@ -102,16 +93,8 @@ class PurgeOptionsView(View):
                 else:
                     break
 
-        embed = create_embed("Purge complete", f"Deleted {total_deleted} bot messages.")
-        await interaction.followup.send(embed=embed, ephemeral=True)
-
-    async def prompt_user_selection(self, interaction: discord.Interaction):
-        modal = UserSelectionModal()
-        await interaction.response.send_modal(modal)
-
-    async def prompt_timeframe(self, interaction: discord.Interaction):
-        modal = TimeframeModal()
-        await interaction.response.send_modal(modal)
+        # Send an ephemeral follow-up message to the user with the total deleted count
+        await interaction.followup.send(f"Purge complete: Deleted {total_deleted} bot messages.", ephemeral=True)
 
 class PurgeOptionsSelect(discord.ui.Select):
     def __init__(self):
@@ -135,10 +118,6 @@ class PurgeOptionsSelect(discord.ui.Select):
             await self.view.purge_non_bot_messages(interaction)
         elif option == "purge_bot":
             await self.view.purge_bot_messages(interaction)
-        elif option == "purge_user":
-            await self.view.prompt_user_selection(interaction)
-        elif option == "purge_timeframe":
-            await self.view.prompt_timeframe(interaction)
 
 class NumberInputModal(Modal, title="Purge number of messages"):
     number = TextInput(label="Number of messages to delete", placeholder="Enter a number (e.g., 10)", required=True)
@@ -151,80 +130,26 @@ class NumberInputModal(Modal, title="Purge number of messages"):
 
             await interaction.response.defer(thinking=True)
             deleted_count = 0
-            command_message_id = interaction.id  # ID of the /purge command
+            delay_between_deletions = 1.5  # Conservative delay to avoid rate limits
 
-            async for message in interaction.channel.history(limit=limit + 1):
-                if message.id == command_message_id:
-                    continue  # Skip the /purge command message itself
+            async for message in interaction.channel.history(limit=limit):
+                try:
+                    await message.delete()
+                    deleted_count += 1
+                    await asyncio.sleep(delay_between_deletions)
+                except discord.HTTPException as e:
+                    if e.status == 429:
+                        retry_after = e.retry_after or 10
+                        await asyncio.sleep(retry_after)
+                    else:
+                        break
 
-                if deleted_count < limit:
-                    try:
-                        await message.delete()
-                        deleted_count += 1
-                    except discord.HTTPException as e:
-                        if e.status == 429:
-                            retry_after = e.retry_after or 10
-                            await asyncio.sleep(retry_after)
-                        else:
-                            break
-                else:
-                    break
-
-            embed = create_embed("Purge complete", f"Deleted {deleted_count} messages.")
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            # Send an ephemeral follow-up message with the total deleted count
+            await interaction.followup.send(f"Purge complete: Deleted {deleted_count} messages.", ephemeral=True)
 
         except ValueError:
             embed = create_embed("Error", "Please enter a valid positive integer.")
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-class UserSelectionModal(Modal, title="Purge messages from a User"):
-    user_input = TextInput(label="User ID or mention", placeholder="Enter the user's ID or mention them", required=True)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        try:
-            user_value = self.user_input.value.strip()
-            user = None
-            if user_value.isdigit():
-                user = await interaction.guild.fetch_member(int(user_value))
-            elif user_value.startswith("<@") and user_value.endswith(">"):
-                user_id = int(user_value.strip("<@!>"))
-                user = await interaction.guild.fetch_member(user_id)
-            else:
-                user = interaction.guild.get_member_named(user_value)
-            if user is None:
-                raise ValueError("User not found.")
-
-            await interaction.response.defer(thinking=True)
-            deleted = await interaction.channel.purge(limit=None, check=lambda m: m.author == user)
-            embed = create_embed("Purge complete", f"Deleted {len(deleted)} messages from {user.display_name}.")
-            await interaction.followup.send(embed=embed, ephemeral=True)
-        except Exception as e:
-            embed = create_embed("Error", f"Error: {str(e)}")
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-
-class TimeframeModal(Modal, title="Purge Messages from a Timeframe"):
-    hours = TextInput(label="Hours", placeholder="Enter the number of hours", required=False)
-    minutes = TextInput(label="Minutes", placeholder="Enter the number of minutes", required=False)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        try:
-            hours = int(self.hours.value) if self.hours.value else 0
-            minutes = int(self.minutes.value) if self.minutes.value else 0
-            if hours == 0 and minutes == 0:
-                raise ValueError("Please enter a valid timeframe.")
-
-            from datetime import datetime, timedelta
-
-            time_limit = datetime.utcnow() - timedelta(hours=hours, minutes=minutes)
-
-            await interaction.response.defer(thinking=True)
-            deleted = await interaction.channel.purge(after=time_limit)
-            embed = create_embed("Purge complete", f"Deleted {len(deleted)} messages from the last {hours} hours and {minutes} minutes.")
-            await interaction.followup.send(embed=embed, ephemeral=True)
-        except ValueError as e:
-            embed = create_embed("Error", str(e))
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-
 async def setup(bot):
     await bot.add_cog(PurgeCog(bot))
-
