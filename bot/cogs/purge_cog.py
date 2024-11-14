@@ -48,7 +48,7 @@ class PurgeOptionsView(View):
                 else:
                     break
 
-        embed = create_embed("Purge Complete", f"Deleted {total_deleted} messages.")
+        embed = create_embed("Purge complete", f"Deleted {total_deleted} messages.")
         await interaction.followup.send(embed=embed, ephemeral=True)
 
     async def prompt_number_of_messages(self, interaction: discord.Interaction):
@@ -77,7 +77,7 @@ class PurgeOptionsView(View):
                 else:
                     break
 
-        embed = create_embed("Purge Complete", f"Deleted {total_deleted} non-bot messages.")
+        embed = create_embed("Purge complete", f"Deleted {total_deleted} non-bot messages.")
         await interaction.followup.send(embed=embed, ephemeral=True)
 
     async def purge_bot_messages(self, interaction: discord.Interaction):
@@ -102,7 +102,7 @@ class PurgeOptionsView(View):
                 else:
                     break
 
-        embed = create_embed("Purge Complete", f"Deleted {total_deleted} bot messages.")
+        embed = create_embed("Purge complete", f"Deleted {total_deleted} bot messages.")
         await interaction.followup.send(embed=embed, ephemeral=True)
 
     async def prompt_user_selection(self, interaction: discord.Interaction):
@@ -116,12 +116,12 @@ class PurgeOptionsView(View):
 class PurgeOptionsSelect(discord.ui.Select):
     def __init__(self):
         options = [
-            discord.SelectOption(label="Purge All Messages", value="purge_all", description="Delete all messages in the channel."),
-            discord.SelectOption(label="Purge Number of Messages", value="purge_number", description="Delete a specific number of messages."),
-            discord.SelectOption(label="Purge Non-Bot Messages", value="purge_non_bot", description="Delete all messages sent by users."),
-            discord.SelectOption(label="Purge Bot Messages", value="purge_bot", description="Delete all messages sent by bots."),
-            discord.SelectOption(label="Purge Messages from a User", value="purge_user", description="Delete messages from a specific user."),
-            discord.SelectOption(label="Purge Messages from a Timeframe", value="purge_timeframe", description="Delete messages within a timeframe."),
+            discord.SelectOption(label="Purge all messages", value="purge_all", description="Delete all messages in the channel."),
+            discord.SelectOption(label="Purge number of messages", value="purge_number", description="Delete a specific number of messages."),
+            discord.SelectOption(label="Purge non-bot messages", value="purge_non_bot", description="Delete all messages sent by users."),
+            discord.SelectOption(label="Purge bot messages", value="purge_bot", description="Delete all messages sent by bots."),
+            discord.SelectOption(label="Purge messages from a user", value="purge_user", description="Delete messages from a specific user."),
+            discord.SelectOption(label="Purge messages from a timeframe", value="purge_timeframe", description="Delete messages within a timeframe."),
         ]
         super().__init__(placeholder="Select a purge option...", options=options, min_values=1, max_values=1)
 
@@ -140,7 +140,7 @@ class PurgeOptionsSelect(discord.ui.Select):
         elif option == "purge_timeframe":
             await self.view.prompt_timeframe(interaction)
 
-class NumberInputModal(Modal, title="Purge Number of Messages"):
+class NumberInputModal(Modal, title="Purge number of messages"):
     number = TextInput(label="Number of messages to delete", placeholder="Enter a number (e.g., 10)", required=True)
 
     async def on_submit(self, interaction: discord.Interaction):
@@ -170,15 +170,15 @@ class NumberInputModal(Modal, title="Purge Number of Messages"):
                 else:
                     break
 
-            embed = create_embed("Purge Complete", f"Deleted {deleted_count} messages.")
+            embed = create_embed("Purge complete", f"Deleted {deleted_count} messages.")
             await interaction.followup.send(embed=embed, ephemeral=True)
 
         except ValueError:
             embed = create_embed("Error", "Please enter a valid positive integer.")
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-class UserSelectionModal(Modal, title="Purge Messages from a User"):
-    user_input = TextInput(label="User ID or Mention", placeholder="Enter the user's ID or mention them", required=True)
+class UserSelectionModal(Modal, title="Purge messages from a User"):
+    user_input = TextInput(label="User ID or mention", placeholder="Enter the user's ID or mention them", required=True)
 
     async def on_submit(self, interaction: discord.Interaction):
         try:
@@ -196,7 +196,7 @@ class UserSelectionModal(Modal, title="Purge Messages from a User"):
 
             await interaction.response.defer(thinking=True)
             deleted = await interaction.channel.purge(limit=None, check=lambda m: m.author == user)
-            embed = create_embed("Purge Complete", f"Deleted {len(deleted)} messages from {user.display_name}.")
+            embed = create_embed("Purge complete", f"Deleted {len(deleted)} messages from {user.display_name}.")
             await interaction.followup.send(embed=embed, ephemeral=True)
         except Exception as e:
             embed = create_embed("Error", f"Error: {str(e)}")
@@ -219,7 +219,7 @@ class TimeframeModal(Modal, title="Purge Messages from a Timeframe"):
 
             await interaction.response.defer(thinking=True)
             deleted = await interaction.channel.purge(after=time_limit)
-            embed = create_embed("Purge Complete", f"Deleted {len(deleted)} messages from the last {hours} hours and {minutes} minutes.")
+            embed = create_embed("Purge complete", f"Deleted {len(deleted)} messages from the last {hours} hours and {minutes} minutes.")
             await interaction.followup.send(embed=embed, ephemeral=True)
         except ValueError as e:
             embed = create_embed("Error", str(e))
