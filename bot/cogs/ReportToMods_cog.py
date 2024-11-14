@@ -42,7 +42,7 @@ class ReportToModsCog(commands.Cog):
         await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
 
         # Prepare the title and description for the mod channel report message
-        title = "⚠️ New Message Report"
+        title = "⚠️ Nieuw gemeld bericht"
         description = (
             f"**Reported Message**: {message.content}\n\n"
             f"**Reported by**: {interaction.user.mention}\n"
