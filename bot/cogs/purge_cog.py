@@ -128,11 +128,17 @@ class NumberInputModal(Modal, title="Purge number of messages"):
             if limit <= 0:
                 raise ValueError("Number must be positive.")
 
-            await interaction.response.defer(thinking=True)
             deleted_count = 0
             delay_between_deletions = 1.5  # Conservative delay to avoid rate limits
 
-            async for message in interaction.channel.history(limit=limit):
+            # Inform the user that the purge is starting
+            await interaction.response.send_message(f"Purging up to {limit} messages...", ephemeral=True)
+
+            # Skip the interaction message itself
+            async for message in interaction.channel.history(limit=limit + 1):  # +1 to account for the interaction message
+                if message.id == interaction.message.id:
+                    continue  # Skip the command message
+
                 try:
                     await message.delete()
                     deleted_count += 1
