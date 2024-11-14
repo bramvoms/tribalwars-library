@@ -87,7 +87,7 @@ class PurgeOptionsView(View):
 
     async def purge_all_messages(self, interaction: discord.Interaction):
         embed = create_embed(
-            "⚠️ Confirm delete all",
+            "⚠️ Confirm delete all ⚠️",
             "You are about to delete **all messages** in this channel. This action is irreversible. Do you want to continue?"
         )
         view = ConfirmPurgeView(self, interaction.id, check_func=lambda _: True)
