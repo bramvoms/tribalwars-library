@@ -158,9 +158,13 @@ class NumberInputModal(Modal, title="Purge number of messages"):
             status_view = StopPurgeView(self)  # Assuming StopPurgeView has stop functionality
             status_message = await interaction.followup.send("Deleting messages...", view=status_view)
             
-            async for message in interaction.channel.history(limit=limit):
-                if getattr(self, "stop_deletion", False) or message.id >= self.command_message_id:
+            # Retrieve extra messages to ensure we have enough to delete after skipping command message
+            async for message in interaction.channel.history(limit=limit + 10):
+                if getattr(self, "stop_deletion", False):
                     break
+                if message.id >= self.command_message_id:
+                    continue  # Skip the command message itself and any newer messages
+
                 try:
                     await message.delete()
                     deleted_count += 1
@@ -171,6 +175,9 @@ class NumberInputModal(Modal, title="Purge number of messages"):
                         await asyncio.sleep(retry_after)
                     else:
                         break
+                
+                if deleted_count >= limit:
+                    break  # Stop once the target number of messages is deleted
             
             final_text = f"Purge complete: Deleted {deleted_count} messages." if not getattr(self, "stop_deletion", False) else f"Purge stopped: {deleted_count} messages deleted."
             await status_message.edit(content=final_text, view=None)
