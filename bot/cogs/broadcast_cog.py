@@ -10,7 +10,7 @@ class BroadcastCog(commands.Cog):
     @commands.is_owner()  # Ensures only the bot owner can run this command
     async def update(self, ctx, *, message: str):
         # Create the embed using the pre-configured format
-        title = f"━ UPDATE ━"
+        title = f"🛠️ UPDATE 🛠️"
         embed = create_embed(title=title, description=message)
 
         # List of prioritized channel name patterns
