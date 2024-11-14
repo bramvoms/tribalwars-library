@@ -5,13 +5,6 @@ from discord.ui import View, Button, Modal, TextInput
 import asyncio
 from main import create_embed
 
-import discord
-from discord.ext import commands
-from discord import app_commands, Interaction
-from discord.ui import View, Button, Modal, TextInput
-import asyncio
-from main import create_embed
-
 class PurgeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -35,9 +28,11 @@ class PurgeOptionsView(View):
         self.add_item(PurgeOptionsSelect())
 
     async def confirm_and_purge(self, interaction: discord.Interaction, check_func, limit=None, confirmation_text=""):
-        """Calculate messages to delete, show confirmation, and proceed if confirmed."""
-        # Acknowledge the interaction immediately
+        """Send initial message, calculate messages to delete, then show confirmation screen."""
         await interaction.response.defer(ephemeral=True)
+        
+        # Initial "Searching for messages..." message
+        status_message = await interaction.followup.send("Searching for messages...", ephemeral=True)
         
         # Calculate the count of messages to be deleted
         total_count = 0
@@ -48,10 +43,10 @@ class PurgeOptionsView(View):
             if limit and total_count >= limit:
                 break
 
-        # Show confirmation message
+        # Show confirmation message with the count
         embed = create_embed("Confirmation", f"{confirmation_text} Are you sure you want to delete {total_count} messages?")
         view = ConfirmPurgeView(self, interaction.id, check_func, limit)
-        await interaction.followup.send(embed=embed, view=view, ephemeral=True)
+        await status_message.edit(content=None, embed=embed, view=view)
 
     async def perform_purge_with_stop(self, interaction: discord.Interaction, check_func, limit=None):
         """Perform the purge with a 'Stop' button, deleting messages before the command message."""
@@ -163,7 +158,7 @@ class PurgeOptionsSelect(discord.ui.Select):
             await self.view.purge_messages_from_user(interaction)
         elif option == "purge_timeframe":
             await self.view.purge_messages_from_timeframe(interaction)
-            
+
 class NumberInputModal(Modal, title="Purge number of messages"):
     def __init__(self, command_message_id):
         super().__init__()
