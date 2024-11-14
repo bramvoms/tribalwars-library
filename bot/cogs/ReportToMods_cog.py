@@ -175,15 +175,12 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-Out Options", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # Mark as resolved right after clicking "Time-Out Options" and then show time-out options
+        # Mark as resolved right after clicking "Time-Out Options"
         await self.mark_as_resolved(interaction)
-
-        # Send the time-out options
-        await interaction.response.send_message(
-            "Select a time-out duration for the user:", 
-            view=TimeoutDurationView(self.message.author, self.message, self),
-            ephemeral=True
-        )
+        
+        # Send the time-out options without causing a second response to the same interaction
+        view = TimeoutDurationView(self.message.author, self.message, self)
+        await interaction.message.edit(content="Select a time-out duration for the user:", view=view)
 
     @discord.ui.button(label="Ban Author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
