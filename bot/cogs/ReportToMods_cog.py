@@ -30,37 +30,111 @@ class ReportToModsCog(commands.Cog):
             );
         """)
         self.db.commit()
-        
- # Command to remove warnings for a user
+
+    def set_moderator_channel(self, guild_id: int, channel_id: int):
+        self.cursor.execute(
+            sql.SQL("INSERT INTO mod_channels (guild_id, channel_id) VALUES (%s, %s) ON CONFLICT (guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id"),
+            (guild_id, channel_id)
+        )
+        self.db.commit()
+
+    def get_moderator_channel(self, guild_id: int):
+        self.cursor.execute(
+            sql.SQL("SELECT channel_id FROM mod_channels WHERE guild_id = %s"),
+            (guild_id,)
+        )
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+
+    @commands.command(name="setmodchannel")
+    @commands.has_permissions(administrator=True)
+    async def set_mod_channel(self, ctx, channel: discord.TextChannel):
+        guild_id = ctx.guild.id
+        self.set_moderator_channel(guild_id, channel.id)
+        await ctx.send(f"Moderator channel set to {channel.mention}")
+
+    async def report_message(self, interaction: discord.Interaction, message: discord.Message):
+        await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
+
+        title = "⚠️ New Message Report!"
+        description = (
+            f"**Reported Message**: \n{message.content}\n\n"
+            f"**Reported by**: {interaction.user.mention}\n"
+            f"**Author**: {message.author.mention}\n"
+            f"**Channel**: {message.channel.mention}\n"
+            f"[Jump to Message]({message.jump_url})"
+        )
+
+        # Fetch warning information for the author in the last 8 hours
+        guild_id = interaction.guild.id
+        current_time = datetime.utcnow()
+        self.cursor.execute(
+            """
+            SELECT COUNT(*), array_agg(DISTINCT moderator_id), array_agg(DISTINCT timestamp)
+            FROM warnings
+            WHERE user_id = %s AND guild_id = %s AND timestamp > %s
+            """,
+            (message.author.id, guild_id, current_time - timedelta(hours=8))
+        )
+        result = self.cursor.fetchone()
+        warning_count = result[0]
+        moderator_ids = result[1] if result[1] else []
+        timestamps = result[2] if result[2] else []
+
+        # Build the moderator warning information for the report message
+        warning_info = f"{warning_count} warning(s) in the last 8 hours.\n"
+        for mod_id, timestamp in zip(moderator_ids, timestamps):
+            mod_member = interaction.guild.get_member(mod_id)
+            mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
+            warning_info += f"- {mod_name} at {timestamp}\n"
+
+        # Add warning information to the embed
+        embed = create_embed(title=title, description=description)
+        embed.add_field(name="Previous Warnings", value=warning_info, inline=False)
+        embed.set_footer(text="Use this information for appropriate moderation actions.")
+
+        mod_channel_id = self.get_moderator_channel(guild_id)
+        if mod_channel_id:
+            mod_channel = self.bot.get_channel(mod_channel_id)
+            if mod_channel:
+                view = ReportView(message, self.bot)
+                await mod_channel.send(embed=embed, view=view)
+            else:
+                await interaction.followup.send("Moderator channel not found.", ephemeral=True)
+        else:
+            await interaction.followup.send("Moderator channel has not been set. Please contact an admin.", ephemeral=True)
+
     @app_commands.command(name="removewarnings", description="Remove warnings for a specified user.")
-    @app_commands.describe(user="The user to remove warnings from.", all="Remove all warnings? (Y/N)", timeframe="If 'N', specify timeframe in hours")
+    @app_commands.describe(user="The user to remove warnings from within this guild.", all="Remove all warnings? (Y/N)", timeframe="If 'N', specify timeframe in hours")
     @app_commands.checks.has_permissions(administrator=True)
-    async def removewarnings(self, interaction: discord.Interaction, user: discord.User, all: str, timeframe: int = 0):
+    async def removewarnings(self, interaction: discord.Interaction, user: discord.Member, all: str, timeframe: int = 0):
         guild_id = interaction.guild.id
 
-        if all.upper() == 'Y':
-            # Remove all warnings for the user
-            self.cursor.execute(
-                "DELETE FROM warnings WHERE user_id = %s AND guild_id = %s",
-                (user.id, guild_id)
-            )
-            self.db.commit()
-            await interaction.response.send_message(f"All warnings for {user.mention} have been removed.", ephemeral=True)
+        # Validate that the specified user is a member of the guild
+        if not user:
+            await interaction.response.send_message("This user is not a member of the current guild.", ephemeral=True)
+            return
 
-        elif all.upper() == 'N' and timeframe > 0:
-            # Calculate the time limit based on the specified timeframe
-            time_limit = datetime.utcnow() - timedelta(hours=timeframe)
-
-            # Remove warnings within the specified timeframe
-            self.cursor.execute(
-                "DELETE FROM warnings WHERE user_id = %s AND guild_id = %s AND timestamp > %s",
-                (user.id, guild_id, time_limit)
-            )
-            self.db.commit()
-            await interaction.response.send_message(f"Warnings for {user.mention} within the last {timeframe} hours have been removed.", ephemeral=True)
-
-        else:
-            await interaction.response.send_message("Invalid input. Please specify 'Y' or 'N' for 'all' and a valid timeframe if 'N' is selected.", ephemeral=True)
+        try:
+            if all.upper() == 'Y':
+                # Remove all warnings for the user in this guild
+                self.cursor.execute(
+                    "DELETE FROM warnings WHERE user_id = %s AND guild_id = %s",
+                    (user.id, guild_id)
+                )
+                self.db.commit()
+                await interaction.response.send_message(f"All warnings for {user.display_name} have been removed.", ephemeral=True)
+            else:
+                # Remove warnings within a specified timeframe
+                timeframe_delta = datetime.utcnow() - timedelta(hours=timeframe)
+                self.cursor.execute(
+                    "DELETE FROM warnings WHERE user_id = %s AND guild_id = %s AND timestamp > %s",
+                    (user.id, guild_id, timeframe_delta)
+                )
+                self.db.commit()
+                await interaction.response.send_message(f"Warnings for {user.display_name} within the last {timeframe} hours have been removed.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f"An error occurred while removing warnings: {str(e)}", ephemeral=True)
             
     def set_moderator_channel(self, guild_id: int, channel_id: int):
         self.cursor.execute(
