@@ -94,7 +94,7 @@ class ReportView(discord.ui.View):
             embed.add_field(name="Resolved by", value=interaction.user.mention, inline=False)
             embed.set_footer(text="This report has been marked as resolved by the moderation team.")
             await interaction.message.edit(embed=embed, view=self)
-            await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
+            # Only mark the report as resolved without sending an additional message here
 
     async def send_violation_dm(self, member, message, reason):
         """Sends a DM to the user with details of their message violation."""
@@ -178,11 +178,13 @@ class ReportView(discord.ui.View):
         await self.send_violation_dm(self.message.author, self.message, "Message Deleted")
         await self.message.delete()
         await self.mark_as_resolved(interaction)
+        # Send the final response message after resolving
         await interaction.response.send_message("Message deleted, author notified, and report marked as resolved.", ephemeral=True)
 
     @discord.ui.button(label="Time-Out Options", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.mark_as_resolved(interaction)
+        # Open the TimeoutDurationView without sending an additional response
         await interaction.response.send_message(
             "Select a time-out duration for the user:", 
             view=TimeoutDurationView(self.message.author, self.message),
@@ -195,6 +197,7 @@ class ReportView(discord.ui.View):
         await self.message.author.ban(reason="Violation of server rules")
         await self.message.delete()
         await self.mark_as_resolved(interaction)
+        # Send the final response message after resolving
         await interaction.response.send_message("Author banned, notified, and report marked as resolved.", ephemeral=True)
 
 class TimeoutDurationView(discord.ui.View):
