@@ -8,6 +8,7 @@ class ReportToModsCog(commands.Cog):
         self.bot = bot
         self.db = sqlite3.connect("moderator_channels.db")
         self.cursor = self.db.cursor()
+        # Create the table if it doesn't exist
         self.cursor.execute(
             "CREATE TABLE IF NOT EXISTS mod_channels (guild_id INTEGER PRIMARY KEY, channel_id INTEGER)"
         )
@@ -20,6 +21,7 @@ class ReportToModsCog(commands.Cog):
             (guild_id, channel_id),
         )
         self.db.commit()
+        print(f"Set moderator channel for guild {guild_id} to channel {channel_id}")  # Debug
 
     def get_moderator_channel(self, guild_id: int):
         """Get the moderator channel ID for a guild from the database."""
@@ -27,6 +29,10 @@ class ReportToModsCog(commands.Cog):
             "SELECT channel_id FROM mod_channels WHERE guild_id = ?", (guild_id,)
         )
         result = self.cursor.fetchone()
+        if result:
+            print(f"Retrieved moderator channel for guild {guild_id}: {result[0]}")  # Debug
+        else:
+            print(f"No moderator channel found for guild {guild_id}")  # Debug
         return result[0] if result else None
 
     @commands.command(name="setmodchannel")
@@ -42,7 +48,7 @@ class ReportToModsCog(commands.Cog):
         await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
 
         # Prepare the title and description for the mod channel report message
-        title = "⚠️ Nieuw gemeld bericht"
+        title = "⚠️ New Message Report"
         description = (
             f"**Reported Message**: {message.content}\n\n"
             f"**Reported by**: {interaction.user.mention}\n"
