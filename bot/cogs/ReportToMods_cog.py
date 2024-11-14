@@ -111,9 +111,9 @@ class ReportView(discord.ui.View):
             pass
 
     async def warn_author(self, interaction: discord.Interaction):
-    author = self.message.author
-    guild_id = interaction.guild.id
-    current_time = datetime.utcnow()
+        author = self.message.author
+        guild_id = interaction.guild.id
+        current_time = datetime.utcnow()
 
     # Insert the new warning into the database
     self.bot.get_cog("ReportToModsCog").cursor.execute(
