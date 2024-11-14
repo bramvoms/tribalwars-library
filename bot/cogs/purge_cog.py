@@ -10,7 +10,7 @@ class PurgeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="purge", description="Purge messages in a channel based on various criteria.")
+    @app_commands.command(name="purge", description="Delete messages in a channel based on various criteria.")
     @app_commands.default_permissions(manage_messages=True)
     async def purge(self, interaction: discord.Interaction):
         if not interaction.user.guild_permissions.administrator:
@@ -87,7 +87,7 @@ class PurgeOptionsView(View):
 
     async def purge_all_messages(self, interaction: discord.Interaction):
         embed = create_embed(
-            "⚠️ Confirm Purge All",
+            "⚠️ Confirm delete all",
             "You are about to delete **all messages** in this channel. This action is irreversible. Do you want to continue?"
         )
         view = ConfirmPurgeView(self, interaction.id, check_func=lambda _: True)
@@ -181,12 +181,12 @@ class UserSelectionModal(Modal, title="Purge messages from a User"):
         super().__init__()
         self.command_message_id = command_message_id
 
-    user_input = TextInput(label="User ID or mention", placeholder="Enter the user's ID or mention them", required=True)
+    user_input = TextInput(label="User ID", placeholder="Enter the user's ID", required=True)
 
     async def on_submit(self, interaction: discord.Interaction):
         user_id = int(self.user_input.value.strip("<@!>")) if self.user_input.value.isdigit() else None
         if not user_id:
-            await interaction.response.send_message("Invalid user ID or mention.", ephemeral=True)
+            await interaction.response.send_message("Invalid user ID.", ephemeral=True)
             return
         await PurgeOptionsView().confirm_and_purge(interaction, check_func=lambda m: m.author.id == user_id and m.id < self.command_message_id, confirmation_text=f"This will delete messages from the specified user.")
 
