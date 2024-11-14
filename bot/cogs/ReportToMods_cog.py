@@ -228,6 +228,7 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-out author", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.mark_as_resolved(interaction)
         view = TimeoutDurationView(self.message.author, self.message, self)
         await interaction.message.edit(content="Select a time-out duration for the user:", view=view)
 
@@ -274,7 +275,6 @@ class TimeoutDurationView(discord.ui.View):
                 f"{self.member.mention} has been timed out for {duration}, message deleted, and author notified.",
                 ephemeral=True
             )
-            await self.report_view.mark_as_resolved(interaction)
         except discord.Forbidden:
             await interaction.response.send_message("Unable to time out the user or delete the message due to permission issues.", ephemeral=True)
 
