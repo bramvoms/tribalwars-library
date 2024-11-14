@@ -5,6 +5,13 @@ from discord.ui import View, Button, Modal, TextInput
 import asyncio
 from main import create_embed
 
+import discord
+from discord.ext import commands
+from discord import app_commands, Interaction
+from discord.ui import View, Button, Modal, TextInput
+import asyncio
+from main import create_embed
+
 class PurgeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -29,6 +36,9 @@ class PurgeOptionsView(View):
 
     async def confirm_and_purge(self, interaction: discord.Interaction, check_func, limit=None, confirmation_text=""):
         """Calculate messages to delete, show confirmation, and proceed if confirmed."""
+        # Acknowledge the interaction immediately
+        await interaction.response.defer(ephemeral=True)
+        
         # Calculate the count of messages to be deleted
         total_count = 0
         async for message in interaction.channel.history(limit=(limit + 10 if limit else None)):
@@ -41,7 +51,7 @@ class PurgeOptionsView(View):
         # Show confirmation message
         embed = create_embed("Confirmation", f"{confirmation_text} Are you sure you want to delete {total_count} messages?")
         view = ConfirmPurgeView(self, interaction.id, check_func, limit)
-        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+        await interaction.followup.send(embed=embed, view=view, ephemeral=True)
 
     async def perform_purge_with_stop(self, interaction: discord.Interaction, check_func, limit=None):
         """Perform the purge with a 'Stop' button, deleting messages before the command message."""
@@ -75,7 +85,6 @@ class PurgeOptionsView(View):
         await status_message.edit(content=final_text, view=None)
 
     async def purge_all_messages(self, interaction: discord.Interaction):
-        # Display a warning confirmation message for Purge All
         embed = create_embed(
             "⚠️ Confirm Purge All",
             "You are about to delete **all messages** in this channel. This action is irreversible. Do you want to continue?"
@@ -154,7 +163,7 @@ class PurgeOptionsSelect(discord.ui.Select):
             await self.view.purge_messages_from_user(interaction)
         elif option == "purge_timeframe":
             await self.view.purge_messages_from_timeframe(interaction)
-
+            
 class NumberInputModal(Modal, title="Purge number of messages"):
     def __init__(self, command_message_id):
         super().__init__()
