@@ -79,16 +79,28 @@ class ReportToModsCog(commands.Cog):
         )
         warnings = self.cursor.fetchall()
 
+        # Log the warnings fetched from the database
+        print("Fetched warnings:", warnings)  # Log the entire list of warnings
+
         # Build the warning information in chronological order
         if warnings:
             warning_info = f"{len(warnings)} warning(s) in the last 8 hours.\n"
             for mod_id, timestamp in warnings:
                 mod_member = interaction.guild.get_member(mod_id)
                 mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
-                formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                
+                # Format timestamp without milliseconds
+                formatted_timestamp = timestamp.replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S')
+                
+                # Log the formatted timestamp without milliseconds
+                print(f"Formatted timestamp (no milliseconds): {formatted_timestamp}")
+
                 warning_info += f"- Warning given by {mod_name} at {formatted_timestamp}\n"
+                # Log each warning added to warning_info
+                print(f"Adding to warning_info: {mod_name} at {formatted_timestamp}")
         else:
             warning_info = "No warnings in the last 8 hours."
+            print("No warnings found for the user in the last 8 hours.")  # Log if no warnings are found
 
         # Add warning information to the embed
         embed = create_embed(title=title, description=description)
