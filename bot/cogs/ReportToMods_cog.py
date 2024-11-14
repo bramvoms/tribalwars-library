@@ -107,12 +107,13 @@ class ReportToModsCog(commands.Cog):
     @app_commands.command(name="removewarnings", description="Remove warnings for a specified user.")
     @app_commands.describe(user="The user to remove warnings from within this guild.", all="Remove all warnings? (Y/N)", timeframe="If 'N', specify timeframe in hours")
     @app_commands.checks.has_permissions(administrator=True)
-    async def removewarnings(self, interaction: discord.Interaction, user: discord.Member, all: str, timeframe: int = 0):
+    async def removewarnings(self, interaction: discord.Interaction, user: discord.User, all: str, timeframe: int = 0):
         guild_id = interaction.guild.id
 
-        # Validate that the specified user is a member of the guild
-        if not user:
-            await interaction.response.send_message("This user is not a member of the current guild.", ephemeral=True)
+        # Verify that the specified user exists in the guild
+        guild_member = interaction.guild.get_member(user.id)
+        if not guild_member:
+            await interaction.response.send_message("The specified user is not a member of this guild.", ephemeral=True)
             return
 
         try:
@@ -123,7 +124,7 @@ class ReportToModsCog(commands.Cog):
                     (user.id, guild_id)
                 )
                 self.db.commit()
-                await interaction.response.send_message(f"All warnings for {user.display_name} have been removed.", ephemeral=True)
+                await interaction.response.send_message(f"All warnings for {guild_member.display_name} have been removed.", ephemeral=True)
             else:
                 # Remove warnings within a specified timeframe
                 timeframe_delta = datetime.utcnow() - timedelta(hours=timeframe)
@@ -132,7 +133,7 @@ class ReportToModsCog(commands.Cog):
                     (user.id, guild_id, timeframe_delta)
                 )
                 self.db.commit()
-                await interaction.response.send_message(f"Warnings for {user.display_name} within the last {timeframe} hours have been removed.", ephemeral=True)
+                await interaction.response.send_message(f"Warnings for {guild_member.display_name} within the last {timeframe} hours have been removed.", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"An error occurred while removing warnings: {str(e)}", ephemeral=True)
             
