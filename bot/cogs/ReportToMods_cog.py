@@ -110,6 +110,11 @@ class ReportView(discord.ui.View):
         except discord.Forbidden:
             pass
 
+    @discord.ui.button(label="Warn Author", style=discord.ButtonStyle.primary)
+    async def warn_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.warn_author(interaction)
+        await self.mark_as_resolved(interaction)
+
     async def warn_author(self, interaction: discord.Interaction):
         author = self.message.author
         guild_id = interaction.guild.id
