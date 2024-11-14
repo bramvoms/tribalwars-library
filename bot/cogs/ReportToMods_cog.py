@@ -3,12 +3,11 @@ from discord.ext import commands
 import os
 import psycopg2
 from psycopg2 import sql
-from main import create_embed  # Import the pre-configured embed function
+from main import create_embed
 
 class ReportToModsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        # Connect to the PostgreSQL database using DATABASE_URL from Heroku
         database_url = os.getenv("DATABASE_URL")
         self.db = psycopg2.connect(database_url, sslmode="require")
         self.cursor = self.db.cursor()
@@ -23,7 +22,6 @@ class ReportToModsCog(commands.Cog):
         self.db.commit()
 
     def set_moderator_channel(self, guild_id: int, channel_id: int):
-        """Set the moderator channel in the database."""
         self.cursor.execute(
             sql.SQL("INSERT INTO mod_channels (guild_id, channel_id) VALUES (%s, %s) ON CONFLICT (guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id"),
             (guild_id, channel_id)
@@ -31,7 +29,6 @@ class ReportToModsCog(commands.Cog):
         self.db.commit()
 
     def get_moderator_channel(self, guild_id: int):
-        """Get the moderator channel ID for a guild from the database."""
         self.cursor.execute(
             sql.SQL("SELECT channel_id FROM mod_channels WHERE guild_id = %s"),
             (guild_id,)
@@ -42,37 +39,31 @@ class ReportToModsCog(commands.Cog):
     @commands.command(name="setmodchannel")
     @commands.has_permissions(administrator=True)
     async def set_mod_channel(self, ctx, channel: discord.TextChannel):
-        """Sets the moderator channel for the current server. Only for administrators."""
         guild_id = ctx.guild.id
         self.set_moderator_channel(guild_id, channel.id)
         await ctx.send(f"Moderator channel set to {channel.mention}")
 
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
-        # Send a private confirmation to the user who reported the message
         await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
 
-        # Prepare the title and description for the mod channel report message
         title = "⚠️ New Message Report!"
         description = (
-            f"**Reported Message**: {message.content}\n\n"
+            f"**Reported Message**: \n{message.content}\n\n"
             f"**Reported by**: {interaction.user.mention}\n"
             f"**Author**: {message.author.mention}\n"
             f"**Channel**: {message.channel.mention}\n"
             f"[Jump to Message]({message.jump_url})"
         )
 
-        # Use create_embed from main.py for consistent embed styling
         embed = create_embed(title=title, description=description)
         embed.set_footer(text="Use this information for appropriate moderation actions.")
         
-        # Retrieve the moderator channel from the database
         guild_id = interaction.guild.id
         mod_channel_id = self.get_moderator_channel(guild_id)
         if mod_channel_id:
             mod_channel = self.bot.get_channel(mod_channel_id)
             if mod_channel:
-                # Send the embed publicly in the moderator's channel
-                view = ReportView()
+                view = ReportView(message)
                 await mod_channel.send(embed=embed, view=view)
             else:
                 await interaction.followup.send("Moderator channel not found.", ephemeral=True)
@@ -80,30 +71,50 @@ class ReportToModsCog(commands.Cog):
             await interaction.followup.send("Moderator channel has not been set. Please contact an admin.", ephemeral=True)
 
 class ReportView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)  # No timeout, button stays until manually removed
+    def __init__(self, message):
+        super().__init__(timeout=None)
+        self.message = message
 
     @discord.ui.button(label="Resolved", style=discord.ButtonStyle.success)
     async def resolved_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # Disable the button to prevent further clicks
         button.disabled = True
-
-        # Safely retrieve the embed and update it
         if interaction.message.embeds:
             embed = interaction.message.embeds[0]
             embed.title = "✅ Resolved Report"
             embed.color = discord.Color.green()
             embed.add_field(name="Resolved by", value=interaction.user.mention, inline=False)
             embed.set_footer(text="This report has been marked as resolved by the moderation team.")
-
-            # Edit the message in the channel with the updated embed and disabled button
             await interaction.message.edit(embed=embed, view=self)
-
-            # Send an ephemeral confirmation message to the moderator
             await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
-        else:
-            # Send an ephemeral message if no embed was found
-            await interaction.response.send_message("No embed found to update.", ephemeral=True)
-            
+
+    @discord.ui.button(label="Delete Message", style=discord.ButtonStyle.danger)
+    async def delete_message_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.message.delete()
+        await self.message.author.send("Your message has been deleted due to a violation of the server rules.")
+        await interaction.response.send_message("Message deleted and author notified.", ephemeral=True)
+
+    @discord.ui.button(label="Mute Author", style=discord.ButtonStyle.danger)
+    async def mute_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(MuteModal(self.message))
+
+    @discord.ui.button(label="Ban Author", style=discord.ButtonStyle.danger)
+    async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.message.delete()
+        await self.message.author.ban(reason="Violation of server rules")
+        await self.message.author.send("Your message has been deleted and you have been permanently banned due to a violation of the server rules.")
+        await interaction.response.send_message("Author banned and notified.", ephemeral=True)
+
+class MuteModal(discord.ui.Modal, title="Mute Duration"):
+    def __init__(self, message):
+        super().__init__()
+        self.message = message
+        self.add_item(discord.ui.InputText(label="Mute duration (in minutes)"))
+
+    async def callback(self, interaction: discord.Interaction):
+        duration = int(self.children[0].value)
+        await self.message.delete()
+        await interaction.response.send_message(f"{self.message.author.mention} has been muted for {duration} minutes and notified.", ephemeral=True)
+        await self.message.author.send(f"Your message has been deleted and you have been muted for {duration} minutes due to a violation of the server rules.")
+
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
