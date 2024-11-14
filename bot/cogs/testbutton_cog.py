@@ -29,4 +29,8 @@ class TestView(discord.ui.View):
             else:
                 print("Error: Interaction object has no 'response' attribute.")
         except Exception as e:
-            # Log any errors to understand where t
+            # Log any errors to understand where the issue may lie
+            print(f"Error in interaction: {e}")
+
+async def setup(bot):
+    await bot.add_cog(TestButtonCog(bot))
