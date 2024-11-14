@@ -85,7 +85,8 @@ class ReportToModsCog(commands.Cog):
             for mod_id, timestamp in warnings:
                 mod_member = interaction.guild.get_member(mod_id)
                 mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
-                warning_info += f"- Warning given by {mod_name} at {timestamp}\n"
+                formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                warning_info += f"- Warning given by {mod_name} at {formatted_timestamp}\n"
         else:
             warning_info = "No warnings in the last 8 hours."
 
