@@ -90,8 +90,11 @@ class ReportView(discord.ui.View):
     @discord.ui.button(label="Delete Message", style=discord.ButtonStyle.danger)
     async def delete_message_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.message.delete()
-        await self.message.author.send("Your message has been deleted due to a violation of the server rules.")
-        await interaction.response.send_message("Message deleted and author notified.", ephemeral=True)
+        try:
+            await self.message.author.send("Your message has been deleted due to a violation of the server rules.")
+        except discord.Forbidden:
+            await interaction.response.send_message("Unable to notify the user via DM.", ephemeral=True)
+        await interaction.response.send_message("Message deleted and author notified (if possible).", ephemeral=True)
 
     @discord.ui.button(label="Mute Author", style=discord.ButtonStyle.danger)
     async def mute_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -101,20 +104,26 @@ class ReportView(discord.ui.View):
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.message.delete()
         await self.message.author.ban(reason="Violation of server rules")
-        await self.message.author.send("Your message has been deleted and you have been permanently banned due to a violation of the server rules.")
-        await interaction.response.send_message("Author banned and notified.", ephemeral=True)
+        try:
+            await self.message.author.send("Your message has been deleted and you have been permanently banned due to a violation of the server rules.")
+        except discord.Forbidden:
+            await interaction.response.send_message("Unable to notify the user via DM.", ephemeral=True)
+        await interaction.response.send_message("Author banned and notified (if possible).", ephemeral=True)
 
 class MuteModal(discord.ui.Modal, title="Mute Duration"):
     def __init__(self, message):
         super().__init__()
         self.message = message
-        self.add_item(discord.ui.InputText(label="Mute duration (in minutes)"))
+        self.add_item(discord.ui.TextInput(label="Mute duration (in minutes)"))
 
     async def callback(self, interaction: discord.Interaction):
         duration = int(self.children[0].value)
         await self.message.delete()
         await interaction.response.send_message(f"{self.message.author.mention} has been muted for {duration} minutes and notified.", ephemeral=True)
-        await self.message.author.send(f"Your message has been deleted and you have been muted for {duration} minutes due to a violation of the server rules.")
+        try:
+            await self.message.author.send(f"Your message has been deleted and you have been muted for {duration} minutes due to a violation of the server rules.")
+        except discord.Forbidden:
+            await interaction.response.send_message("Unable to notify the user via DM.", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
