@@ -200,8 +200,7 @@ class ReportView(discord.ui.View):
             try:
                 await author.timeout(timedelta(days=1), reason="Accumulated 3 warnings in 8 hours.")
                 dm_message = (
-                    f"You have been timed out for 1 day in **{interaction.guild.name}** due to multiple violations. "
-                    f"Your message in {self.message.channel.mention} was:\n\n
+                    f"You have been timed out for 1 day in **{interaction.guild.name}** due to multiple violations. Your message in {self.message.channel.mention} was: \n\n"
                     f"**Message content:**\n{self.message.content}"
                 )
             except discord.Forbidden:
