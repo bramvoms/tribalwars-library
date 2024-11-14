@@ -17,6 +17,10 @@ class TestButtonCog(commands.Cog):
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Set up logging configuration
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 class TestView(discord.ui.View):
     @discord.ui.button(label="Click Me", style=discord.ButtonStyle.primary)
     async def test_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -39,6 +43,9 @@ class TestView(discord.ui.View):
                 # Attempt to edit the message with the updated embed and disabled button
                 await interaction.message.edit(embed=embed, view=self)
                 logger.info("Message edited successfully.")
+
+                # Send an ephemeral response to confirm the interaction
+                await interaction.response.send_message("Interaction processed successfully.", ephemeral=True)
             except Exception as e:
                 logger.error("Failed to edit the message: %s", e)
                 await interaction.response.send_message("An error occurred while updating the message.", ephemeral=True)
