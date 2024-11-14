@@ -97,9 +97,10 @@ class ReportView(discord.ui.View):
         await self.message.delete()
         await interaction.response.send_message("Message deleted and author notified (if possible).", ephemeral=True)
 
-    @discord.ui.button(label="Mute Author", style=discord.ButtonStyle.danger)
-    async def mute_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_modal(MuteModal(self.message))
+    @discord.ui.button(label="Time-Out Options", style=discord.ButtonStyle.danger)
+    async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # Replace the current view with a new view that provides time-out duration buttons
+        await interaction.response.send_message("Select a time-out duration for the user:", view=TimeoutDurationView(self.message.author), ephemeral=True)
 
     @discord.ui.button(label="Ban Author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -111,31 +112,43 @@ class ReportView(discord.ui.View):
         await self.message.delete()
         await interaction.response.send_message("Author banned and notified (if possible).", ephemeral=True)
 
-class MuteModal(discord.ui.Modal, title="Mute Duration"):
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
-        self.add_item(discord.ui.TextInput(label="Mute duration (in minutes)"))
+class TimeoutDurationView(discord.ui.View):
+    def __init__(self, member):
+        super().__init__(timeout=None)
+        self.member = member
 
-    async def callback(self, interaction: discord.Interaction):
-        try:
-            duration = int(self.children[0].value)
-            timeout_duration = timedelta(minutes=duration)
-        except ValueError:
-            await interaction.response.send_message("Invalid duration. Please enter a number.", ephemeral=True)
-            return
+    @discord.ui.button(label="1 Minute", style=discord.ButtonStyle.secondary)
+    async def timeout_1_minute(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.apply_timeout(interaction, timedelta(minutes=1))
 
+    @discord.ui.button(label="5 Minutes", style=discord.ButtonStyle.secondary)
+    async def timeout_5_minutes(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.apply_timeout(interaction, timedelta(minutes=5))
+
+    @discord.ui.button(label="10 Minutes", style=discord.ButtonStyle.secondary)
+    async def timeout_10_minutes(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.apply_timeout(interaction, timedelta(minutes=10))
+
+    @discord.ui.button(label="1 Hour", style=discord.ButtonStyle.secondary)
+    async def timeout_1_hour(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.apply_timeout(interaction, timedelta(hours=1))
+
+    @discord.ui.button(label="1 Day", style=discord.ButtonStyle.secondary)
+    async def timeout_1_day(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.apply_timeout(interaction, timedelta(days=1))
+
+    @discord.ui.button(label="1 Week", style=discord.ButtonStyle.secondary)
+    async def timeout_1_week(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.apply_timeout(interaction, timedelta(weeks=1))
+
+    async def apply_timeout(self, interaction: discord.Interaction, duration: timedelta):
         try:
-            # Notify the user about the mute
-            await self.message.author.send(f"Your message has been deleted and you have been muted for {duration} minutes due to a violation of the server rules.")
-            # Apply the Time-Out feature
-            await self.message.author.timeout(timeout_duration, reason="Muted due to violation of server rules.")
-            await self.message.delete()
-            await interaction.response.send_message(f"{self.message.author.mention} has been muted for {duration} minutes and notified (if possible).", ephemeral=True)
+            # Notify the user and apply the time-out
+            await self.member.send(f"You have been timed out for {duration} due to a violation of the server rules.")
+            await self.member.timeout(duration, reason="Violation of server rules.")
+            await interaction.response.send_message(f"{self.member.mention} has been timed out for {duration}.", ephemeral=True)
         except discord.Forbidden:
-            await interaction.response.send_message("Unable to notify or mute the user due to permission issues.", ephemeral=True)
-        except Exception as e:
-            await interaction.response.send_message(f"An error occurred: {str(e)}", ephemeral=True)
+            await interaction.response.send_message("Unable to time out the user due to permission issues.", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(ReportToModsCog(bot))
