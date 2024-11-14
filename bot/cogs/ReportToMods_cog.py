@@ -29,7 +29,38 @@ class ReportToModsCog(commands.Cog):
             );
         """)
         self.db.commit()
+        
+ # Command to remove warnings for a user
+    @app_commands.command(name="removewarnings", description="Remove warnings for a specified user.")
+    @app_commands.describe(user="The user to remove warnings from.", all="Remove all warnings? (Y/N)", timeframe="If 'N', specify timeframe in hours")
+    @app_commands.checks.has_permissions(administrator=True)
+    async def removewarnings(self, interaction: discord.Interaction, user: discord.User, all: str, timeframe: int = 0):
+        guild_id = interaction.guild.id
 
+        if all.upper() == 'Y':
+            # Remove all warnings for the user
+            self.cursor.execute(
+                "DELETE FROM warnings WHERE user_id = %s AND guild_id = %s",
+                (user.id, guild_id)
+            )
+            self.db.commit()
+            await interaction.response.send_message(f"All warnings for {user.mention} have been removed.", ephemeral=True)
+
+        elif all.upper() == 'N' and timeframe > 0:
+            # Calculate the time limit based on the specified timeframe
+            time_limit = datetime.utcnow() - timedelta(hours=timeframe)
+
+            # Remove warnings within the specified timeframe
+            self.cursor.execute(
+                "DELETE FROM warnings WHERE user_id = %s AND guild_id = %s AND timestamp > %s",
+                (user.id, guild_id, time_limit)
+            )
+            self.db.commit()
+            await interaction.response.send_message(f"Warnings for {user.mention} within the last {timeframe} hours have been removed.", ephemeral=True)
+
+        else:
+            await interaction.response.send_message("Invalid input. Please specify 'Y' or 'N' for 'all' and a valid timeframe if 'N' is selected.", ephemeral=True)
+            
     def set_moderator_channel(self, guild_id: int, channel_id: int):
         self.cursor.execute(
             sql.SQL("INSERT INTO mod_channels (guild_id, channel_id) VALUES (%s, %s) ON CONFLICT (guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id"),
