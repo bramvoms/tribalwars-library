@@ -79,15 +79,15 @@ class ReportToModsCog(commands.Cog):
         )
         results = self.cursor.fetchall()
 
-        warning_info = f"{len(results)} warning(s) in the last 8 hours.\n"
         if results:
+            warning_info = f"{len(results)} warning(s) in the last 8 hours.\n"
             for warning_id, mod_id, timestamp in results:
                 mod_member = interaction.guild.get_member(mod_id)
                 mod_name = mod_member.mention if mod_member else f"Mod ID: {mod_id}"
                 formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
                 warning_info += f"- Warning #{warning_id} | {formatted_timestamp} | Mod: {mod_name}\n"
         else:
-            warning_info += "No recent warnings."
+            warning_info = "No recent warnings."
 
         embed = create_embed(title=title, description=description)
         embed.add_field(name="Previous Warnings", value=warning_info, inline=False)
