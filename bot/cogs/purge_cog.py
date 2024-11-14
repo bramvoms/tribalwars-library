@@ -29,7 +29,7 @@ class PurgeOptionsView(View):
         self.add_item(PurgeOptionsSelect())
 
     async def confirm_and_purge(self, interaction: discord.Interaction, check_func, limit=None, confirmation_text=""):
-        """Send initial message, calculate messages to delete, then show confirmation screen."""
+        """Send initial message, calculate messages to delete, then show confirmation screen if messages are found."""
         await interaction.response.defer(ephemeral=True)
         
         # Initial "Searching for messages..." message
@@ -44,7 +44,12 @@ class PurgeOptionsView(View):
             if limit and total_count >= limit:
                 break
 
-        # Show confirmation message with the count
+        # If no messages are found, notify the user and stop
+        if total_count == 0:
+            await status_message.edit(content="No messages found.")
+            return
+
+        # Show confirmation message with the count if messages are found
         embed = create_embed("Confirmation", f"{confirmation_text} Are you sure you want to delete {total_count} messages?")
         view = ConfirmPurgeView(self, interaction.id, check_func, limit)
         await status_message.edit(content=None, embed=embed, view=view)
