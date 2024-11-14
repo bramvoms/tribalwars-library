@@ -89,7 +89,7 @@ class ReportToModsCog(commands.Cog):
 
         # Add warning information to the embed
         embed = create_embed(title=title, description=description)
-        embed.add_field(name="Previous Warnings", value=warning_info, inline=False)
+        embed.add_field(name="Previous warnings", value=warning_info, inline=False)
         embed.set_footer(text="Use this information for appropriate moderation actions.")
 
         mod_channel_id = self.get_moderator_channel(guild_id)
@@ -114,7 +114,7 @@ class ReportView(discord.ui.View):
             item.disabled = True
         if interaction.message.embeds:
             embed = interaction.message.embeds[0]
-            embed.title = "✅ Resolved Report"
+            embed.title = "✅ Resolved report"
             embed.color = discord.Color.green()
             embed.add_field(name="Resolved by", value=interaction.user.mention, inline=False)
             embed.set_footer(text="This report has been marked as resolved by the moderation team.")
@@ -126,11 +126,11 @@ class ReportView(discord.ui.View):
 
     async def send_violation_dm(self, member, message, reason):
         """Sends a DM to the user with details of their message violation."""
-        title = "Message Violation Notice"
+        title = "Moderator message"
         description = (
-            f"Your message in **{message.guild.name}** (#{message.channel.name}) was removed for violating server rules.\n\n"
+            f"Your message in {self.message.channel.mention} was removed for violating server rules.\n\n"
             f"**Message Content:**\n{message.content}\n\n"
-            f"**Action Taken:** {reason}"
+            f"**Action Taken:** \n{reason}"
         )
         embed = create_embed(title=title, description=description)
         try:
@@ -138,13 +138,13 @@ class ReportView(discord.ui.View):
         except discord.Forbidden:
             pass
 
-    @discord.ui.button(label="Delete Message", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="Delete message", style=discord.ButtonStyle.danger)
     async def delete_message_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.send_violation_dm(self.message.author, self.message, "Message Deleted")
+        await self.send_violation_dm(self.message.author, self.message, "Message deleted")
         await self.message.delete()
         await self.mark_as_resolved(interaction)
 
-    @discord.ui.button(label="Warn Author", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Warn author", style=discord.ButtonStyle.danger)
     async def warn_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.warn_author(interaction)
         await self.mark_as_resolved(interaction)
@@ -183,14 +183,14 @@ class ReportView(discord.ui.View):
                 return
         else:
             dm_message = (
-                f"You have received a warning in **{interaction.guild.name}**. "
+                f"You have received a warning in **{interaction.guild.name}** for violating server rules. If you accumulate three warnings within 8 hours, you will get timed-out."
                 f"Your message in {self.message.channel.mention} was: \n\n{self.message.content}"
             )
 
         # Send DM to the user
         try:
             embed = create_embed(
-                title="⚠️ Warning Notification",
+                title="Moderator message",
                 description=dm_message
             )
             await author.send(embed=embed)
@@ -202,20 +202,20 @@ class ReportView(discord.ui.View):
         if not interaction.response.is_done():
             await interaction.response.send_message("Author warned and message deleted.", ephemeral=True)
 
-    @discord.ui.button(label="Time-Out Options", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="Time-out author", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.mark_as_resolved(interaction)
         view = TimeoutDurationView(self.message.author, self.message, self)
         await interaction.message.edit(content="Select a time-out duration for the user:", view=view)
 
-    @discord.ui.button(label="Ban Author", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="Ban author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.send_violation_dm(self.message.author, self.message, "Permanent Ban")
+        await self.send_violation_dm(self.message.author, self.message, "Permanent ban")
         await self.message.author.ban(reason="Violation of server rules")
         await self.message.delete()
         await self.mark_as_resolved(interaction)
 
-    @discord.ui.button(label="Resolved", style=discord.ButtonStyle.success)
+    @discord.ui.button(label="No further action", style=discord.ButtonStyle.success)
     async def resolved_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.mark_as_resolved(interaction)
 
@@ -228,7 +228,7 @@ class TimeoutDurationView(discord.ui.View):
 
     async def apply_timeout(self, interaction: discord.Interaction, duration: timedelta):
         try:
-            await self.report_view.send_violation_dm(self.member, self.message, f"Timed Out for {duration}")
+            await self.report_view.send_violation_dm(self.member, self.message, f"Timed out for {duration}")
             await self.member.timeout(duration, reason="Violation of server rules.")
             await self.message.delete()
             await interaction.response.send_message(
