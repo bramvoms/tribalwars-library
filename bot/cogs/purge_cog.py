@@ -60,7 +60,13 @@ class PurgeOptionsView(View):
         await status_message.edit(content=final_text, view=None)
 
     async def purge_all_messages(self, interaction: discord.Interaction):
-        await self.perform_purge_with_stop(interaction, check_func=lambda _: True)
+        # Display a warning confirmation message
+        embed = create_embed(
+            "⚠️ Confirm Purge All",
+            "You are about to delete **all messages** in this channel. This action is irreversible. Do you want to continue?"
+        )
+        view = ConfirmPurgeAllView(self, command_message_id=interaction.id)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
     async def purge_non_bot_messages(self, interaction: discord.Interaction):
         await self.perform_purge_with_stop(interaction, check_func=lambda m: not m.author.bot)
