@@ -92,7 +92,7 @@ class ReportView(discord.ui.View):
         description = (
             f"Your message in **{message.guild.name}** (#{message.channel.name}) was removed for violating server rules.\n\n"
             f"**Message Content:**\n{message.content}\n\n"
-            f"**Action Taken:** {reason}"
+            f"**Action Taken:** \n{reason}"
         )
         embed = create_embed(title=title, description=description)
         try:
@@ -100,19 +100,19 @@ class ReportView(discord.ui.View):
         except discord.Forbidden:
             pass
 
-    @discord.ui.button(label="Resolved", style=discord.ButtonStyle.success)
+    @discord.ui.button(label="No further action", style=discord.ButtonStyle.success)
     async def resolved_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.mark_as_resolved(interaction)
         await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
 
-    @discord.ui.button(label="Delete Message", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="Delete message", style=discord.ButtonStyle.danger)
     async def delete_message_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.send_violation_dm(self.message.author, self.message, "Message Deleted")
+        await self.send_violation_dm(self.message.author, self.message, "\nMessage deleted")
         await self.message.delete()
         await self.mark_as_resolved(interaction)
         await interaction.response.send_message("Message deleted, author notified, and report marked as resolved.", ephemeral=True)
 
-    @discord.ui.button(label="Time-Out Options", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="Time-out options", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.mark_as_resolved(interaction)
         await interaction.response.send_message(
@@ -121,13 +121,13 @@ class ReportView(discord.ui.View):
             ephemeral=True
         )
 
-    @discord.ui.button(label="Ban Author", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="Ban author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.send_violation_dm(self.message.author, self.message, "Permanent Ban")
+        await self.send_violation_dm(self.message.author, self.message, "\nPermanent ban")
         await self.message.author.ban(reason="Violation of server rules")
         await self.message.delete()
         await self.mark_as_resolved(interaction)
-        await interaction.response.send_message("Author banned, notified, and report marked as resolved.", ephemeral=True)
+        await interaction.response.send_message("Message deleted, author banned, notified, and report marked as resolved.", ephemeral=True)
 
 class TimeoutDurationView(discord.ui.View):
     def __init__(self, member, message):
@@ -161,7 +161,7 @@ class TimeoutDurationView(discord.ui.View):
 
     async def apply_timeout(self, interaction: discord.Interaction, duration: timedelta):
         try:
-            await ReportView.send_violation_dm(self, self.member, self.message, f"Timed Out for {duration}")
+            await ReportView.send_violation_dm(self, self.member, self.message, f"\nTimed out for {duration}")
             await self.member.timeout(duration, reason="Violation of server rules.")
             await self.message.delete()
             await interaction.response.send_message(f"{self.member.mention} has been timed out for {duration}, message deleted, and author notified.", ephemeral=True)
