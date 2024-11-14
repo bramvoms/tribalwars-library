@@ -153,7 +153,7 @@ class ReportView(discord.ui.View):
             await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
 
     async def send_violation_dm(self, member, message, reason):
-        title = "⚠️ MODERATER MESSAGE"
+        title = "⚠️ MODERATOR MESSAGE"
         description = (
             f"Your message in {self.message.channel.mention} was removed for violating server rules.\n\n"
             f"**Message content:**\n{message.content}\n\n"
@@ -215,7 +215,7 @@ class ReportView(discord.ui.View):
 
         try:
             embed = create_embed(
-                title="⚠️ MODERATER MESSAGE",
+                title="⚠️ MODERATOR MESSAGE",
                 description=dm_message
             )
             await author.send(embed=embed)
@@ -267,14 +267,24 @@ class TimeoutDurationView(discord.ui.View):
         self.report_view = report_view
 
     async def apply_timeout(self, interaction: discord.Interaction, duration: timedelta):
+        def format_duration(duration: timedelta):
+            total_minutes = int(duration.total_seconds() // 60)
+            hours, minutes = divmod(total_minutes, 60)
+            if hours > 0:
+                return f"{hours} hours and {minutes} minutes"
+            else:
+                return f"{minutes} minutes"
+
+        formatted_duration = format_duration(duration)
         try:
-            await self.report_view.send_violation_dm(self.member, self.message, f"Message deleted and timed out for {duration}")
+            await self.report_view.send_violation_dm(self.member, self.message, f"Message deleted and timed out for {formatted_duration}")
             await self.member.timeout(duration, reason="Violation of server rules.")
             await self.message.delete()
             await interaction.response.send_message(
-                f"{self.member.mention} has been timed out for {duration}, message deleted, and author notified.",
+                f"{self.member.mention} has been timed out for {formatted_duration}, message deleted, and author notified.",
                 ephemeral=True
             )
+            await self.report_view.mark_as_resolved(interaction)
         except discord.Forbidden:
             await interaction.response.send_message("Unable to time out the user or delete the message due to permission issues.", ephemeral=True)
 
