@@ -89,23 +89,27 @@ class ReportToModsCog(commands.Cog):
             )
             results = self.cursor.fetchall()
 
-            # Add each warning as an inline field
+            # Initialize the embed and warning summary
             embed = create_embed(title=title, description=description)
-            embed.add_field(name="Previous Warnings", value=f"{len(results)} warning(s) in the last 8 hours.", inline=False)
-            
+            warning_summary = f"{len(results)} warning(s) in the last 8 hours."
+            embed.add_field(name="Previous Warnings", value=warning_summary, inline=False)
+
+            # Add each warning as its own field in the embed
             for warning_id, mod_id, timestamp in results:
                 mod_member = interaction.guild.get_member(mod_id)
                 mod_name = mod_member.display_name if mod_member else f"Moderator ID: {mod_id}"
                 formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
-                
+
+                # Each warning with inline details
                 embed.add_field(
                     name=f"Warning #{warning_id}",
                     value=f"**Timestamp**: {formatted_timestamp}\n**Moderator**: {mod_name}",
-                    inline=True
+                    inline=False
                 )
 
             embed.set_footer(text="Use this information for appropriate moderation actions.")
 
+            # Send the embed to the moderator channel
             mod_channel_id = self.get_moderator_channel(guild_id)
             if mod_channel_id:
                 mod_channel = self.bot.get_channel(mod_channel_id)
