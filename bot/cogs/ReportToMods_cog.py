@@ -66,6 +66,9 @@ class ReportToModsCog(commands.Cog):
             f"[Jump to Message]({message.jump_url})"
         )
 
+        # Retrieve the main category
+        category_name = message.channel.category.name if message.channel.category else "No category"
+
         guild_id = interaction.guild.id
         current_time = datetime.utcnow()
         self.cursor.execute(
@@ -91,6 +94,7 @@ class ReportToModsCog(commands.Cog):
 
         embed = create_embed(title=title, description=description)
         embed.add_field(name="Previous Warnings", value=warning_info, inline=False)
+        embed.add_field(name="Channel Category", value=category_name, inline=False)  # New field added
         embed.set_footer(text="Use this information for appropriate moderation actions.")
 
         mod_channel_id = self.get_moderator_channel(guild_id)
