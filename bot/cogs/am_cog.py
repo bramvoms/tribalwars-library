@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import app_commands, Interaction
 from discord.ui import View, Button
 from fuzzywuzzy import process  # Import for fuzzy matching
-from deepl import Translator  # Import DeepL translator
+import deepl
 from main import create_embed
 
 # Initialize DeepL Translator with your API key
