@@ -289,18 +289,15 @@ class BanMessageDeletionView(discord.ui.View):
         self.add_item(self.deletion_select)
 
     async def process_ban(self, interaction: discord.Interaction):
-        # Retrieve the selected message deletion duration
+        # Retrieve the selected message deletion duration in seconds
         deletion_seconds = int(interaction.data["values"][0])
 
         try:
-            # Convert seconds to a timedelta for the deletion duration
-            deletion_duration = timedelta(seconds=deletion_seconds)
-
             # Apply the ban with the selected deletion duration
             await interaction.guild.ban(
                 user=self.author,
                 reason="Violation of server rules",
-                delete_message_duration=deletion_duration,
+                delete_message_seconds=deletion_seconds,
             )
 
             # Delete the original reported message
@@ -310,8 +307,9 @@ class BanMessageDeletionView(discord.ui.View):
             await self.report_view.mark_as_resolved(interaction)
 
             # Notify the moderator of successful ban
+            deleted_hours = deletion_seconds // 3600 if deletion_seconds > 0 else "no"
             await interaction.response.send_message(
-                f"The user **{self.author}** has been banned with messages from the last {deletion_seconds // 3600} hour(s) deleted.",
+                f"The user **{self.author}** has been banned with messages from the last {deleted_hours} hour(s) deleted.",
                 ephemeral=True,
             )
         except discord.Forbidden:
