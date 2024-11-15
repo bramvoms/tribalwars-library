@@ -103,11 +103,13 @@ class AMCog(commands.Cog):
             # Perform fuzzy matching
             matches = process.extract(translated_name, combined_data.values(), limit=5)
             print(f"Fuzzy matches: {matches}")  # Debug log
+
+            # Corrected logic for top_matches
             top_matches = [
-                (title, combined_data[title])
-                for title, full_text in combined_data.items()
+                (title, am_descriptions[title])
+                for title, _ in combined_data.items()
                 for match in matches
-                if full_text == match[0] and match[1] > 60
+                if title.lower() in match[0].lower() and match[1] > 60
             ]
             print(f"Top matches: {top_matches}")  # Debug log
 
