@@ -38,7 +38,12 @@ def create_embed(title: str, description: str) -> discord.Embed:
 
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user} ({bot.user.id})")
+    print(f"Logged in as {bot.user} (ID: {bot.user.id})")
+    try:
+        await bot.tree.sync()
+        print("Slash commands synced successfully.")
+    except Exception as e:
+        print(f"Error syncing slash commands: {e}")
     
     # Delay context menu registration until cog is loaded
     report_cog = bot.get_cog("ReportToModsCog")
