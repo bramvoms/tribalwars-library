@@ -289,7 +289,7 @@ class BanMessageDeletionView(discord.ui.View):
         self.add_item(self.deletion_select)
 
     async def process_ban(self, interaction: discord.Interaction):
-        # Retrieve the selected message deletion duration
+        # Retrieve the selected message deletion duration in seconds
         deletion_seconds = int(interaction.data["values"][0])
 
         try:
@@ -318,16 +318,16 @@ class BanMessageDeletionView(discord.ui.View):
             # Mark the report as resolved
             await self.report_view.mark_as_resolved(interaction)
 
-            # Notify the moderator of successful ban
+            # Notify the moderator of successful ban using follow-up
             deleted_hours = deletion_seconds // 3600 if deletion_seconds > 0 else "no"
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f"The user **{self.author}** has been banned with messages from the last {deleted_hours} hour(s) deleted.",
                 ephemeral=True,
             )
         except discord.Forbidden:
-            await interaction.response.send_message("Failed to ban the user due to insufficient permissions.", ephemeral=True)
+            await interaction.followup.send("Failed to ban the user due to insufficient permissions.", ephemeral=True)
         except discord.HTTPException as e:
-            await interaction.response.send_message(f"An error occurred while banning the user: {e}", ephemeral=True)
+            await interaction.followup.send(f"An error occurred while banning the user: {e}", ephemeral=True)
 
 class TimeoutDurationView(discord.ui.View):
     def __init__(self, member, message, report_view):
