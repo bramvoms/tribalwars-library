@@ -236,24 +236,80 @@ class ReportView(discord.ui.View):
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         author = self.message.author
 
-        # Create the ban message using the server name instead of the channel mention
+        # Create the ban message for the user
         dm_message = (
             f"You have been banned from **{interaction.guild.name}** due to a serious violation of server rules.\n\n"
             f"**Message content:**\n{self.message.content}\n\n"
             f"**Action taken:**\nPermanent ban"
         )
 
-        # Send DM to the author with the ban details before banning them
+        # Attempt to DM the user about the ban
         try:
             embed = create_embed(title="⛔ MODERATOR MESSAGE ⛔", description=dm_message)
             await author.send(embed=embed)
         except discord.Forbidden:
             await interaction.response.send_message("Unable to send a DM to the user.", ephemeral=True)
 
-        # Ban the user and delete their message
-        await self.message.author.ban(reason="Violation of server rules")
-        await self.message.delete()
-        await self.mark_as_resolved(interaction)
+        # Provide a menu for the moderator to select the deletion range
+        view = BanMessageDeletionView(self.message, author, self)
+        await interaction.response.send_message(
+            "Select the range of messages to delete when banning the user:",
+            view=view,
+            ephemeral=True
+        )
+        
+class BanMessageDeletionView(discord.ui.View):
+    def __init__(self, message, author, report_view):
+        super().__init__(timeout=180)
+        self.message = message
+        self.author = author
+        self.report_view = report_view
+
+        # Options for message deletion during ban
+        options = [
+            discord.SelectOption(label="Don't delete any", value="0", description="Don't delete any messages."),
+            discord.SelectOption(label="Previous hour", value="3600", description="Delete messages from the last hour."),
+            discord.SelectOption(label="Previous 6 hours", value="21600", description="Delete messages from the last 6 hours."),
+            discord.SelectOption(label="Previous 12 hours", value="43200", description="Delete messages from the last 12 hours."),
+            discord.SelectOption(label="Previous 24 hours", value="86400", description="Delete messages from the last 24 hours."),
+            discord.SelectOption(label="Previous 3 days", value="259200", description="Delete messages from the last 3 days."),
+            discord.SelectOption(label="Previous 7 days", value="604800", description="Delete messages from the last 7 days."),
+        ]
+
+        self.deletion_select = discord.ui.Select(
+            placeholder="Select message deletion range",
+            options=options
+        )
+        self.deletion_select.callback = self.process_ban
+        self.add_item(self.deletion_select)
+
+    async def process_ban(self, interaction: discord.Interaction):
+        # Retrieve the selected message deletion duration
+        deletion_seconds = int(interaction.data["values"][0])
+
+        try:
+            # Apply the ban with the selected deletion duration
+            await interaction.guild.ban(
+                user=self.author,
+                reason="Violation of server rules",
+                delete_message_seconds=deletion_seconds,
+            )
+
+            # Delete the original reported message
+            await self.message.delete()
+
+            # Mark the report as resolved
+            await self.report_view.mark_as_resolved(interaction)
+
+            # Notify the moderator of successful ban
+            await interaction.response.send_message(
+                f"The user **{self.author}** has been banned with messages from the last {deletion_seconds // 3600} hour(s) deleted.",
+                ephemeral=True,
+            )
+        except discord.Forbidden:
+            await interaction.response.send_message("Failed to ban the user due to insufficient permissions.", ephemeral=True)
+        except discord.HTTPException as e:
+            await interaction.response.send_message(f"An error occurred while banning the user: {e}", ephemeral=True)
 
     @discord.ui.button(label="No further action", style=discord.ButtonStyle.success)
     async def resolved_button(self, interaction: discord.Interaction, button: discord.ui.Button):
