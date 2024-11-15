@@ -88,18 +88,6 @@ class AutoModCog(commands.Cog):
         if bad_words:
             await message.delete()  # Delete the message
 
-            # Generate nickname or display name for warning
-            nickname_or_displayname = message.author.nick or message.author.display_name
-            description = (
-                f"**Reason:** Bad word usage"
-            )
-            embed = create_embed(description=description)
-            embed.set_author(
-                name=f"{nickname_or_displayname} has been warned", 
-                icon_url=message.author.display_avatar.url
-            )
-            await message.channel.send(embed=embed)
-
             # Apply warning and timeout logic
             current_time = datetime.utcnow()
             self.cursor.execute("""
@@ -115,7 +103,10 @@ class AutoModCog(commands.Cog):
             """, (message.author.id, guild_id, current_time - timedelta(minutes=20)))
             warnings_count = self.cursor.fetchone()[0]
 
+            nickname_or_displayname = message.author.nick or message.author.display_name
+
             if warnings_count >= 3:
+                # Send only the timeout message on the third warning
                 timeout_duration = timedelta(minutes=60)
                 try:
                     await message.author.timeout(timeout_duration, reason="Auto-Mod: 3 warnings within 20 minutes.")
@@ -129,6 +120,20 @@ class AutoModCog(commands.Cog):
                         icon_url=message.author.display_avatar.url
                     )
                     await message.channel.send(embed=embed)
+                except discord.Forbidden:
+                    await message.channel.send("Unable to timeout the user due to insufficient permissions.")
+            else:
+                # Send the warning message only if warnings are less than 3
+                description = (
+                    f"**Reason:** Bad word usage"
+                )
+                embed = create_embed(description=description)
+                embed.set_author(
+                    name=f"{nickname_or_displayname} has been warned", 
+                    icon_url=message.author.display_avatar.url
+                )
+                await message.channel.send(embed=embed)
+
                 except discord.Forbidden:
                     await message.channel.send("Unable to timeout the user due to insufficient permissions.")
 
