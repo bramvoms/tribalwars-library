@@ -121,7 +121,7 @@ class AMCog(commands.Cog):
             if not template_name.strip():
                 raise ValueError("Template name cannot be empty.")
 
-            translation_result = translator.translate_text(template_name, target_lang="EN")
+            translation_result = translator.translate_text(template_name, target_lang="EN-US")
             translated_name = translation_result.text.lower().strip()  # Normalize to lowercase and strip whitespace
         except ValueError as ve:
             await ctx.send(f"Invalid input: {ve}")
