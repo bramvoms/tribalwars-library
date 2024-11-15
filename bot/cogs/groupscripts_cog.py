@@ -23,8 +23,6 @@ class GroupScriptsCog(commands.Cog):
 
         # Defer the interaction to acknowledge it
         await interaction.response.defer()
-        # Add your logic here for the command
-        await interaction.followup.send("Group scripts functionality is being processed.")
 
         # Create a view with script selections and a combine button
         view = ScriptCombineView(interaction.user)  # Pass the command initiator to the view
