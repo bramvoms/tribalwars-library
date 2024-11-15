@@ -287,6 +287,9 @@ class TimeoutDurationView(discord.ui.View):
         formatted_duration = format_duration(duration)
 
         try:
+            # Defer the interaction to handle the timeout process
+            await interaction.response.defer(ephemeral=True)
+
             # Notify the user via DM
             await self.report_view.send_violation_dm(
                 self.member,
