@@ -580,7 +580,7 @@ class ScriptsCog(commands.Cog):
     async def scripts(self, interaction: Interaction):
         guild = interaction.guild
         if guild and guild.id == 1208007216494542869:  # Specific guild ID check
-            role = discord.utils.get(interaction.user.roles, name="Bot-Tester")
+            role = discord.utils.get(interaction.user.roles, name="Bot-tester")
             if not role:
                 await interaction.response.send_message(
                     "This command is for TribalWars.NL players only.",
@@ -595,7 +595,7 @@ class ScriptsCog(commands.Cog):
     async def get_script_description(self, ctx, *, script_name: str):
         guild = ctx.guild
         if guild and guild.id == 1208007216494542869:  # Specific guild ID check
-            role = discord.utils.get(ctx.author.roles, name="Bot-Tester")
+            role = discord.utils.get(ctx.author.roles, name="Bot-tester")
             if not role:
                 await ctx.send("This command is for TribalWars.NL players only.")
                 return
