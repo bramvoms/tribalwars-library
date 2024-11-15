@@ -95,7 +95,7 @@ class AutoModCog(commands.Cog):
             )
             embed = create_embed(description=description)
             embed.set_author(
-                name=f"{nickname_or_displayname} has been warned.", 
+                name=f"{nickname_or_displayname} has been warned", 
                 icon_url=message.author.display_avatar.url
             )
             await message.channel.send(embed=embed)
@@ -125,7 +125,7 @@ class AutoModCog(commands.Cog):
                     )
                     embed = create_embed(description=description)
                     embed.set_author(
-                        name=f"{nickname_or_displayname} was timed-out.", 
+                        name=f"{nickname_or_displayname} was timed-out", 
                         icon_url=message.author.display_avatar.url
                     )
                     await message.channel.send(embed=embed)
