@@ -109,11 +109,18 @@ class AMCog(commands.Cog):
 
     # Text command for &amtemplates <template_name> for direct template lookup
     @commands.command(name="amtemplates", help="Find a specific AM template")
-    async def get_am_template_description(self, ctx, *, template_name: str):
+    async def amtemplates(self, ctx, *, template_name: str):
+        """Text command implementation for &amtemplates <template_name>."""
         # Translate the input to English
         try:
+            if not template_name.strip():
+                raise ValueError("Template name cannot be empty.")
+                
             translation = translator.translate(template_name, src='auto', dest='en')
-            translated_name = translation.text.lower()  # Normalize to lowercase
+            translated_name = translation.text.lower().strip()  # Normalize to lowercase and strip whitespace
+        except ValueError as ve:
+            await ctx.send(f"Invalid input: {ve}")
+            return
         except Exception as e:
             await ctx.send(f"Error translating template name: {e}")
             return
