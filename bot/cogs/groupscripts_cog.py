@@ -9,10 +9,22 @@ class GroupScriptsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="group_scripts", description="Groepeer scripts tot één om laadtijden te bevoorderen.")
+    @app_commands.command(name="group_scripts", description="Groepeer scripts tot één om laadtijden te bevoordelen.")
     async def group_scripts(self, interaction: discord.Interaction):
+        guild = interaction.guild
+        if guild and guild.id == 645639196882501642:  # Specific guild ID check
+            role = discord.utils.get(interaction.user.roles, name="NL")
+            if not role:
+                await interaction.response.send_message(
+                    "This command is for TribalWars.NL players only.",
+                    ephemeral=True
+                )
+                return
+
         # Defer the interaction to acknowledge it
         await interaction.response.defer()
+        # Add your logic here for the command
+        await interaction.followup.send("Group scripts functionality is being processed.")
 
         # Create a view with script selections and a combine button
         view = ScriptCombineView(interaction.user)  # Pass the command initiator to the view
