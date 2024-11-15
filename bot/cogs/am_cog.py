@@ -69,6 +69,73 @@ am_descriptions = {
     """,
 }
 
+class AMCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    async def cog_load(self):
+        """Ensure the slash commands are registered when the cog is loaded."""
+        await self.bot.tree.sync()
+        print("Slash commands synced successfully.")
+
+    @app_commands.command(name="amtemplates", description="Displays the AM templates menu")
+    async def amtemplates(self, interaction: Interaction):
+        """Slash command to display the AM templates menu."""
+        title = "⚙️ ** AM TEMPLATES ** ⚙️"
+        embed = create_embed(
+            title=title,
+            description="Select which template you want to view.\nCopy the text under TEMPLATE and paste it ingame:\nAccount Manager > Construction > Manage templates > Import template."
+        )
+        await interaction.response.send_message(embed=embed, view=AMView(self.bot), ephemeral=True)
+
+    @commands.command(name="amtemplates", help="Find a specific AM template")
+    async def amtemplates_text(self, ctx, *, template_name: str):
+        """Text command implementation for &amtemplates <template_name>."""
+        try:
+            if not template_name.strip():
+                raise ValueError("Template name cannot be empty.")
+
+            # Translate the input to English
+            translation_result = translator.translate_text(template_name.strip(), target_lang="EN-US")
+            translated_name = translation_result.text.lower().strip()
+            print(f"Input: {template_name}, Translated: {translated_name}")  # Debug log
+
+            # Combined dataset for fuzzy matching
+            combined_data = {
+                title: f"{title.lower()} {description.lower()}" for title, description in am_descriptions.items()
+            }
+
+            # Perform fuzzy matching
+            matches = process.extract(translated_name, combined_data.values(), limit=5)
+            top_matches = [
+                (title, combined_data[title])
+                for title, full_text in combined_data.items()
+                for match in matches
+                if full_text == match[0] and match[1] > 60
+            ]
+
+            if not top_matches:
+                embed = create_embed("Template Not Found", f"No template found matching '{template_name}'.")
+                await ctx.send(embed=embed)
+                return
+
+            if len(top_matches) == 1:
+                # Show the exact match description
+                template, _ = top_matches[0]
+                description = am_descriptions[template]
+                title = f"━ {template.upper()} ━"
+                embed = create_embed(title=title, description=description)
+                await ctx.send(embed=embed)
+            else:
+                # Allow user to choose from multiple matches
+                view = TemplateSelectionView(ctx, [match[0] for match in top_matches], am_descriptions)
+                await ctx.send("Multiple templates found. Please select one:", view=view)
+        except ValueError as ve:
+            await ctx.send(f"Invalid input: {ve}")
+        except Exception as e:
+            await ctx.send(f"Error translating template name: {e}")
+
+
 class AMView(View):
     def __init__(self, bot):
         super().__init__(timeout=None)
@@ -79,11 +146,10 @@ class AMView(View):
             self.add_item(button)
 
     async def show_am_description(self, interaction: Interaction, subcategory):
-        # Format the title and retrieve description
         title = f"━ {subcategory.upper()} ━"
         description = am_descriptions.get(subcategory, "No description available.")
         embed = create_embed(title=title, description=description)
-        
+
         # Create a main menu button view
         main_menu_only_view = View()
         main_menu_button = Button(label="Main Menu", style=discord.ButtonStyle.danger)
@@ -93,72 +159,12 @@ class AMView(View):
         await interaction.response.edit_message(embed=embed, view=main_menu_only_view)
 
     async def go_to_main_menu(self, interaction: Interaction):
-        # Redirect to the main AM menu
-        title = f"⚙️ ** AM TEMPLATES ** ⚙️"
-        embed = create_embed(title=title, description="Select which template you want to view.\nCopy the text under TEMPLATE and paste it ingame:\nAccount Manager > Construction > Manage templates > Import template.")
-        await interaction.response.edit_message(embed=embed, view=self)
-
-class AMCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
-    # Slash command to show AM options
-    @app_commands.command(name="amtemplates", description="Displays the AM templates menu")
-    async def amtemplates(self, interaction: Interaction):
-        title = f"⚙️ ** AM TEMPLATES ** ⚙️"
+        title = "⚙️ ** AM TEMPLATES ** ⚙️"
         embed = create_embed(
             title=title,
             description="Select which template you want to view.\nCopy the text under TEMPLATE and paste it ingame:\nAccount Manager > Construction > Manage templates > Import template."
         )
-        await interaction.response.send_message(embed=embed, view=AMView(self.bot), ephemeral=True)
-
-    @commands.command(name="amtemplates", help="Find a specific AM template")
-    async def amtemplates(self, ctx, *, template_name: str):
-        """Text command implementation for &amtemplates <template_name>."""
-        # Translate the input to English using DeepL
-        try:
-            if not template_name.strip():
-                raise ValueError("Template name cannot be empty.")
-
-            translation_result = translator.translate_text(template_name, target_lang="EN-US")
-            translated_name = translation_result.text.lower().strip()  # Normalize to lowercase and strip whitespace
-        except ValueError as ve:
-            await ctx.send(f"Invalid input: {ve}")
-            return
-        except Exception as e:
-            await ctx.send(f"Error translating template name: {e}")
-            return
-
-        # Combine titles and descriptions into a searchable dataset
-        combined_data = {
-            title: f"{title.lower()} {description.lower()}" for title, description in am_descriptions.items()
-        }
-
-        # Perform fuzzy matching on combined titles and descriptions
-        matches = process.extract(translated_name, combined_data.values(), limit=5)
-        top_matches = [
-            (title, combined_data[title])
-            for title, full_text in combined_data.items()
-            for match in matches
-            if full_text == match[0] and match[1] > 60
-        ]
-
-        if not top_matches:
-            embed = create_embed("Template Not Found", f"No template found matching '{template_name}'.")
-            await ctx.send(embed=embed)
-            return
-
-        if len(top_matches) == 1:
-            # Show the exact match description
-            template, _ = top_matches[0]
-            description = am_descriptions[template]
-            title = f"━ {template.upper()} ━"
-            embed = create_embed(title=title, description=description)
-            await ctx.send(embed=embed)
-        else:
-            # Allow user to choose from multiple matches
-            view = TemplateSelectionView(ctx, [match[0] for match in top_matches], am_descriptions)
-            await ctx.send("Multiple templates found. Please select one:", view=view)
+        await interaction.response.edit_message(embed=embed, view=self)
 
 
 class TemplateSelectionView(discord.ui.View):
@@ -175,7 +181,6 @@ class TemplateSelectionView(discord.ui.View):
 
     def make_callback(self, template):
         async def callback(interaction: Interaction):
-            # Display the selected template description
             description = self.descriptions[template]
             title = f"━ {template.upper()} ━"
             embed = create_embed(title=title, description=description)
