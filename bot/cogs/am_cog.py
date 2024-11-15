@@ -93,6 +93,7 @@ class AMCog(commands.Cog):
             # Translate the input to English
             translation_result = translator.translate_text(template_name.strip(), target_lang="EN-US")
             translated_name = translation_result.text.lower().strip()
+            print(f"Input: {template_name}, Translated: {translated_name}")  # Debug log
 
             # Combined dataset for fuzzy matching
             combined_data = {
@@ -101,12 +102,14 @@ class AMCog(commands.Cog):
 
             # Perform fuzzy matching
             matches = process.extract(translated_name, combined_data.values(), limit=5)
+            print(f"Fuzzy matches: {matches}")  # Debug log
             top_matches = [
                 (title, combined_data[title])
                 for title, full_text in combined_data.items()
                 for match in matches
                 if full_text == match[0] and match[1] > 60
             ]
+            print(f"Top matches: {top_matches}")  # Debug log
 
             if not top_matches:
                 embed = create_embed("Template Not Found", f"No template found matching '{template_name}'.")
@@ -114,19 +117,20 @@ class AMCog(commands.Cog):
                 return
 
             if len(top_matches) == 1:
+                # Show the exact match description
                 template, _ = top_matches[0]
                 description = am_descriptions[template]
                 title = f"━ {template.upper()} ━"
                 embed = create_embed(title=title, description=description)
                 await ctx.send(embed=embed)
             else:
+                # Allow user to choose from multiple matches
                 view = TemplateSelectionView(ctx, [match[0] for match in top_matches], am_descriptions)
                 await ctx.send("Multiple templates found. Please select one:", view=view)
         except ValueError as ve:
             await ctx.send(f"Invalid input: {ve}")
         except Exception as e:
-            await ctx.send(f"An unexpected error occurred: {e}")
-
+            await ctx.send(f"Error translating template name: {e}")
 
 class AMView(View):
     def __init__(self, bot):
