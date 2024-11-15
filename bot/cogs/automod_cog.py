@@ -5,6 +5,7 @@ from main import create_embed
 import psycopg2
 from psycopg2 import sql
 from datetime import datetime, timedelta
+import os
 
 class AutoModCog(commands.Cog):
     def __init__(self, bot):
