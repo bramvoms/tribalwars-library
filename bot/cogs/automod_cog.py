@@ -91,11 +91,13 @@ class AutoModCog(commands.Cog):
             # Generate nickname or display name for warning
             nickname_or_displayname = message.author.nick or message.author.display_name
             description = (
-                f"{message.author.mention} has been warned.\n\n"
                 f"**Reason:** Bad word usage"
             )
             embed = create_embed(description=description)
-            embed.set_author(name=nickname_or_displayname, icon_url=message.author.display_avatar.url)
+            embed.set_author(
+                name=f"{nickname_or_displayname} has been warned.", 
+                icon_url=message.author.display_avatar.url
+            )
             await message.channel.send(embed=embed)
 
             # Apply warning and timeout logic
@@ -118,12 +120,14 @@ class AutoModCog(commands.Cog):
                 try:
                     await message.author.timeout(timeout_duration, reason="Auto-Mod: 3 warnings within 20 minutes.")
                     description = (
-                        f"{message.author.mention}, you have been timed-out.\n\n"
                         f"**Reason:** Repeated bad word usage.\n"
                         f"**Duration:** 60 minutes.\n"
                     )
                     embed = create_embed(description=description)
-                    embed.set_author(name=nickname_or_displayname, icon_url=message.author.display_avatar.url)
+                    embed.set_author(
+                        name=f"{nickname_or_displayname} was timed-out.", 
+                        icon_url=message.author.display_avatar.url
+                    )
                     await message.channel.send(embed=embed)
                 except discord.Forbidden:
                     await message.channel.send("Unable to timeout the user due to insufficient permissions.")
