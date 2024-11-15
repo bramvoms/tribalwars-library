@@ -230,14 +230,14 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-out author", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # Defer the interaction to allow further updates
-        await interaction.response.defer(ephemeral=True)
+        # Immediately update the report message
+        await self.mark_as_resolved(interaction, action_taken="Author timed-out and message deleted.")
 
         # Create the timeout duration selection view
         view = TimeoutDurationView(self.message.author, self.message, self)
 
         # Send the selection view to the moderator
-        await interaction.followup.send(content="Select a time-out duration for the user:", view=view)
+        await interaction.followup.send(content="Select a time-out duration for the user:", view=view, ephemeral=True)
 
     @discord.ui.button(label="Ban author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -293,15 +293,14 @@ class TimeoutDurationView(discord.ui.View):
 
             # Apply the timeout
             await self.member.timeout(duration, reason="Violation of server rules.")
-            await self.message.delete()
-
-            # Edit the original report message to mark it as resolved
-            action_taken = f"Author timed out for {formatted_duration}."
-            await self.report_view.mark_as_resolved(interaction, action_taken=action_taken)
+            await interaction.followup.send(
+                f"The user has been timed out for {formatted_duration}.",
+                ephemeral=True,
+            )
 
         except discord.Forbidden:
             await interaction.followup.send(
-                "Unable to time out the user or delete the message due to permission issues.",
+                "Unable to time out the user due to permission issues.",
                 ephemeral=True,
             )
 
