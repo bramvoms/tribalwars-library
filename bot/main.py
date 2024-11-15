@@ -29,8 +29,10 @@ embed_color = discord.Color.from_rgb(221, 205, 165)
 thumbnail_url = "https://i.imgur.com/GDJE1uD.png"
 footer_icon_url = "https://i.imgur.com/N6Z8wxx.png"  # Same image or different as needed
 
-def create_embed(title: str, description: str) -> discord.Embed:
-    embed = discord.Embed(title=title, description=description, color=embed_color)
+def create_embed(title: str = None, description: str = None) -> discord.Embed:
+    embed = discord.Embed(description=description, color=embed_color)
+    if title:  # Only set the title if provided
+        embed.title = title
     embed.set_thumbnail(url=thumbnail_url)  # Add the thumbnail image in the top right corner
     embed.add_field(name="\u200b", value="\u200b", inline=False)  # Adds an empty space
     embed.set_footer(icon_url=footer_icon_url, text="TribalWars Library - Created by Victorious")  # Footer with image
