@@ -28,7 +28,7 @@ class MapCog(commands.Cog):
         items_list = [item.strip() for item in items.split(',')]
         return '&'.join([f"{param_name}[]={quote(item)}" for item in items_list])
 
-    @app_commands.command(name="map", description="Get a map link for specified world and type")
+    @app_commands.command(name="map", description="Generate a map for specified world and type")
     @app_commands.describe(
         world="The world name to get map for",
         type="Type of the map view",
@@ -101,28 +101,6 @@ class MapCog(commands.Cog):
             app_commands.Choice(name=world, value=world)
             for world in self.bot.worlds if current.lower() in world.lower()
         ][:25]
-
-    @map_command.autocomplete('tribes')
-    async def tribes_autocomplete(
-        self,
-        interaction: discord.Interaction,
-        current: str,
-    ) -> List[app_commands.Choice[str]]:
-        # Show autocomplete only for villages-tribe-by
-        if interaction.namespace.type != "villages-tribe-by":
-            return []  # Hide tribes for other types
-        return []
-
-    @map_command.autocomplete('players')
-    async def players_autocomplete(
-        self,
-        interaction: discord.Interaction,
-        current: str,
-    ) -> List[app_commands.Choice[str]]:
-        # Show autocomplete only for villages-player-by
-        if interaction.namespace.type != "villages-player-by":
-            return []  # Hide players for other types
-        return []
 
 async def setup(bot):
     await bot.add_cog(MapCog(bot))
