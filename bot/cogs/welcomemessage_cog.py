@@ -40,7 +40,7 @@ class WelcomeMessageCog(commands.Cog):
         # Send a DM to the new member
         try:
             dm_embed = create_embed(
-                title=f"WELCOME TO THE {**guild.name**} SERVER!",
+                title=f"WELCOME TO THE **{guild.name}** SERVER!",
                 description=(
                     f"Please make sure to check {rules_channel_mention} for the rules of the server.\n"
                     f"Use Channels & Roles to browse channels.\n\n"
