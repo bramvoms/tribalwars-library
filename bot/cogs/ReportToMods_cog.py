@@ -60,12 +60,19 @@ class ReportToModsCog(commands.Cog):
         # Retrieve the main category
         category_name = message.channel.category.name if message.channel.category else "No category"
 
+        # Extract the market from the category name
+        market_role_name = None
+        if category_name:
+            match = re.search(r"\((\w+)\)", category_name)
+            if match:
+                market_role_name = match.group(1)  # Extract the market (e.g., NL, NET)
+
         title = "⚠️ NEW REPORTED MESSAGE ⚠️"
         description = (
             f"**Reported Message**: \n{message.content}\n\n"
             f"**Reported by**: {interaction.user.mention}\n"
             f"**Author**: {message.author.mention}\n"
-            f"**Category**: {category_name}\n"  # Moved category above channel
+            f"**Category**: {category_name}\n"
             f"**Channel**: {message.channel.mention}\n"
             f"[Jump to Message]({message.jump_url})"
         )
@@ -102,39 +109,20 @@ class ReportToModsCog(commands.Cog):
             mod_channel = self.bot.get_channel(mod_channel_id)
             if mod_channel:
                 view = ReportView(message, self.bot)
-                await mod_channel.send(embed=embed, view=view)
+                report_message = await mod_channel.send(embed=embed, view=view)
+
+                # Ping the associated role if the market role name is found
+                if market_role_name:
+                    role = discord.utils.get(interaction.guild.roles, name=market_role_name)
+                    if role:
+                        await mod_channel.send(f"{role.mention}")
+                    else:
+                        await mod_channel.send(f"Role @{market_role_name} not found.")
+
             else:
                 await interaction.followup.send("Moderator channel not found.", ephemeral=True)
         else:
             await interaction.followup.send("Moderator channel has not been set. Please contact an admin.", ephemeral=True)
-
-    @app_commands.command(name="removewarnings", description="Remove warnings for a specified user.")
-    @app_commands.describe(user="The user to remove warnings from within this guild.", all="Remove all warnings? (Y/N)", timeframe="If 'N', specify timeframe in hours")
-    @app_commands.checks.has_permissions(administrator=True)
-    async def removewarnings(self, interaction: discord.Interaction, user: discord.User, all: str, timeframe: int = 0):
-        guild_id = interaction.guild.id
-
-        guild_member = interaction.guild.get_member(user.id)
-        if not guild_member:
-            await interaction.response.send_message("The specified user is not a member of this guild.", ephemeral=True)
-            return
-
-        try:
-            if all.upper() == 'Y':
-                self.cursor.execute(
-                    "DELETE FROM warnings WHERE user_id = %s AND guild_id = %s",
-                    (user.id, guild_id)
-                )
-            else:
-                timeframe_delta = datetime.utcnow() - timedelta(hours=timeframe)
-                self.cursor.execute(
-                    "DELETE FROM warnings WHERE user_id = %s AND guild_id = %s AND timestamp > %s",
-                    (user.id, guild_id, timeframe_delta)
-                )
-            self.db.commit()
-            await interaction.response.send_message(f"Warnings for {guild_member.display_name} have been removed.", ephemeral=True)
-        except Exception as e:
-            await interaction.response.send_message(f"An error occurred while removing warnings: {str(e)}", ephemeral=True)
 
 class ReportView(discord.ui.View):
     def __init__(self, message, bot):
