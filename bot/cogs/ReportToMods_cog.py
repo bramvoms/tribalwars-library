@@ -6,6 +6,7 @@ import os
 import psycopg2
 from psycopg2 import sql
 from main import create_embed
+import re
 
 class ReportToModsCog(commands.Cog):
     def __init__(self, bot):
