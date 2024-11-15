@@ -20,10 +20,10 @@ class WelcomeMessageCog(commands.Cog):
             embed = create_embed(
                 title=f"WELCOME {member.display_name}",
                 description=(
-                    f"{member.mention} has joined **{guild.name}**!\n"
+                    f"{member.mention} has joined **{guild.name}**!\n\n"
                     f"**Rules & information**\n"
                     f"Please make sure to check {rules_channel_mention} for the rules of the server.\n"
-                    f"Use <id:customize> to browse channels.\n"
+                    f"Use <id:customize> to browse channels.\n\n"
                     f"Have fun!"
                 )
             )
@@ -39,9 +39,9 @@ class WelcomeMessageCog(commands.Cog):
             dm_embed = create_embed(
                 title=f"WELCOME {member.display_name}",
                 description=(
-                    f"Welcome to **{guild.name}**!\n"
+                    f"Welcome to **{guild.name}**!\n\n"
                     f"Please make sure to check {rules_channel_mention} for the rules of the server.\n"
-                    f"Use Channels & Roles to browse channels.\n"
+                    f"Use Channels & Roles to browse channels.\n\n"
                     f"Have fun!"
                 )
             )
