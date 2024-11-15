@@ -8,7 +8,8 @@ from main import create_embed
 
 # Initialize DeepL Translator with your API key
 DEEPL_AUTH_KEY = "f58d2e0f-d065-4d78-bc69-19e728f1ca61:fx"  # Replace with your actual API key
-translator = Translator(DEEPL_AUTH_KEY)
+translator = deepl.Translator(auth_key=DEEPL_AUTH_KEY)
+print(f"Initializing DeepL Translator with key: {DEEPL_AUTH_KEY}")
 
 # Dictionary of descriptions for the AM functionality
 am_descriptions = {
