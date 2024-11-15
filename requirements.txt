@@ -4,4 +4,4 @@ python-Levenshtein
 requests
 psycopg2
 python-dotenv
-googletrans
+deep-translator
