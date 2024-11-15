@@ -48,14 +48,14 @@ class AutoModCog(commands.Cog):
     async def add_automod(self, interaction: discord.Interaction, word: str):
         guild_id = interaction.guild_id
         self.add_forbidden_word(guild_id, word)
-        await interaction.response.send_message(f"Added forbidden word: `{word}`", ephemeral=True)
+        await interaction.response.send_message(f"Added forbidden word: {word}", ephemeral=True)
 
     @app_commands.command(name="remove-automod", description="Remove a forbidden word from Auto-Moderation.")
     @app_commands.checks.has_permissions(administrator=True)
     async def remove_automod(self, interaction: discord.Interaction, word: str):
         guild_id = interaction.guild_id
         self.remove_forbidden_word(guild_id, word)
-        await interaction.response.send_message(f"Removed forbidden word: `{word}`", ephemeral=True)
+        await interaction.response.send_message(f"Removed forbidden word: {word}", ephemeral=True)
 
     @app_commands.command(name="view-automod", description="View the list of forbidden words.")
     @app_commands.checks.has_permissions(manage_messages=True)
@@ -63,12 +63,14 @@ class AutoModCog(commands.Cog):
         guild_id = interaction.guild_id
         forbidden_words = self.get_forbidden_words(guild_id)
         if forbidden_words:
-            words_list = "\n".join(f"`{word}`" for word in forbidden_words)
+            words_list = "\n".join(f"{word}" for word in forbidden_words)
             embed = create_embed(
+                title="Forbidden Words",
                 description=f"**Current forbidden words in this server:**\n{words_list}"
             )
         else:
             embed = create_embed(
+                title="Forbidden Words",
                 description="No forbidden words have been added yet."
             )
         await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -88,9 +90,15 @@ class AutoModCog(commands.Cog):
 
             # Generate nickname or display name for warning
             nickname_or_displayname = message.author.nick or message.author.display_name
-            avatar_url = message.author.display_avatar.url
+            description = (
+                f"{message.author.mention} has been warned.\n\n"
+                f"**Reason:** Bad word usage"
+            )
+            embed = create_embed(description=description)
+            embed.set_author(name=nickname_or_displayname, icon_url=message.author.display_avatar.url)
+            await message.channel.send(embed=embed)
 
-            # Apply warning logic
+            # Apply warning and timeout logic
             current_time = datetime.utcnow()
             self.cursor.execute("""
                 INSERT INTO warnings (user_id, guild_id, timestamp, moderator_id)
@@ -105,30 +113,17 @@ class AutoModCog(commands.Cog):
             """, (message.author.id, guild_id, current_time - timedelta(minutes=20)))
             warnings_count = self.cursor.fetchone()[0]
 
-            if warnings_count < 3:
-                # Send warning embed for first and second warnings
-                embed = create_embed(
-                    description=(
-                        f"{message.author.mention} has been warned.\n\n"
-                        f"**Reason:** Bad word usage\n"
-                    )
-                )
-                embed.set_author(name=nickname_or_displayname, icon_url=avatar_url)
-                await message.channel.send(embed=embed)
-
-            elif warnings_count == 3:
-                # Timeout and send timeout embed on the third warning
+            if warnings_count >= 3:
                 timeout_duration = timedelta(minutes=60)
                 try:
                     await message.author.timeout(timeout_duration, reason="Auto-Mod: 3 warnings within 20 minutes.")
-                    embed = create_embed(
-                        description=(
-                            f"{message.author.mention}, you have been timed-out.\n\n"
-                            f"**Reason:** Repeated bad word usage.\n"
-                            f"**Duration:** 60 minutes.\n"
-                        )
+                    description = (
+                        f"{message.author.mention}, you have been timed-out.\n\n"
+                        f"**Reason:** Repeated bad word usage.\n"
+                        f"**Duration:** 60 minutes.\n"
                     )
-                    embed.set_author(name=nickname_or_displayname, icon_url=avatar_url)
+                    embed = create_embed(description=description)
+                    embed.set_author(name=nickname_or_displayname, icon_url=message.author.display_avatar.url)
                     await message.channel.send(embed=embed)
                 except discord.Forbidden:
                     await message.channel.send("Unable to timeout the user due to insufficient permissions.")
