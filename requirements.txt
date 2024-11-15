@@ -3,3 +3,4 @@ fuzzywuzzy
 python-Levenshtein
 requests
 psycopg2
+python-dotenv
