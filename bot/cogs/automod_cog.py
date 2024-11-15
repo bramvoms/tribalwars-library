@@ -97,10 +97,10 @@ class AutoModCog(commands.Cog):
         try:
             # Apply timeout
             await member.timeout(timeout_duration, reason="Auto-Mod: 3 warnings within 20 minutes.")
+            # Generate title using server nickname or display name
+            nickname_or_displayname = message.author.nick or message.author.display_name
             embed = create_embed(
-                # Generate title using server nickname or display name
-                nickname_or_displayname = message.author.nick or message.author.display_name
-                title = f"{nickname_or_displayname}, you have been timed-out.",
+                title=f"{nickname_or_displayname}, you have been timed-out.",
                 description=(
                     f"**Reason:** Repeated bad word usage.\n"
                     f"**Duration:** 60 minutes.\n"
