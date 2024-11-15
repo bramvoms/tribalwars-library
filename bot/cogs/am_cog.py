@@ -105,12 +105,15 @@ class AMCog(commands.Cog):
             print(f"Fuzzy matches: {matches}")  # Debug log
 
             # Corrected logic for top_matches
-            top_matches = [
-                (title, am_descriptions[title])
-                for title, _ in combined_data.items()
-                for match in matches
-                if title.lower() in match[0].lower() and match[1] > 60
-            ]
+            top_matches = []
+            for match_text, score in matches:
+                if score > 60:
+                    # Find the title that matches the fuzzy result
+                    for title, full_text in combined_data.items():
+                        if full_text == match_text:
+                            top_matches.append((title, am_descriptions[title]))
+                            break  # Stop looking once we find the match
+
             print(f"Top matches: {top_matches}")  # Debug log
 
             if not top_matches:
