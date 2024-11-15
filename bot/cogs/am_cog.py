@@ -129,9 +129,16 @@ class AMCog(commands.Cog):
             await ctx.send(f"Error translating template name: {e}")
             return
 
-        # Find matches using fuzzy matching
-        matches = process.extract(translated_name, am_descriptions.keys(), limit=5)
-        top_matches = [match for match, score in matches if score > 60]
+        # Combine titles and descriptions into a searchable dataset
+        combined_data = {
+            title: f"{title.lower()} {description.lower()}" for title, description in am_descriptions.items()
+        }
+
+        # Perform fuzzy matching on combined titles and descriptions
+        matches = process.extract(translated_name, combined_data.values(), limit=5)
+        top_matches = [
+            (title, combined_data[title]) for title, full_text in combined_data.items() if full_text in [match[0] for match in matches] and match[1] > 60
+        ]
 
         if not top_matches:
             embed = create_embed("Template Not Found", f"No template found matching '{template_name}'.")
@@ -140,14 +147,14 @@ class AMCog(commands.Cog):
 
         if len(top_matches) == 1:
             # Show the exact match description
-            template = top_matches[0]
+            template, _ = top_matches[0]
             description = am_descriptions[template]
             title = f"━ {template.upper()} ━"
             embed = create_embed(title=title, description=description)
             await ctx.send(embed=embed)
         else:
             # Allow user to choose from multiple matches
-            view = TemplateSelectionView(ctx, top_matches, am_descriptions)
+            view = TemplateSelectionView(ctx, [match[0] for match in top_matches], am_descriptions)
             await ctx.send("Multiple templates found. Please select one:", view=view)
 
 
@@ -171,6 +178,6 @@ class TemplateSelectionView(discord.ui.View):
             embed = create_embed(title=title, description=description)
             await interaction.response.edit_message(content=None, embed=embed, view=None)
         return callback
-
+        
 async def setup(bot):
     await bot.add_cog(AMCog(bot))
