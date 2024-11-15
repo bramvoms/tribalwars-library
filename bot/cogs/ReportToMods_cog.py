@@ -230,7 +230,7 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-out author", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # Immediately update the report message
+        # Mark as resolved immediately
         await self.mark_as_resolved(interaction, action_taken="Author timed-out and message deleted.")
 
         # Create the timeout duration selection view
@@ -285,9 +285,6 @@ class TimeoutDurationView(discord.ui.View):
         formatted_duration = format_duration(duration)
 
         try:
-            # Mark the report as resolved
-            await self.report_view.mark_as_resolved(interaction, action_taken="Author timed-out and message deleted.")
-
             # Notify the user via DM
             await self.report_view.send_violation_dm(
                 self.member,
@@ -301,7 +298,7 @@ class TimeoutDurationView(discord.ui.View):
             # Delete the original reported message
             await self.message.delete()
 
-            # Acknowledge the interaction with a confirmation message
+            # Send a confirmation message to the moderator
             await interaction.followup.send(
                 f"The user has been timed out for {formatted_duration}.",
                 ephemeral=True,
