@@ -4,6 +4,10 @@ from discord import app_commands
 import os
 import asyncio
 from pathlib import Path
+from dotenv import load_dotenv  # Import load_dotenv
+
+# Load environment variables
+load_dotenv()  # Load environment variables from a .env file
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -82,8 +86,14 @@ async def load_cogs():
             print(f"Successfully loaded cog: {cog_name}")
         except Exception as e:
             print(f"Failed to load cog {cog_name}: {e}")
-            
+
 async def main():
+    # Ensure the cogs directory exists
+    cogs_dir = Path(__file__).parent / "cogs"
+    if not cogs_dir.exists():
+        cogs_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Created missing cogs directory: {cogs_dir.resolve()}")
+
     await load_cogs()  # Load all cogs asynchronously
     await bot.start(os.getenv("DISCORD_TOKEN"))  # Start the bot
     
