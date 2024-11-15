@@ -3,10 +3,12 @@ from discord.ext import commands
 from discord import app_commands, Interaction
 from discord.ui import View, Button
 from fuzzywuzzy import process  # Import for fuzzy matching
-from googletrans import Translator  # Import for translation
+from deepl import Translator  # Import DeepL translator
 from main import create_embed
 
-translator = Translator()  # Initialize translator
+# Initialize DeepL Translator with your API key
+DEEPL_AUTH_KEY = "BTUSkiUUDGFRR3y98"  # Replace with your actual API key
+translator = Translator(DEEPL_AUTH_KEY)
 
 # Dictionary of descriptions for the AM functionality
 am_descriptions = {
@@ -104,20 +106,23 @@ class AMCog(commands.Cog):
     @app_commands.command(name="amtemplates", description="Displays the AM templates menu")
     async def amtemplates(self, interaction: Interaction):
         title = f"⚙️ ** AM TEMPLATES ** ⚙️"
-        embed = create_embed(title=title, description="Selecteer welk sjabloon je wilt bekijken")
+        embed = create_embed(
+            title=title,
+            description="Select which template you want to view.\nCopy the text under TEMPLATE and paste it ingame:\nAccount Manager > Construction > Manage templates > Import template."
+        )
         await interaction.response.send_message(embed=embed, view=AMView(self.bot), ephemeral=True)
 
     # Text command for &amtemplates <template_name> for direct template lookup
     @commands.command(name="amtemplates", help="Find a specific AM template")
     async def amtemplates(self, ctx, *, template_name: str):
         """Text command implementation for &amtemplates <template_name>."""
-        # Translate the input to English
+        # Translate the input to English using DeepL
         try:
             if not template_name.strip():
                 raise ValueError("Template name cannot be empty.")
-                
-            translation = translator.translate(template_name, src='auto', dest='en')
-            translated_name = translation.text.lower().strip()  # Normalize to lowercase and strip whitespace
+
+            translation_result = translator.translate_text(template_name, target_lang="EN")
+            translated_name = translation_result.text.lower().strip()  # Normalize to lowercase and strip whitespace
         except ValueError as ve:
             await ctx.send(f"Invalid input: {ve}")
             return
