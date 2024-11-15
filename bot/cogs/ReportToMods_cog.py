@@ -236,8 +236,11 @@ class ReportView(discord.ui.View):
         # Create the timeout duration selection view
         view = TimeoutDurationView(self.message.author, self.message, self)
 
+        # Defer the interaction to allow follow-up responses
+        await interaction.response.defer(ephemeral=True)
+
         # Send the selection view to the moderator
-        await interaction.followup.send(content="Select a time-out duration for the user:", view=view, ephemeral=True)
+        await interaction.followup.send(content="Select a time-out duration for the user:", view=view)
 
     @discord.ui.button(label="Ban author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -298,14 +301,14 @@ class TimeoutDurationView(discord.ui.View):
             # Delete the original reported message
             await self.message.delete()
 
-            # Send a confirmation message to the moderator
+            # Confirm the timeout action to the moderator
             await interaction.followup.send(
                 f"The user has been timed out for {formatted_duration}.",
                 ephemeral=True,
             )
 
         except discord.Forbidden:
-            # Acknowledge the interaction with an error message
+            # Send an error message to the moderator
             await interaction.followup.send(
                 "Unable to complete the timeout or message deletion due to insufficient permissions.",
                 ephemeral=True,
