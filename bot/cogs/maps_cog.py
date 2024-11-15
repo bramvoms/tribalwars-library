@@ -9,7 +9,6 @@ class MapCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.bot.worlds = []
-        self.bot.loop.create_task(self.fetch_worlds())
 
     async def fetch_worlds(self):
         try:
@@ -20,6 +19,10 @@ class MapCog(commands.Cog):
                         print(f"Updated worlds: {self.bot.worlds}")
         except Exception as e:
             print(f"Failed to fetch worlds: {e}")
+
+    async def cog_load(self):
+        """Run tasks when the cog is loaded."""
+        await self.fetch_worlds()
 
     def build_array_params(self, items: str, param_name: str) -> str:
         items_list = [item.strip() for item in items.split(',')]
@@ -33,12 +36,12 @@ class MapCog(commands.Cog):
         players="Comma-separated player names (for villages-player-by)"
     )
     async def map_command(
-            self,
-            interaction: discord.Interaction,
-            world: str,
-            type: Literal["top-ally", "top-players", "villages-all", "villages-tribe-by", "villages-player-by"],
-            tribes: Optional[str] = None,
-            players: Optional[str] = None
+        self,
+        interaction: discord.Interaction,
+        world: str,
+        type: Literal["top-ally", "top-players", "villages-all", "villages-tribe-by", "villages-player-by"],
+        tribes: Optional[str] = None,
+        players: Optional[str] = None
     ):
         await interaction.response.defer()
 
@@ -90,14 +93,14 @@ class MapCog(commands.Cog):
 
     @map_command.autocomplete('world')
     async def world_autocomplete(
-            self,
-            interaction: discord.Interaction,
-            current: str,
+        self,
+        interaction: discord.Interaction,
+        current: str,
     ) -> List[app_commands.Choice[str]]:
         return [
-                   app_commands.Choice(name=world, value=world)
-                   for world in self.bot.worlds if current.lower() in world.lower()
-               ][:25]
+            app_commands.Choice(name=world, value=world)
+            for world in self.bot.worlds if current.lower() in world.lower()
+        ][:25]
 
 async def setup(bot):
     await bot.add_cog(MapCog(bot))
