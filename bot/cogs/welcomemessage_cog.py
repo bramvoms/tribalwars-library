@@ -13,12 +13,15 @@ class WelcomeMessageCog(commands.Cog):
         welcome_channel = guild.system_channel  # This gets the server's system channel
         rules_channel = guild.rules_channel  # This gets the server's rules channel (if configured)
 
+        # Use server nickname if set, otherwise fallback to display_name
+        display_name = member.nick if member.nick else member.display_name
+
         rules_channel_mention = f"<#{rules_channel.id}>" if rules_channel else "the rules channel"
 
         if welcome_channel:
             # Create the public welcome message
             embed = create_embed(
-                title=f"WELCOME {member.display_name}",
+                title=f"WELCOME {display_name}",
                 description=(
                     f"{member.mention} has joined **{guild.name}**!\n\n"
                     f"**Rules & information**\n"
@@ -37,7 +40,7 @@ class WelcomeMessageCog(commands.Cog):
         # Send a DM to the new member
         try:
             dm_embed = create_embed(
-                title=f"WELCOME {member.display_name}",
+                title=f"WELCOME {display_name}",
                 description=(
                     f"Welcome to **{guild.name}**!\n\n"
                     f"Please make sure to check {rules_channel_mention} for the rules of the server.\n"
@@ -53,7 +56,7 @@ class WelcomeMessageCog(commands.Cog):
             await member.send(embed=dm_embed)
         except discord.Forbidden:
             # Handle cases where the user has disabled DMs from server members
-            print(f"Could not send a DM to {member.display_name}.")
+            print(f"Could not send a DM to {display_name}.")
 
 async def setup(bot):
     await bot.add_cog(WelcomeMessageCog(bot))
