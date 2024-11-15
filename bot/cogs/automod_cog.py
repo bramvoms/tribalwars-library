@@ -68,13 +68,14 @@ class AutoModCog(commands.Cog):
 
         if bad_words:
             await message.delete()  # Delete the message
+            # Generate title using server nickname or display name
+            nickname_or_displayname = message.author.nick or message.author.display_name
             embed = create_embed(
-                # Generate title using server nickname or display name
-                nickname_or_displayname = message.author.nick or message.author.display_name
-                title = f"{nickname_or_displayname} has been warned",
+                title=f"{nickname_or_displayname} has been warned",
                 description=f"**Reason:** Bad word usage"
             )
             await message.channel.send(embed=embed)
+
 
             now = datetime.utcnow()
             self.warned_users[message.author.id].append(now)
