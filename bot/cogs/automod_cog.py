@@ -69,8 +69,10 @@ class AutoModCog(commands.Cog):
         if bad_words:
             await message.delete()  # Delete the message
             embed = create_embed(
-                title=f"{message.author.mention} has been warned",
-                description=f"**Reason:** Bad word usage\n**Message content:**\n{message.content}"
+                # Generate title using server nickname or display name
+                nickname_or_displayname = message.author.nick or message.author.display_name
+                title = f"{nickname_or_displayname} has been warned",
+                description=f"**Reason:** Bad word usage"
             )
             await message.channel.send(embed=embed)
 
@@ -95,11 +97,12 @@ class AutoModCog(commands.Cog):
             # Apply timeout
             await member.timeout(timeout_duration, reason="Auto-Mod: 3 warnings within 20 minutes.")
             embed = create_embed(
-                title=f"{member.mention}, you have been timed out.",
+                # Generate title using server nickname or display name
+                nickname_or_displayname = message.author.nick or message.author.display_name
+                title = f"{nickname_or_displayname}, you have been timed-out.",
                 description=(
                     f"**Reason:** Repeated bad word usage.\n"
                     f"**Duration:** 60 minutes.\n"
-                    f"**Last message:**\n{message.content}"
                 )
             )
             await message.channel.send(embed=embed)
