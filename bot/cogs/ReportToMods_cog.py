@@ -149,6 +149,8 @@ class ReportView(discord.ui.View):
             if action_taken:
                 embed.add_field(name="Action Taken", value=action_taken, inline=False)
             embed.set_footer(text="This report has been marked as resolved by the moderation team.")
+
+            # Edit the original report message
             await interaction.message.edit(embed=embed, view=self)
         
         if not interaction.response.is_done():
@@ -230,17 +232,14 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-out author", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # Mark as resolved immediately
+        # Update the report message directly
         await self.mark_as_resolved(interaction, action_taken="Author timed-out and message deleted.")
 
         # Create the timeout duration selection view
         view = TimeoutDurationView(self.message.author, self.message, self)
 
-        # Defer the interaction to allow follow-up responses
-        await interaction.response.defer(ephemeral=True)
-
         # Send the selection view to the moderator
-        await interaction.followup.send(content="Select a time-out duration for the user:", view=view)
+        await interaction.followup.send(content="Select a time-out duration for the user:", view=view, ephemeral=True)
 
     @discord.ui.button(label="Ban author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
