@@ -8,15 +8,7 @@ from main import create_embed
 
 # Initialize DeepL Translator with your API key
 DEEPL_AUTH_KEY = "f58d2e0f-d065-4d78-bc69-19e728f1ca61:fx"  # Replace with your actual API key
-translator = None
-
-try:
-    logger.info("Initializing DeepL Translator...")
-    translator = deepl.Translator(auth_key=DEEPL_AUTH_KEY)
-    logger.info("DeepL Translator initialized successfully.")
-except Exception as e:
-    logger.error(f"Failed to initialize DeepL Translator: {e}")
-    raise  # Stop execution if translator is critical
+translator = deepl.Translator(auth_key=DEEPL_AUTH_KEY)
 
 # Dictionary of descriptions for the AM functionality
 am_descriptions = {
@@ -80,12 +72,10 @@ am_descriptions = {
 class AMCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        logger.info("AMCog initialized.")
 
     @app_commands.command(name="amtemplates", description="Displays the AM templates menu")
     async def amtemplates(self, interaction: Interaction):
         """Slash command to display the AM templates menu."""
-        logger.debug(f"Processing slash command /amtemplates from {interaction.user}")
         title = "⚙️ ** AM TEMPLATES ** ⚙️"
         embed = create_embed(
             title=title,
@@ -97,32 +87,26 @@ class AMCog(commands.Cog):
     async def amtemplates_text(self, ctx, *, template_name: str):
         """Text command implementation for &amtemplates <template_name>."""
         try:
-            logger.debug(f"Processing text command &amtemplates from {ctx.author}: {template_name}")
             if not template_name.strip():
                 raise ValueError("Template name cannot be empty.")
 
             # Translate the input to English
-            logger.debug(f"Translating input '{template_name}'...")
             translation_result = translator.translate_text(template_name.strip(), target_lang="EN-US")
             translated_name = translation_result.text.lower().strip()
-            logger.info(f"Translated '{template_name}' to '{translated_name}'.")
 
             # Combined dataset for fuzzy matching
             combined_data = {
                 title: f"{title.lower()} {description.lower()}" for title, description in am_descriptions.items()
             }
-            logger.debug(f"Combined data for matching: {combined_data}")
 
             # Perform fuzzy matching
             matches = process.extract(translated_name, combined_data.values(), limit=5)
-            logger.debug(f"Fuzzy matches for '{translated_name}': {matches}")
             top_matches = [
                 (title, combined_data[title])
                 for title, full_text in combined_data.items()
                 for match in matches
                 if full_text == match[0] and match[1] > 60
             ]
-            logger.debug(f"Top matches: {top_matches}")
 
             if not top_matches:
                 embed = create_embed("Template Not Found", f"No template found matching '{template_name}'.")
@@ -139,10 +123,8 @@ class AMCog(commands.Cog):
                 view = TemplateSelectionView(ctx, [match[0] for match in top_matches], am_descriptions)
                 await ctx.send("Multiple templates found. Please select one:", view=view)
         except ValueError as ve:
-            logger.warning(f"Invalid input: {ve}")
             await ctx.send(f"Invalid input: {ve}")
         except Exception as e:
-            logger.error(f"Error processing &amtemplates: {e}")
             await ctx.send(f"An unexpected error occurred: {e}")
 
 
@@ -150,14 +132,12 @@ class AMView(View):
     def __init__(self, bot):
         super().__init__(timeout=None)
         self.bot = bot
-        logger.debug("AMView initialized.")
         for label in am_descriptions.keys():
             button = Button(label=label, style=discord.ButtonStyle.primary)
             button.callback = lambda interaction, label=label: self.show_am_description(interaction, label)
             self.add_item(button)
 
     async def show_am_description(self, interaction: Interaction, subcategory):
-        logger.debug(f"Showing description for '{subcategory}'.")
         title = f"━ {subcategory.upper()} ━"
         description = am_descriptions.get(subcategory, "No description available.")
         embed = create_embed(title=title, description=description)
@@ -171,7 +151,6 @@ class AMView(View):
         await interaction.response.edit_message(embed=embed, view=main_menu_only_view)
 
     async def go_to_main_menu(self, interaction: Interaction):
-        logger.debug("Returning to the main menu.")
         title = "⚙️ ** AM TEMPLATES ** ⚙️"
         embed = create_embed(
             title=title,
@@ -186,7 +165,6 @@ class TemplateSelectionView(discord.ui.View):
         self.ctx = ctx
         self.templates = templates
         self.descriptions = descriptions
-        logger.debug(f"TemplateSelectionView initialized with templates: {templates}")
 
         for template in templates:
             button = discord.ui.Button(label=template, style=discord.ButtonStyle.primary)
@@ -195,7 +173,6 @@ class TemplateSelectionView(discord.ui.View):
 
     def make_callback(self, template):
         async def callback(interaction: Interaction):
-            logger.debug(f"Selected template: {template}")
             description = self.descriptions[template]
             title = f"━ {template.upper()} ━"
             embed = create_embed(title=title, description=description)
@@ -203,9 +180,6 @@ class TemplateSelectionView(discord.ui.View):
         return callback
         
 async def setup(bot):
-    try:
-        await bot.add_cog(AMCog(bot))
-        logger.info("AMCog loaded successfully.")
-    except Exception as e:
-        logger.error(f"Failed to load AMCog: {e}")
+    await bot.add_cog(AMCog(bot))
+
         
