@@ -283,8 +283,9 @@ class TimeoutDurationView(discord.ui.View):
                 return f"{minutes} minutes"
 
         formatted_duration = format_duration(duration)
+
         try:
-            # Send a DM to the user
+            # Notify the user via DM
             await self.report_view.send_violation_dm(
                 self.member,
                 self.message,
@@ -293,14 +294,13 @@ class TimeoutDurationView(discord.ui.View):
 
             # Apply the timeout
             await self.member.timeout(duration, reason="Violation of server rules.")
-            await interaction.followup.send(
-                f"The user has been timed out for {formatted_duration}.",
-                ephemeral=True,
-            )
+
+            # Delete the original reported message
+            await self.message.delete()
 
         except discord.Forbidden:
             await interaction.followup.send(
-                "Unable to time out the user due to permission issues.",
+                "Unable to complete the timeout or message deletion due to insufficient permissions.",
                 ephemeral=True,
             )
 
