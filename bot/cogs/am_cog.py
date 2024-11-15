@@ -213,3 +213,4 @@ async def setup(bot):
         logger.info("AMCog loaded successfully.")
     except Exception as e:
         logger.error(f"Failed to load AMCog: {e}")
+        
