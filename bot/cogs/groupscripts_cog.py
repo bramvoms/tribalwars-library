@@ -21,13 +21,10 @@ class GroupScriptsCog(commands.Cog):
                 )
                 return
 
-        # Defer the interaction to acknowledge it
-        await interaction.response.defer()
-
         # Create a view with script selections and a combine button
         view = ScriptCombineView(interaction.user)  # Pass the command initiator to the view
         embed = create_embed("Selecteer scripts om te groeperen", "Selecteer de scripts en klik op groeperen om de code in DM gestuurd te krijgen.")
-        await interaction.followup.send(embed=embed, view=view)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 class ScriptCombineView(View):
     def __init__(self, command_user):
@@ -110,7 +107,7 @@ class ScriptCombineView(View):
         # Generate the combined script code
         combined_code = self.get_combined_script_code()
 
-         # Use the pre-configured embed style from main.py
+        # Use the pre-configured embed style from main.py
         embed = create_embed(
             title="Gegroepeerde Script Code",
             description=f"Hier is je gegroepeerde script:\n```js\n{combined_code}\n```"
