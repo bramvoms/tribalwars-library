@@ -87,16 +87,6 @@ class AMCog(commands.Cog):
         self.bot = bot
         logger.info("AMCog initialized.")
 
-    async def cog_load(self):
-        """Ensure the slash commands are registered when the cog is loaded."""
-        try:
-            logger.info("Syncing slash commands...")
-            await self.bot.tree.sync()
-            logger.info("Slash commands synced successfully.")
-        except Exception as e:
-            logger.error(f"Error syncing slash commands: {e}")
-            raise
-
     @app_commands.command(name="amtemplates", description="Displays the AM templates menu")
     async def amtemplates(self, interaction: Interaction):
         """Slash command to display the AM templates menu."""
