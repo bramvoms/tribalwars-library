@@ -138,7 +138,7 @@ class ReportView(discord.ui.View):
         self.message = message
         self.bot = bot
 
-    async def mark_as_resolved(self, interaction):
+    async def mark_as_resolved(self, interaction, action_taken: str = None):
         for item in self.children:
             item.disabled = True
         if interaction.message.embeds:
@@ -146,11 +146,13 @@ class ReportView(discord.ui.View):
             embed.title = "✅ Resolved report"
             embed.color = discord.Color.green()
             embed.add_field(name="Resolved by", value=interaction.user.mention, inline=False)
+            if action_taken:
+                embed.add_field(name="Action Taken", value=action_taken, inline=False)
             embed.set_footer(text="This report has been marked as resolved by the moderation team.")
             await interaction.message.edit(embed=embed, view=self)
         
         if not interaction.response.is_done():
-            await interaction.response.send_message("This report has been marked as resolved.", ephemeral=True)
+            await interaction.response.send_message(action_taken or "This report has been marked as resolved.", ephemeral=True)
 
     async def send_violation_dm(self, member, message, reason):
         title = "⚠️ MODERATOR MESSAGE ⚠️"
@@ -169,12 +171,12 @@ class ReportView(discord.ui.View):
     async def delete_message_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.send_violation_dm(self.message.author, self.message, "Message deleted")
         await self.message.delete()
-        await self.mark_as_resolved(interaction)
+        await self.mark_as_resolved(interaction, action_taken="Message deleted.")
 
     @discord.ui.button(label="Warn author", style=discord.ButtonStyle.danger)
     async def warn_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.warn_author(interaction)
-        await self.mark_as_resolved(interaction)
+        await self.mark_as_resolved(interaction, action_taken="Author warned and message deleted.")
 
     async def warn_author(self, interaction: discord.Interaction):
         author = self.message.author
@@ -228,9 +230,10 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-out author", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.mark_as_resolved(interaction)
+        await self.mark_as_resolved(interaction, action_taken="User timed out.")
         view = TimeoutDurationView(self.message.author, self.message, self)
-        await interaction.message.edit(content="Select a time-out duration for the user:", view=view)
+        await interaction.response.send_message(content="Select a time-out duration for the user:", view=view, ephemeral=True)
+
 
     @discord.ui.button(label="Ban author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -253,11 +256,11 @@ class ReportView(discord.ui.View):
         # Ban the user and delete their message
         await self.message.author.ban(reason="Violation of server rules")
         await self.message.delete()
-        await self.mark_as_resolved(interaction)
+        await self.mark_as_resolved(interaction, action_taken="Author banned and message deleted.")
 
     @discord.ui.button(label="No further action", style=discord.ButtonStyle.success)
     async def resolved_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.mark_as_resolved(interaction)
+        await self.mark_as_resolved(interaction, action_taken="No action taken.")
 
 class TimeoutDurationView(discord.ui.View):
     def __init__(self, member, message, report_view):
