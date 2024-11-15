@@ -137,7 +137,10 @@ class AMCog(commands.Cog):
         # Perform fuzzy matching on combined titles and descriptions
         matches = process.extract(translated_name, combined_data.values(), limit=5)
         top_matches = [
-            (title, combined_data[title]) for title, full_text in combined_data.items() if full_text in [match[0] for match in matches] and match[1] > 60
+            (title, combined_data[title])
+            for title, full_text in combined_data.items()
+            for match in matches
+            if full_text == match[0] and match[1] > 60
         ]
 
         if not top_matches:
