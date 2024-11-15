@@ -112,7 +112,6 @@ class AMCog(commands.Cog):
         )
         await interaction.response.send_message(embed=embed, view=AMView(self.bot), ephemeral=True)
 
-    # Text command for &amtemplates <template_name> for direct template lookup
     @commands.command(name="amtemplates", help="Find a specific AM template")
     async def amtemplates(self, ctx, *, template_name: str):
         """Text command implementation for &amtemplates <template_name>."""
@@ -121,7 +120,7 @@ class AMCog(commands.Cog):
             if not template_name.strip():
                 raise ValueError("Template name cannot be empty.")
 
-            translation_result = translator.translate_text(template_name, target_lang="EN-US")
+            translation_result = translator.translate_text(template_name, target_lang="EN")
             translated_name = translation_result.text.lower().strip()  # Normalize to lowercase and strip whitespace
         except ValueError as ve:
             await ctx.send(f"Invalid input: {ve}")
@@ -130,27 +129,48 @@ class AMCog(commands.Cog):
             await ctx.send(f"Error translating template name: {e}")
             return
 
-        # Try to match the translated name with the English templates
-        matching_template = am_descriptions.get(translated_name)  # Exact match
+        # Find matches using fuzzy matching
+        matches = process.extract(translated_name, am_descriptions.keys(), limit=5)
+        top_matches = [match for match, score in matches if score > 60]
 
-        if matching_template:
-            # Send the exact match description
-            title = f"━ {translated_name.upper()} ━"
-            embed = create_embed(title=title, description=matching_template)
+        if not top_matches:
+            embed = create_embed("Template Not Found", f"No template found matching '{template_name}'.")
+            await ctx.send(embed=embed)
+            return
+
+        if len(top_matches) == 1:
+            # Show the exact match description
+            template = top_matches[0]
+            description = am_descriptions[template]
+            title = f"━ {template.upper()} ━"
+            embed = create_embed(title=title, description=description)
             await ctx.send(embed=embed)
         else:
-            # No exact match, use fuzzy matching to find the closest template
-            closest_match, score = process.extractOne(translated_name, am_descriptions.keys())
-            
-            if score > 60:  # Threshold for considering a match
-                # Show the closest match automatically
-                title = f"━ {closest_match.upper()} ━"
-                embed = create_embed(title=title, description=am_descriptions[closest_match])
-                await ctx.send(embed=embed)
-            else:
-                # No close match found
-                embed = create_embed("Template Not Found", f"No template found matching '{template_name}' in your language.")
-                await ctx.send(embed=embed)
+            # Allow user to choose from multiple matches
+            view = TemplateSelectionView(ctx, top_matches, am_descriptions)
+            await ctx.send("Multiple templates found. Please select one:", view=view)
+
+
+class TemplateSelectionView(discord.ui.View):
+    def __init__(self, ctx, templates, descriptions):
+        super().__init__(timeout=60)
+        self.ctx = ctx
+        self.templates = templates
+        self.descriptions = descriptions
+
+        for template in templates:
+            button = discord.ui.Button(label=template, style=discord.ButtonStyle.primary)
+            button.callback = self.make_callback(template)
+            self.add_item(button)
+
+    def make_callback(self, template):
+        async def callback(interaction: Interaction):
+            # Display the selected template description
+            description = self.descriptions[template]
+            title = f"━ {template.upper()} ━"
+            embed = create_embed(title=title, description=description)
+            await interaction.response.edit_message(content=None, embed=embed, view=None)
+        return callback
 
 async def setup(bot):
     await bot.add_cog(AMCog(bot))
