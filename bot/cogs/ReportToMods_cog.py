@@ -289,11 +289,14 @@ class BanMessageDeletionView(discord.ui.View):
         self.add_item(self.deletion_select)
 
     async def process_ban(self, interaction: discord.Interaction):
-        # Retrieve the selected message deletion duration in seconds
+        # Defer the interaction response to allow time for processing
+        await interaction.response.defer(ephemeral=True)
+
+        # Retrieve the selected message deletion duration
         deletion_seconds = int(interaction.data["values"][0])
 
         try:
-            # Apply the ban (Discord's API no longer allows specifying message deletion directly)
+            # Apply the ban
             await interaction.guild.ban(
                 user=self.author,
                 reason="Violation of server rules",
@@ -310,10 +313,14 @@ class BanMessageDeletionView(discord.ui.View):
                     ):
                         messages_to_delete.append(message)
 
-                await interaction.channel.delete_messages(messages_to_delete)
+                if messages_to_delete:
+                    await interaction.channel.delete_messages(messages_to_delete)
 
-            # Delete the original reported message
-            await self.message.delete()
+            # Delete the original reported message if it still exists
+            try:
+                await self.message.delete()
+            except discord.NotFound:
+                pass  # Ignore if the message is already deleted
 
             # Mark the report as resolved
             await self.report_view.mark_as_resolved(interaction)
@@ -328,7 +335,7 @@ class BanMessageDeletionView(discord.ui.View):
             await interaction.followup.send("Failed to ban the user due to insufficient permissions.", ephemeral=True)
         except discord.HTTPException as e:
             await interaction.followup.send(f"An error occurred while banning the user: {e}", ephemeral=True)
-
+            
 class TimeoutDurationView(discord.ui.View):
     def __init__(self, member, message, report_view):
         super().__init__(timeout=None)
