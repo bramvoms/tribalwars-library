@@ -69,8 +69,6 @@ async def load_cogs():
     # Define the cogs_path based on the location of main.py
     base_dir = Path(__file__).parent
     cogs_path = base_dir / "cogs"
-    
-    print(f"Loading cogs from: {cogs_path.resolve()}")  # Log the absolute path
 
     if not cogs_path.exists() or not cogs_path.is_dir():
         print("Error: Cogs directory does not exist or is not a directory.")
@@ -78,12 +76,13 @@ async def load_cogs():
 
     # Iterate over all `.py` files in the `cogs` directory
     for cog_file in cogs_path.glob("*.py"):
-        print(f"Found cog file: {cog_file.name}")
         cog_name = f"cogs.{cog_file.stem}"  # `stem` gives the filename without the extension
 
         try:
             await bot.load_extension(cog_name)
             print(f"Successfully loaded cog: {cog_name}")
+        except commands.errors.ExtensionAlreadyLoaded:
+            print(f"Cog {cog_name} is already loaded.")
         except Exception as e:
             print(f"Failed to load cog {cog_name}: {e}")
 
