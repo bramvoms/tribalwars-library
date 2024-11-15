@@ -94,7 +94,6 @@ class AutoModCog(commands.Cog):
                 title=f"{nickname_or_displayname} has been warned",
                 description=(
                     f"**Reason:** Bad word usage\n"
-                    f"**Message content:**\n{message.content}\n\n"
                 )
             )
             await message.channel.send(embed=embed)
