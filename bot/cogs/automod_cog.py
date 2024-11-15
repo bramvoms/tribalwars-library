@@ -114,9 +114,10 @@ class AutoModCog(commands.Cog):
                         f"**Reason:** Repeated bad word usage.\n"
                         f"**Duration:** 60 minutes.\n"
                     )
-                    embed = create_embed(description=description)
+                    # Create the embed without thumbnail and footer
+                    embed = discord.Embed(description=description, color=discord.Color.red())
                     embed.set_author(
-                        name=f"{nickname_or_displayname} was timed-out", 
+                        name=f"{nickname_or_displayname} was timed-out",
                         icon_url=message.author.display_avatar.url
                     )
                     await message.channel.send(embed=embed)
@@ -127,9 +128,10 @@ class AutoModCog(commands.Cog):
                 description = (
                     f"**Reason:** Bad word usage"
                 )
-                embed = create_embed(description=description)
+                # Create the embed without thumbnail and footer
+                embed = discord.Embed(description=description, color=discord.Color.orange())
                 embed.set_author(
-                    name=f"{nickname_or_displayname} has been warned", 
+                    name=f"{nickname_or_displayname} has been warned",
                     icon_url=message.author.display_avatar.url
                 )
                 await message.channel.send(embed=embed)
