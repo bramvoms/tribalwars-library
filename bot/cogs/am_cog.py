@@ -109,7 +109,7 @@ class AMCog(commands.Cog):
                 (title, am_descriptions[title])
                 for title, full_text in combined_data.items()
                 for match in matches
-                if full_text == match[0] and match[1] > 25
+                if full_text == match[0] and match[1] > 44
             ]
             print(f"Top matches: {top_matches}")  # Debug log
 
