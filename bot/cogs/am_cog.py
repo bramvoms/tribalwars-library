@@ -105,7 +105,7 @@ class AMCog(commands.Cog):
             print(f"Fuzzy matches: {matches}")  # Debug log
 
             # Corrected logic for top_matches
-            top_matches = [(title, am_descriptions[title]) for title, score in matches if score > 60]
+            top_matches = [(title, am_descriptions[title]) for title, score in matches if score > 44]
             print(f"Top matches: {top_matches}")  # Debug log
 
             if not top_matches:
