@@ -63,17 +63,19 @@ class ScriptCombineView(View):
             await interaction.response.send_message("You are not authorized to select scripts for this action.", ephemeral=True)
             return
 
-        # Update selected scripts based on current selections in all menus
+        # Retrieve the selected values from the dropdown
         selected_values = set(interaction.data["values"])
-        self.selected_scripts.symmetric_difference_update(selected_values)
 
-        # Keep selected options highlighted
+        # Update the selected scripts persistently
+        self.selected_scripts.update(selected_values)
+
+        # Reflect the selection in the dropdown menus
         for select in self.children:
             if isinstance(select, Select):
                 for option in select.options:
                     option.default = option.value in self.selected_scripts
 
-        # Respond to interaction by editing the message to update view
+        # Respond to interaction by editing the message to update the view
         await interaction.response.edit_message(view=self)
     
     async def clear_selection(self, interaction: discord.Interaction):
