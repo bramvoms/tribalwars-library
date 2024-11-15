@@ -31,7 +31,9 @@ class MapCog(commands.Cog):
     @app_commands.command(name="map", description="Get a map link for specified world and type")
     @app_commands.describe(
         world="The world name to get map for",
-        type="Type of the map view"
+        type="Type of the map view",
+        tribes="Comma-separated tribe names (only for villages-tribe-by)",
+        players="Comma-separated player names (only for villages-player-by)"
     )
     async def map_command(
         self,
@@ -106,12 +108,10 @@ class MapCog(commands.Cog):
         interaction: discord.Interaction,
         current: str,
     ) -> List[app_commands.Choice[str]]:
+        # Show autocomplete only for villages-tribe-by
         if interaction.namespace.type != "villages-tribe-by":
-            return []  # Return no options for other types
-        return [
-            app_commands.Choice(name=f"Tribe {i+1}", value=f"Tribe{i+1}")
-            for i in range(10)  # Example tribes
-        ]
+            return []  # Hide tribes for other types
+        return []
 
     @map_command.autocomplete('players')
     async def players_autocomplete(
@@ -119,12 +119,10 @@ class MapCog(commands.Cog):
         interaction: discord.Interaction,
         current: str,
     ) -> List[app_commands.Choice[str]]:
+        # Show autocomplete only for villages-player-by
         if interaction.namespace.type != "villages-player-by":
-            return []  # Return no options for other types
-        return [
-            app_commands.Choice(name=f"Player {i+1}", value=f"Player{i+1}")
-            for i in range(10)  # Example players
-        ]
+            return []  # Hide players for other types
+        return []
 
 async def setup(bot):
     await bot.add_cog(MapCog(bot))
