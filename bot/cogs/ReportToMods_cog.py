@@ -258,6 +258,11 @@ class ReportView(discord.ui.View):
             ephemeral=True
         )
         
+    @discord.ui.button(label="No further action", style=discord.ButtonStyle.success)
+    async def resolved_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.mark_as_resolved(interaction)
+
+        
 class BanMessageDeletionView(discord.ui.View):
     def __init__(self, message, author, report_view):
         super().__init__(timeout=180)
@@ -288,11 +293,14 @@ class BanMessageDeletionView(discord.ui.View):
         deletion_seconds = int(interaction.data["values"][0])
 
         try:
+            # Convert seconds to a timedelta for the deletion duration
+            deletion_duration = timedelta(seconds=deletion_seconds)
+
             # Apply the ban with the selected deletion duration
             await interaction.guild.ban(
                 user=self.author,
                 reason="Violation of server rules",
-                delete_message_seconds=deletion_seconds,
+                delete_message_duration=deletion_duration,
             )
 
             # Delete the original reported message
@@ -310,10 +318,6 @@ class BanMessageDeletionView(discord.ui.View):
             await interaction.response.send_message("Failed to ban the user due to insufficient permissions.", ephemeral=True)
         except discord.HTTPException as e:
             await interaction.response.send_message(f"An error occurred while banning the user: {e}", ephemeral=True)
-
-    @discord.ui.button(label="No further action", style=discord.ButtonStyle.success)
-    async def resolved_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.mark_as_resolved(interaction)
 
 class TimeoutDurationView(discord.ui.View):
     def __init__(self, member, message, report_view):
