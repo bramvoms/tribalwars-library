@@ -4,12 +4,7 @@ from discord import app_commands, Interaction
 from discord.ui import View, Button
 from fuzzywuzzy import process  # Import for fuzzy matching
 import deepl
-import logging
 from main import create_embed
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s:%(message)s")
-logger = logging.getLogger(__name__)
 
 # Initialize DeepL Translator with your API key
 DEEPL_AUTH_KEY = "f58d2e0f-d065-4d78-bc69-19e728f1ca61:fx"  # Replace with your actual API key
