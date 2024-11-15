@@ -21,7 +21,7 @@ class WelcomeMessageCog(commands.Cog):
         if welcome_channel:
             # Create the public welcome message
             embed = create_embed(
-                title=f"A NEW MEMBER HAS JOINED THE **{guild.name}** SERVER!",
+                title=f"A NEW MEMBER HAS JOINED THE SERVER!",
                 description=(
                     f"{member.mention} has joined the **{guild.name}** server!\n\n"
                     f"**Rules & information**\n"
