@@ -230,10 +230,14 @@ class ReportView(discord.ui.View):
 
     @discord.ui.button(label="Time-out author", style=discord.ButtonStyle.danger)
     async def timeout_options_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.mark_as_resolved(interaction, action_taken="User timed out.")
-        view = TimeoutDurationView(self.message.author, self.message, self)
-        await interaction.response.send_message(content="Select a time-out duration for the user:", view=view, ephemeral=True)
+        # Defer the interaction to allow further updates
+        await interaction.response.defer(ephemeral=True)
 
+        # Create the timeout duration selection view
+        view = TimeoutDurationView(self.message.author, self.message, self)
+
+        # Send the selection view to the moderator
+        await interaction.followup.send(content="Select a time-out duration for the user:", view=view)
 
     @discord.ui.button(label="Ban author", style=discord.ButtonStyle.danger)
     async def ban_author_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -283,10 +287,9 @@ class TimeoutDurationView(discord.ui.View):
             await self.report_view.send_violation_dm(self.member, self.message, f"Message deleted and timed out for {formatted_duration}")
             await self.member.timeout(duration, reason="Violation of server rules.")
             await self.message.delete()
-            await interaction.response.send_message(
-                f"{self.member.mention} has been timed out for {formatted_duration}, message deleted, and author notified.",
-                ephemeral=True
-            )
+
+            # Call mark_as_resolved with the appropriate action message
+            await self.report_view.mark_as_resolved(interaction, action_taken=f"User timed out for {formatted_duration}.")
         except discord.Forbidden:
             await interaction.response.send_message("Unable to time out the user or delete the message due to permission issues.", ephemeral=True)
 
