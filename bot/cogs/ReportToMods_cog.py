@@ -57,17 +57,18 @@ class ReportToModsCog(commands.Cog):
     async def report_message(self, interaction: discord.Interaction, message: discord.Message):
         await interaction.response.send_message("Your report has been sent to the moderators.", ephemeral=True)
 
+        # Retrieve the main category
+        category_name = message.channel.category.name if message.channel.category else "No category"
+
         title = "⚠️ NEW REPORTED MESSAGE ⚠️"
         description = (
             f"**Reported Message**: \n{message.content}\n\n"
             f"**Reported by**: {interaction.user.mention}\n"
             f"**Author**: {message.author.mention}\n"
+            f"**Category**: {category_name}\n"  # Moved category above channel
             f"**Channel**: {message.channel.mention}\n"
             f"[Jump to Message]({message.jump_url})"
         )
-
-        # Retrieve the main category
-        category_name = message.channel.category.name if message.channel.category else "No category"
 
         guild_id = interaction.guild.id
         current_time = datetime.utcnow()
@@ -94,7 +95,6 @@ class ReportToModsCog(commands.Cog):
 
         embed = create_embed(title=title, description=description)
         embed.add_field(name="Previous Warnings", value=warning_info, inline=False)
-        embed.add_field(name="Channel Category", value=category_name, inline=False)  # New field added
         embed.set_footer(text="Use this information for appropriate moderation actions.")
 
         mod_channel_id = self.get_moderator_channel(guild_id)
