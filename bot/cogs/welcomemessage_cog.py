@@ -21,7 +21,7 @@ class WelcomeMessageCog(commands.Cog):
         if welcome_channel:
             # Create the public welcome message
             embed = create_embed(
-                title=f"WELCOME {member.mention}",
+                title=f"WELCOME {member.display_name}",
                 description=(
                     f"{member.mention} has joined **{guild.name}**!\n\n"
                     f"**Rules & information**\n"
@@ -40,7 +40,7 @@ class WelcomeMessageCog(commands.Cog):
         # Send a DM to the new member
         try:
             dm_embed = create_embed(
-                title=f"WELCOME {member.mention}",
+                title=f"WELCOME {member.display_name}",
                 description=(
                     f"Welcome to **{guild.name}**!\n\n"
                     f"Please make sure to check {rules_channel_mention} for the rules of the server.\n"
