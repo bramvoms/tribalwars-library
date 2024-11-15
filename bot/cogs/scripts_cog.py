@@ -572,35 +572,51 @@ class ScriptsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+class ScriptsCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
     @app_commands.command(name="scripts", description="Displays the script categories")
     async def scripts(self, interaction: Interaction):
+        guild = interaction.guild
+        if guild and guild.id == 645639196882501642:  # Specific guild ID check
+            role = discord.utils.get(interaction.user.roles, name="NL")
+            if not role:
+                await interaction.response.send_message(
+                    "This command is for TribalWars.NL players only.",
+                    ephemeral=True
+                )
+                return
+
         embed = create_embed("TribalWars Library: Scripts", "Selecteer een categorie om scripts te bekijken.")
         await interaction.response.send_message(embed=embed, view=PublicMenuView(self.bot), ephemeral=True)
 
     @commands.command(name="scripts", help="Finds a specific script by name.")
     async def get_script_description(self, ctx, *, script_name: str):
-        script_name = script_name.lower()  # Normalize input to lowercase
-        matching_script = descriptions.get(script_name)  # Try to find an exact match
+        guild = ctx.guild
+        if guild and guild.id == 645639196882501642:  # Specific guild ID check
+            role = discord.utils.get(ctx.author.roles, name="NL")
+            if not role:
+                await ctx.send("This command is for TribalWars.NL players only.")
+                return
+
+        script_name = script_name.lower()
+        matching_script = descriptions.get(script_name)
 
         if matching_script:
-            # Format title and description for exact match
             title = f"━ {script_name.upper()} ━"
             embed = create_embed(title=title, description=matching_script)
             await ctx.send(embed=embed)
         else:
-            # No exact match, use fuzzy matching to find the closest script
             closest_match, score = process.extractOne(script_name, descriptions.keys())
-            
-            if score > 60:  # Threshold for considering a match
-                # Format title and description for closest match
+            if score > 60:
                 title = f"━ {closest_match.upper()} ━"
                 embed = create_embed(title=title, description=descriptions[closest_match])
                 await ctx.send(embed=embed)
             else:
-                # No close match found, inform the user
                 embed = create_embed("Script Not Found", f"No script found matching '{script_name}'.")
                 await ctx.send(embed=embed)
-                
+
 class PublicMenuView(discord.ui.View):
     def __init__(self, bot):
         super().__init__(timeout=None)
