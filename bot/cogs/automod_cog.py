@@ -134,8 +134,5 @@ class AutoModCog(commands.Cog):
                 )
                 await message.channel.send(embed=embed)
 
-                except discord.Forbidden:
-                    await message.channel.send("Unable to timeout the user due to insufficient permissions.")
-
 async def setup(bot):
     await bot.add_cog(AutoModCog(bot))
